@@ -1,4 +1,4 @@
-package genealogy;
+package gen;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
 import org.neo4j.procedure.UserFunction;
@@ -9,7 +9,7 @@ import org.neo4j.procedure.UserFunction;
 public class base2to10 {
 
     @UserFunction
-    @Description("Example: return(baseConvert('1101')) will return 13 in the Neo4j browser. - Convert the provided base 2 string to a base 10 integer.")
+    @Description("example.baseConvert('1101', 2) - Convert the provided base 2 string to a base 10 integer.")
     public Long baseConvert(
             @Name("s") 
                 String s
