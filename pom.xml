@@ -2,9 +2,9 @@
 <!--https://github.com/neo4j-examples/neo4j-procedure-template/blob/4.2/pom.xml#L24-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.neo4j.gen</groupId>
-    <artifactId>org.neo4j.gen</artifactId>
-    <version>1</version>
+    <groupId>wai.neo4j.gen</groupId>
+    <artifactId>wai.neo4j.gen</artifactId>
+    <version>1.2</version>
     <packaging>jar</packaging>
     <name>gen</name>
     <properties>
@@ -27,12 +27,12 @@
             <version>4.3.0</version>
             <scope>provided</scope> 
         </dependency>
+        <!--drivers in plugins must be the same-->
          <dependency>
             <groupId>org.neo4j.driver</groupId>
             <artifactId>neo4j-java-driver</artifactId>
-            <!--<version>4.2.5</version>-->
-            <version>4.3.2</version>
-            <scope>test</scope> 
+            <version>4.3.0</version>
+            <scope>provided</scope> 
         </dependency>
         <dependency>
             <groupId>org.neo4j.test</groupId>
@@ -46,6 +46,13 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <!--<dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>procedure-compiler</artifactId>
+            <version>4.3.3</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>-->
     </dependencies>
     
   <build>
