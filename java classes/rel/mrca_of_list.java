@@ -4,7 +4,7 @@
  * Who Am I -- Graphs for Genealogists
  * Woodstock, IL 60098 USA
  */
-package gen.mrca;
+package gen.rel;
     import org.neo4j.driver.AuthToken;
     import gen.auth.AuthInfo;
     import java.util.ArrayList;
@@ -13,8 +13,6 @@ package gen.mrca;
     import org.neo4j.driver.Result;
     import org.neo4j.driver.Session;    
     import org.neo4j.driver.SessionConfig;
-    import org.neo4j.driver.Transaction;
-//    import org.neo4j.driver.TransactionWork;
     import org.neo4j.driver.AccessMode;
 
     import org.neo4j.procedure.Name;
@@ -22,7 +20,6 @@ package gen.mrca;
     import org.neo4j.procedure.Description;
   
     import java.util.List;        
-    import static org.neo4j.driver.Values.parameters;
       
 /**
  *

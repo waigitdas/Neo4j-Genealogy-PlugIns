@@ -4,7 +4,7 @@
  * Who Am I -- Graphs for Genealogists
  * Woodstock, IL 60098 USA
  */
-package gen.mrca;
+package gen.rel;
     import gen.auth.AuthInfo;
 //    import org.neo4j.driver.AuthTokens;
     import org.neo4j.driver.Driver;

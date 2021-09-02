@@ -10,11 +10,18 @@ package gen.auth;
     import org.neo4j.driver.AuthTokens; 
     import org.neo4j.driver.AuthToken;
 
-public class AuthInfo {
 
+public class AuthInfo {
+    public static String neo4j_user = "neo4j";
+    public static String neo4j_pswd = "cns105";
+    
+    /**
+     *
+     * @return
+     */
     public static AuthToken getToken( )
     {
-        AuthToken myToken = AuthTokens.basic( "neo4j", "cns105" );
+        AuthToken myToken = AuthTokens.basic("neo4j", "cns105" );
         return myToken;
     }
    
