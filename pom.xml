@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>wai.neo4j.gen</groupId>
     <artifactId>wai.neo4j.gen</artifactId>
-    <version>1.2</version>
+    <version>1.6</version>
     <packaging>jar</packaging>
     <name>gen</name>
     <properties>
@@ -46,12 +46,31 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.javatuples</groupId>
+            <artifactId>javatuples</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.neo4j/neo4j-auth-plugin-api 
+        <dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>neo4j-auth-plugin-api</artifactId>
+            <version>3.5.0-beta03</version>
+            <type>provided</type>
+        </dependency>-->
+
         <!--<dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>procedure-compiler</artifactId>
             <version>4.3.3</version>
             <scope>compile</scope>
             <optional>true</optional>
+        </dependency>-->
+        <!--<dependency>
+            <groupId>org.neo4j.neo4j_genealogy</groupId>
+            <artifactId>org.neo4j.neo4j_genealogy</artifactId>
+            <version>0.1</version>
+            <type>jar</type>
         </dependency>-->
     </dependencies>
     
