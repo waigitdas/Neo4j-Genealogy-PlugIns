@@ -25,25 +25,27 @@ public class upload_gedcom {
      * @param db
      */
     public String gedcom_to_neo4j(
-        @Name("file_path") 
-             String file_path,
+        @Name("db")
+            String db,
         @Name("user_name") 
             String user_name,
         @Name("password") 
             String password,
-        @Name("db") 
-            String db
+        @Name("file_path") 
+             String file_path,
+        @Name("FAM_Str_Id") 
+            String FAM_Str_Id
        )
       {
-          load_gedcom(file_path, db, user_name, password);
+          load_gedcom(file_path, db, user_name, password,FAM_Str_Id);
           return "completed";
       }
   
     
-    public static void load_gedcom (String file_path,String db, String user_name,String password ) 
+    public static void load_gedcom (String file_path,String db, String user_name,String password,String FAM_Str_Id ) 
    
     {
-        String FAM_Str_Id ="F";
+        //String FAM_Str_Id ="F";
         String filePath = "E:\\DAS_Coded_BU_2017\\Genealogy\\Gedcom\\recd\\erwin2.ged";
         String c =  readLineByLineJava8( filePath );
         String[] s = c.split("0 @");
@@ -92,12 +94,14 @@ public class upload_gedcom {
             fwu.close();
             
             String cqp = "LOAD CSV WITH HEADERS FROM 'file:///person.csv' AS line FIELDTERMINATOR '|' merge (p:Person{RN:toInteger(line.rn),fullname:toString(line.fullname),first_name:toString(case when line.first_name is null then '' else line.first_name end),surname:toString(case when line.surname is null then '' else line.surname end),BDGed:toString(line.bd),BP:toString(line.bp),DD:toString(line.dd),DP:toString(line.dp),nm:toInteger(case when line.nm is null then -1 else line.nm end),union_id:toInteger(case when line.uid is null then 0 else line.uid end),sex:toString(line.sex)})";
-           neo4j_qry.qry_no_return(cqp,"test");
+           neo4j_qry.qry_write(cqp,"test","w");
 
 
             String cqu = "LOAD CSV WITH HEADERS FROM 'file:///union.csv' AS line FIELDTERMINATOR '|' merge (u:Union{Union_id:toInteger(line.uid),U1:toInteger(line.u1),U2:toInteger(line.u2),UDGed:toString(line.ud),Union_Place:toString(line.up)})";
-           neo4j_qry.qry_no_return(cqu,"test");
+           neo4j_qry.qry_write(cqu,"test","w");
 
+           String cqpl = "match (p1:Person) with 'b' as type, p1.BP as Place return Place union match (p2:Person) with 'd' as type,p2.DP as Place return Place union match (u:Union) with 'u' as type,u.UDP as Place return Place";
+        
         }
         catch (IOException e){
              //System.out.println( e);

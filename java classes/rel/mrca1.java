@@ -6,6 +6,7 @@
  */
 package gen.rel;
     import gen.auth.AuthInfo;
+import gen.neo4jlib.neo4j_qry;
 //    import org.neo4j.driver.AuthTokens;
     import org.neo4j.driver.Driver;
     import org.neo4j.driver.GraphDatabase;
@@ -40,43 +41,15 @@ package gen.rel;
     {
         
         { 
-        String q = "match (p1:Person{RN:" + rn1 + "})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(p2:Person{RN:" + rn2 + "}) with mrca.fullname + ' [' + mrca.RN + '] (' + left(mrca.BD,4) +'-' + left(mrca.DD,4) +')' as mrca_indv return collect(mrca_indv) as mrca" ;    
-        String r =mrca_qry(q,rn1,rn2,db);
+        String cq = "match (p1:Person{RN:" + rn1 + "})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(p2:Person{RN:" + rn2 + "}) with mrca.fullname + ' [' + mrca.RN + '] (' + left(mrca.BD,4) +'-' + left(mrca.DD,4) +')' as mrca_indv return collect(mrca_indv) as mrca" ;    
+        String r =mrca_qry(cq,db);
         return r;
             }
      }
    
-    public String mrca_qry(String qry, long rn1, long rn2,String db) 
+    public String mrca_qry(String cq,String db) 
     {
-        AuthToken myToken = AuthInfo.getToken();
-        Driver driver;
-        driver = GraphDatabase.driver( "bolt://localhost:7687", myToken );
-        driver.session(SessionConfig.builder().withDefaultAccessMode(AccessMode.READ).build());
-//        Session session = driver.session() ;
-        try ( Session java_session = driver.session(SessionConfig.forDatabase(db)) )
-        { 
-            String javasession = java_session.writeTransaction(new TransactionWork<String>()
-            {
-                @Override
-                public String execute( Transaction tx )
-                {
-                    Result rslt = tx.run( qry,
-                            parameters( "message", qry ) );
-
-                    
-                    String output = "";
-                        while (rslt.hasNext())
-                        { 
-                            output = output + rslt.next().values().toString() + "; ";
-                        
-                        }
-	                return output;
-                            
-                    
-                }
-            } );
-      return javasession;
-        }
+        return neo4j_qry.qry_str(cq, db);
     }
 
 }
