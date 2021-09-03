@@ -45,7 +45,7 @@ public class neo4j_qry {
    
    //****************************************************
    
-   public static List<String> qry_list(String cq,String db) {
+   public static List<String> qry_str_list(String cq,String db) {
         var myToken = AuthInfo.getToken();
         Driver driver;
         driver = GraphDatabase.driver( "bolt://localhost:7687", myToken );
@@ -59,6 +59,28 @@ public class neo4j_qry {
             while ( result.hasNext() )
             {
                 names.add( result.next().get( 0 ).asString() );
+            }
+            return names;
+        } );
+    }
+   }
+   
+   //****************************************************
+     public static List<Long> qry_long_list(String cq,String db) {
+        var myToken = AuthInfo.getToken();
+           
+        Driver driver;
+        driver = GraphDatabase.driver( "bolt://localhost:7687", myToken );
+        driver.session(SessionConfig.builder().withDefaultAccessMode(AccessMode.READ).build());
+ 
+        try ( Session java_session = driver.session(SessionConfig.forDatabase(db)) )
+                {
+        return java_session.readTransaction( tx -> {
+            List<Long> names = new ArrayList<>();
+            Result result = tx.run(cq );
+            while ( result.hasNext() )
+            {
+                names.add(result.next().get( 0 ).asLong() );
             }
             return names;
         } );

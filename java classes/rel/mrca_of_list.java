@@ -48,7 +48,7 @@ public class mrca_of_list {
    
     public List<String> mrca_from_list_qry(String qry,String rn_list,String db) 
     {
-     return neo4j_qry.qry_list(qry, db);
+     return neo4j_qry.qry_str_list(qry, db);
 }
               
 }

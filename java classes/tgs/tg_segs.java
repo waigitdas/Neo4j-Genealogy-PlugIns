@@ -7,6 +7,7 @@
 package gen.tgs;
     import org.neo4j.driver.AuthToken;
     import gen.auth.AuthInfo;
+import gen.neo4jlib.neo4j_qry;
     import java.util.ArrayList;
     import org.neo4j.driver.Driver;
     import org.neo4j.driver.GraphDatabase;
@@ -48,23 +49,6 @@ public class tg_segs {
    
     public List<String> tg_qry(String qry,long tg ,String db) 
     {
-        AuthToken myToken = AuthInfo.getToken();
-        Driver driver;
-        driver = GraphDatabase.driver( "bolt://localhost:7687", myToken );
-        driver.session(SessionConfig.builder().withDefaultAccessMode(AccessMode.READ).build());
- 
-        try ( Session java_session = driver.session(SessionConfig.forDatabase(db)) )
-                {
-        return java_session.readTransaction( tx -> {
-            List<String> names = new ArrayList<>();
-            Result result = tx.run(qry );
-            while ( result.hasNext() )
-            {
-                names.add( result.next().get( 0 ).asString() );
-            }
-            return names;
-        } );
+        return neo4j_qry.qry_str_list(qry, db);
     }
-}
-              
 }

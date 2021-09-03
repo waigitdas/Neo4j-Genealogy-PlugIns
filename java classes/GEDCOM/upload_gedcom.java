@@ -37,16 +37,18 @@ public class upload_gedcom {
             String FAM_Str_Id
        )
       {
+        double tm = System.currentTimeMillis();
           load_gedcom(file_path, db, user_name, password,FAM_Str_Id);
-          return "completed";
+          double tmelapsed= System.currentTimeMillis() - tm;
+          return "completed in " + tmelapsed + " msec.";
       }
   
     
-    public static void load_gedcom (String file_path,String db, String user_name,String password,String FAM_Str_Id ) 
+    public static void load_gedcom (String filePath,String db, String user_name,String password,String FAM_Str_Id ) 
    
     {
         //String FAM_Str_Id ="F";
-        String filePath = "E:\\DAS_Coded_BU_2017\\Genealogy\\Gedcom\\recd\\erwin2.ged";
+        //String filePath = "E:\\DAS_Coded_BU_2017\\Genealogy\\Gedcom\\recd\\erwin2.ged";
         String c =  readLineByLineJava8( filePath );
         String[] s = c.split("0 @");
         

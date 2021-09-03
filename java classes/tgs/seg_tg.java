@@ -7,6 +7,7 @@
 package gen.tgs;
     import org.neo4j.driver.AuthToken;
     import gen.auth.AuthInfo;
+import gen.neo4jlib.neo4j_qry;
     import java.util.ArrayList;
     import org.neo4j.driver.Driver;
     import org.neo4j.driver.GraphDatabase;
@@ -40,30 +41,15 @@ public class seg_tg {
 
         {
         String qry = "match (s:CB_Segment{Indx:'" + segment_indx + "'})-[:tg_seg]-(t:tg{project:'" + project + "'}) with distinct t as td order by td.tgid  return td.tgid";
-        List<Long> r =tg_qry(qry,segment_indx, db);
+        List<Long> r =tg_qry(qry, db);
         return r;
             }
     
    
-    public List<Long> tg_qry(String qry,String seg ,String db) 
+    public List<Long> tg_qry(String qry,String db) 
     {
-        AuthToken myToken = AuthInfo.getToken();
-        Driver driver;
-        driver = GraphDatabase.driver( "bolt://localhost:7687", myToken );
-        driver.session(SessionConfig.builder().withDefaultAccessMode(AccessMode.READ).build());
- 
-        try ( Session java_session = driver.session(SessionConfig.forDatabase(db)) )
-                {
-        return java_session.readTransaction( tx -> {
-            List<Long> names = new ArrayList<>();
-            Result result = tx.run(qry );
-            while ( result.hasNext() )
-            {
-                names.add(result.next().get( 0 ).asLong() );
-            }
-            return names;
-        } );
-    }
+        return neo4j_qry.qry_long_list(qry, db);
+//  
 }
               
 }
