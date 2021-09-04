@@ -4,8 +4,6 @@
  * and open the template in the editor.
  */
 package gen.neo4jlib;
-    //import org.neo4j.driver.AuthToken;
-    //import org.neo4j.driver.AuthTokens;
     import gen.auth.AuthInfo;
     import java.util.ArrayList;
     import org.neo4j.driver.Driver;

@@ -1,7 +1,7 @@
 package gen.GEDCOM;
     import gen.neo4jlib.neo4j_qry;
     import gen.neo4jlib.file_lib;
-    import gen.neo4jlib.neo4j_reference_info;
+    import gen.neo4jlib.neo4j_info;
 //   import java.io.IOException;
 //    import java.nio.charset.StandardCharsets;
 //    import java.nio.file.Files;
@@ -59,10 +59,10 @@ public class upload_gedcom {
         String c =  file_lib.readFileByLine( filePath );
         String[] s = c.replace("|","^").split("0 @");
         
-        neo4j_reference_info.neo4j_var();
-        String fnmp =neo4j_reference_info.Import_Dir + "person.csv";
+        neo4j_info.neo4j_var();
+        String fnmp =neo4j_info.Import_Dir + "person.csv";
         File fnp = new File(fnmp);
-        String fnmu =neo4j_reference_info.Import_Dir + "union.csv";
+        String fnmu =neo4j_info.Import_Dir + "union.csv";
         File fnu = new File(fnmu);
         try{
             FileWriter fwp = new FileWriter(fnp);
@@ -101,35 +101,51 @@ public class upload_gedcom {
             fwu.flush();
             fwu.close();
       
-            
+            //Load Persons
             String cqp = "LOAD CSV WITH HEADERS FROM 'file:///person.csv' AS line FIELDTERMINATOR '|' merge (p:Person{RN:toInteger(line.rn),fullname:toString(line.fullname),first_name:toString(case when line.first_name is null then '' else line.first_name end),surname:toString(case when line.surname is null then '' else line.surname end),BDGed:toString(line.bd),BP:toString(line.bp),DD:toString(line.dd),DP:toString(line.dp),nm:toInteger(case when line.nm is null then -1 else line.nm end),union_id:toInteger(case when line.uid is null then 0 else line.uid end),sex:toString(line.sex)})";
            neo4j_qry.qry_write(cqp,db);
 
-            String cqu = "LOAD CSV WITH HEADERS FROM 'file:///union.csv' AS line FIELDTERMINATOR '|' merge (u:Union{union_id:toInteger(line.uid),U1:toInteger(line.u1),U2:toInteger(line.u2),UDGed:toString(line.ud),Union_Place:toString(line.up)})";
+           //Load unions/marriages
+           String cqu = "LOAD CSV WITH HEADERS FROM 'file:///union.csv' AS line FIELDTERMINATOR '|' merge (u:Union{UID:toInteger(line.uid),U1:toInteger(line.u1),U2:toInteger(line.u2),UDGed:toString(line.ud),Union_Place:toString(line.up)})";
            neo4j_qry.qry_write(cqu,db);
 
+           //Create place nodes using extant data
            String cqpl =  "match (p1:Person) with 'b' as type, p1.BP as Place return type,Place union match (p2:Person) with 'd' as type,p2.DP as Place return type, Place union match (u:Union) with 'u' as type,u.UDP as Place where Place is not null return type,Place" ;
            neo4j_qry.qry_to_csv(cqpl, db, "places.csv");
 
            String cqplup = "LOAD CSV WITH HEADERS FROM 'file:///places.csv' AS line FIELDTERMINATOR '|' merge (p:Place{desc:toString(line.Place)})";
            neo4j_qry.qry_write(cqplup,db);
            
+           //create child edges using extant data
            String pu = "match (p:Person) where p.union_id>1 return p.RN as rn,p.union_id as uid";
            neo4j_qry.qry_to_csv(pu, db, "child.csv");
            String puup = "LOAD CSV WITH HEADERS FROM 'file:///child.csv' AS line FIELDTERMINATOR '|' match (p:Person{RN:toInteger(line.rn)}) match (u:Union{union_id:toInteger(line.uid)}) merge (p)-[r:child]-(u)";
            neo4j_qry.qry_write(puup,db);
 
+           //create father-union edges using extant data
            String fu = "match (p:Person)-[r:child]->(u:Union) where u.U1 >0 return p.RN as rn,u.U1 as father";
            neo4j_qry.qry_to_csv(fu, db, "father.csv");
-           String fuup = "LOAD CSV WITH HEADERS FROM 'file:///father.csv' AS line FIELDTERMINATOR '|' match (p:Person{RN:toInteger(line.rn)}) match (u:Union{U1:toInteger(line.father)}) merge (p)-[r:father]-(u)";
+           String fuup = "LOAD CSV WITH HEADERS FROM 'file:///father.csv' AS line FIELDTERMINATOR '|' match (p:Person{RN:toInteger(line.rn)}) match (u:Union{U1:toInteger(line.father)}) merge (p)-[r:ufather]-(u)";
            neo4j_qry.qry_write(fuup,db);
 
-             String mu = "match (p:Person)-[r:child]->(u:Union) where u.U2 >0 return p.RN as rn,u.U2 as mother";
+           //create mother-union edges using extant data
+           String mu = "match (p:Person)-[r:child]->(u:Union) where u.U2 >0 return p.RN as rn,u.U2 as mother";
            neo4j_qry.qry_to_csv(mu, db, "mother.csv");
-           String muup = "LOAD CSV WITH HEADERS FROM 'file:///mother.csv' AS line FIELDTERMINATOR '|' match (p:Person{RN:toInteger(line.rn)}) match (u:Union{U2:toInteger(line.mother)}) merge (p)-[r:mother]-(u)";
+           String muup = "LOAD CSV WITH HEADERS FROM 'file:///mother.csv' AS line FIELDTERMINATOR '|' match (p:Person{RN:toInteger(line.rn)}) match (u:Union{U2:toInteger(line.mother)}) merge (p)-[r:umother]-(u)";
            neo4j_qry.qry_write(muup,db);
 
-           
+           //create person-father edges using extant data
+           String fup = "LOAD CSV WITH HEADERS FROM 'file:///father.csv' AS line FIELDTERMINATOR '|' match (p1:Person{RN:toInteger(line.rn)}) match (p2:Person{RN:toInteger(line.father)}) merge (p1)-[r:father]-(p2)";
+           neo4j_qry.qry_write(fup,db);
+
+           //create person-mother edges using extant data
+           String mup = "LOAD CSV WITH HEADERS FROM 'file:///mother.csv' AS line FIELDTERMINATOR '|' match (p1:Person{RN:toInteger(line.rn)}) match (p2:Person{RN:toInteger(line.mother)}) merge (p1)-[r:mother]-(p2)";
+           neo4j_qry.qry_write(mup,db);
+
+           //create spouse edges using extant data
+           String hwup = "LOAD CSV WITH HEADERS FROM 'file:///union.csv' AS line FIELDTERMINATOR '|' match (p1:Person{RN:toInteger(line.u1)}) match (p2:Person{RN:toInteger(line.u2)}) merge (p1)-[r:spouse]-(p2)";
+           neo4j_qry.qry_write(hwup,db);
+
         }
         catch (IOException e){
              //System.out.println( e);
@@ -138,6 +154,7 @@ public class upload_gedcom {
 
     
     private static String person_node_from_gedmatch_I(String ged) {
+        //process @INDV@ tag data in GEDCOM
         String[] s = ged.split("\n");
         String rn = s[0].split("(?=\\D)")[0].replace("I",""); 
         String sout = rn + "|" ;
@@ -161,6 +178,7 @@ public class upload_gedcom {
         }
     
    private static String union_node_from_gedmatch_I(String ged,String FAM_Str_Id) {
+        //parses @FAM@ tag in GEDCOM
         String[] s = ged.split("\n");
         String uid = s[0].split("(?=\\D)")[0].replace(FAM_Str_Id,""); 
         String sout = "";
@@ -193,8 +211,8 @@ public class upload_gedcom {
         }
 
    private static String EventDate(String ged,String event_type) {
-            //if (event_date == null){return "";}
-            String s = " ";
+        //parses date of event from @INDV@ or @FAM@ tags in GEDCOM    
+        String s = " ";
             if(ged.contains("DATE")){
                 String[] d = ged.split(event_type);
                 if (d.length ==2) {
@@ -220,7 +238,7 @@ public class upload_gedcom {
        
   
         private static String EventPlace(String ged,String event_type) {
-            //if (event_date == null){return "";}
+        //parses place of event from @INDV@ or @FAM@ tags in GEDCOM    
             String s = " ";
                 if (ged.contains("PLAC")){
                     String[] d = ged.split(event_type);
@@ -247,6 +265,7 @@ public class upload_gedcom {
         }
   
         private static String getUID(String ged){
+            //gets union id of person from GEDCOM
             String s = "0";
             if (ged.contains("FAMC")){
             String[] ss = ged.split("FAMC")[1].split("\n");
@@ -259,6 +278,9 @@ public class upload_gedcom {
         }
         
         private static String getNumberMarriages(String ged) {
+            //not yet fully coded; 
+            //# of marriages may be more that are in the GEDCOM file
+            //you cannot assume the number is defined by extant data
             String s = "0";
             String[] ss = ged.split("FAMS");
             if (ss.length >1) {
