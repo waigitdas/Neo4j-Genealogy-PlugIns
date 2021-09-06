@@ -1,4 +1,10 @@
-package gen.GEDCOM;
+/**
+ * Copyright 2020 
+ * David A Stumpf, MD, PhD
+ * Who Am I -- Graphs for Genealogists
+ * Woodstock, IL 60098 USA
+ */
+package gen.gedcom;
     import gen.neo4jlib.neo4j_qry;
     import gen.neo4jlib.file_lib;
     import gen.neo4jlib.neo4j_info;
@@ -28,10 +34,6 @@ public class upload_gedcom {
     public String gedcom_to_neo4j(
         @Name("db")
             String db,
-        @Name("user_name") 
-            String user_name,
-        @Name("password") 
-            String password,
         @Name("file_path") 
              String file_path,
         @Name("FAM_Str_Id") 
@@ -39,16 +41,17 @@ public class upload_gedcom {
        )
       {
         double tm = System.currentTimeMillis();
-        load_gedcom(db,user_name, password, file_path, FAM_Str_Id);
+        load_gedcom(db, file_path, FAM_Str_Id);
         double tmelapsed= System.currentTimeMillis() - tm;
         return "completed in " + tmelapsed + " msec.";
       }
   
     
-    public static void load_gedcom (String db,String user_name,String password, String filePath ,String FAM_Str_Id ) 
+    public static void load_gedcom (String db, String filePath ,String FAM_Str_Id ) 
    
     {
-       //create indices to speed upload using merge
+        gen.neo4jlib.neo4j_info.neo4j_var();  //initialize variables
+        //create indices to speed upload using merge
         neo4j_qry.CreateIndex("Person", "RN", db);
         neo4j_qry.CreateIndex("Person", "fullname", db);
         neo4j_qry.CreateIndex("Union", "union_id", db);

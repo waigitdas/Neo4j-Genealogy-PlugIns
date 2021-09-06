@@ -1,7 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Copyright 2020 
+ * David A Stumpf, MD, PhD
+ * Who Am I -- Graphs for Genealogists
+ * Woodstock, IL 60098 USA
  */
 package gen.neo4jlib;
     import gen.auth.AuthInfo;
@@ -17,6 +18,8 @@ package gen.neo4jlib;
     import org.neo4j.driver.TransactionWork;
     import static org.neo4j.driver.Values.parameters;
     import java.util.*;  
+    import java.util.regex.Matcher;
+    import java.util.regex.Pattern;
 
 
 public class neo4j_qry {
@@ -66,6 +69,7 @@ public class neo4j_qry {
             {
                 names.add( result.next().get( 0 ).asString() );
             }
+            //System.out.println(names);
             return names;
         } );
     }
@@ -97,7 +101,9 @@ public class neo4j_qry {
     //****************************************************
    
    public static String qry_str(String cq,String db) {
-        var myToken = AuthInfo.getToken();
+           System.out.println(cq);
+                 
+       var myToken = AuthInfo.getToken();
         Driver driver;
         driver = GraphDatabase.driver( "bolt://localhost:7687", myToken );
         driver.session(SessionConfig.builder().withDefaultAccessMode(AccessMode.READ).build());
@@ -119,6 +125,7 @@ public class neo4j_qry {
                             output = output + rslt.next().values().toString() + "; ";
                         
                         }
+                        System.out.println(output + "***");
 	                return output;
                             
                     
@@ -156,5 +163,6 @@ public class neo4j_qry {
       
    }
    
+ 
 }
         

@@ -1,7 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Copyright 2020 
+ * David A Stumpf, MD, PhD
+ * Who Am I -- Graphs for Genealogists
+ * Woodstock, IL 60098 USA
  */
 package gen.dna.ftdna;
     import gen.neo4jlib.file_lib;
@@ -9,6 +10,7 @@ package gen.dna.ftdna;
     import gen.neo4jlib.neo4j_qry;
             
     import java.io.File;
+import java.io.FileWriter;
     import java.io.FilenameFilter;
     import java.io.IOException;
     import java.nio.file.Files;
@@ -17,6 +19,7 @@ package gen.dna.ftdna;
     import java.util.Arrays;
     import java.util.logging.Level;
     import java.util.logging.Logger;
+import java.util.regex.Pattern;
     import java.util.stream.Stream;
     import org.neo4j.procedure.Name;
     import org.neo4j.procedure.UserFunction;
@@ -53,7 +56,7 @@ public String load_ftdna_csv_files(
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        load_ftdna_files("E:\\DAS_Coded_BU_2017\\Genealogy\\WhoAmI\\django\\data\\Teves Project\\","Teves curated matches.xlsx","test");
+        load_ftdna_files("E:\\DAS_Coded_BU_2017\\Genealogy\\WhoAmI\\django\\data\\Teves Project\\","Teves curated matches.csv","test");
     }
     
     public static void load_ftdna_files(String root_dir,String curated_file, String db) {
@@ -76,6 +79,10 @@ public String load_ftdna_csv_files(
 //        neo4j_qry.CreateIndex("email","fullname", db);
         //neo4j_qry.CreateIndex(, db);
         
+        //load curation file
+        file_lib.get_file_transform_put_in_import_dir(root_dir + curated_file, "RN_for_Matches.csv");
+        neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS line FIELDTERMINATOR '|' merge (l:Lookup{fullname:toString(line.Match_Name),RN:toInteger(line.Curated_RN),kit:toString(line.Kit)})", db);
+        
         File file = new File(root_dir);
         String[] directories = file.list(new FilenameFilter() {
         public boolean accept(File current, String name) {
@@ -83,49 +90,100 @@ public String load_ftdna_csv_files(
           }
         });
         
-        //System.out.println(Arrays.toString(directories));
+       //System.out.println(Arrays.toString(directories));
         
         // iterating over subdirectories holding DNA data files
         for (int i = 0; i < directories.length; i++) {
             String x = directories[i];
-            //System.out.print(x + "\n");
+            //System.out.print(x + "***\n");
             
             String[] paths;
             File f = new File(root_dir + directories[i]);
             paths = f.list();
             String kit;
+            Long kit_rn =  Long.valueOf(0L);
+            String kit_fullname="";
             int ct = 0;
+
+                //        System.out.print(paths + "\n");
 
             //iterate over DNA data files, distinguishing their type before processing
             for (String pathitem : paths) {
                 if (ct == 0){
                     String p[] = pathitem.split("_");
-                    kit = p[0];
+                    kit = p[0].strip();
+                    System.out.println(db + " ---- match (l:Lookup{kit:'" + kit + "'}) return l.fullname as fullname");
                     ct = ct + 1;
-                    //System.out.println(kit);
+                    //neo4j_qry.qry_str("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS line FIELDTERMINATOR '|' match (l:Lookup{kit:'" + kit + "'}) return l.fullname as fullname", db);
+                     try{kit_fullname = neo4j_qry.qry_str("match (l:Lookup{kit:'" + kit + "'}) return l.fullname as fullname", db);}
+                    catch (Exception e) {};
+    System.out.println(db);
+                                    try{kit_rn =Long.parseLong(neo4j_qry.qry_str("match (l:Lookup{kit:'" + kit + "'}) return case when l.RN is null then 0 else l.RN end as kit_rn", db));}
+                    catch (Exception e) {};
+                   System.out.println(kit_rn);
+                  
+                    //placeholder match needed to create edges before full match set up
+                    try
+                    {
+                        neo4j_qry.qry_write("merge (m:FT_Match{fullname:'" + kit_fullname + "'}) set m.kit='" + kit + "' case when m.RN is null then '' else m.RN end", db);
+                    
+                    neo4j_qry.qry_write("merge (k:Kit{kit:'" + kit + "', fullname:'" + kit_fullname + "' , RN:" + kit_rn + ", kit_desc:'" + pathitem + "})'", db);
                 }
+                catch (Exception e) {};
+                    
+//                    neo4j_qry.qry_str("", db);
+//                    neo4j_qry.qry_str("", db);
+//                    neo4j_qry.qry_str("", db);
+//                    neo4j_qry.qry_str("", db);
+                    
+                 }
                 else{ct=ct+1;}
-                
-                String c = file_lib.readFileByLine(root_dir + directories[i] + "\\" + pathitem);
-                //System.out.println(root_dir + directories[i] + "\\" + pathitem);
-                //System.out.println(c);
-                c = c.replace("|"," - ").replace(",","|");
-                file_lib.writeFile(c,neo4j_info.Import_Dir + pathitem);
-              
+          
                 try{
                 //System.out.println("\t" + pathitem );
             
                 if (pathitem.contains("Family_Finder")){
-                    //System.out.println("FF");
+                    file_lib.get_file_transform_put_in_import_dir(root_dir + directories[i] + "\\" + pathitem,  pathitem);
+    
                 }
  
                 if (pathitem.contains("Chromosome_Browser")){
-                    //System.out.println("CB");
-                }
+                    String c = file_lib.readFileByLine(root_dir + directories[i] + "\\" + pathitem);
+                    c = c.replace("|"," ").replace(",","|");
+                    String[] cc = c.split("\n");
+                    String header = cc[0].replace(" ","_");
+                    c = c.replace(cc[0], header);
+                    
+                    String[] ccc = c.split("\n");
+                    File fn = new File(neo4j_info.Import_Dir + pathitem);
+                    FileWriter fw = new FileWriter(fn);
+                    fw.write(header + "\n");
+                    
+                     for (int ii=1; ii<ccc.length; ii++){
+                        String[] xxx = ccc[ii].split(Pattern.quote("|"));
+                        
+                        String s = "";
+                        for(int j=0; j<xxx.length; j++) {
+                             if (j==1) {  //chr
+                                if (xxx[j].strip().length()==1) {
+                                    xxx[j] = "0" + xxx[j].strip();
+                                }
+                                else {xxx[j]=xxx[j].strip();}
+                             }
+                             s = s + xxx[j] + "|";
+                         }
+                         s = s +  "\n";
+                         fw.write(s);
+                     }
+
+                    fw.flush();    
+                    fw.close();
+}
  
                                
                 if (pathitem.contains("Y_DNA")){
-                    //System.out.println("Y");
+                    file_lib.get_file_transform_put_in_import_dir(root_dir + directories[i] + "\\" + pathitem, pathitem);
+    
                 }
  
                 

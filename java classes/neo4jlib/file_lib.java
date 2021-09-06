@@ -1,7 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Copyright 2020 
+ * David A Stumpf, MD, PhD
+ * Who Am I -- Graphs for Genealogists
+ * Woodstock, IL 60098 USA
  */
 package gen.neo4jlib;
 
@@ -40,7 +41,7 @@ public class file_lib {
     
     
     public static void writeFile(String s, String filePath) {
-            File fn = new File(filePath);
+        File fn = new File(filePath);
         try{
             FileWriter fw = new FileWriter(fn);
             fw.write(s);
@@ -51,6 +52,21 @@ public class file_lib {
         
     }
     
+    
+public static void get_file_transform_put_in_import_dir(String filePathRead, String filePathSave){
+    String c = file_lib.readFileByLine(filePathRead);
+    //System.out.println(c);
+    
+    c = c.replace("|","").replace(",","|");
+    String[] cc = c.split("\n");
+    String ccc = cc[0].replace(" ","_");
+    c = c.replace(cc[0], ccc);
+    //System.out.println(c);
+    file_lib.writeFile(c,neo4j_info.Import_Dir +  filePathSave);
+     
+ }
+ 
+
 //    public static String readFileWithEscChar(String filePath){
 //        File f = new File("C:\\Users\\SV7104\\Desktop\\sampletest.txt");
 //Scanner sc = new Scanner(f).useDelimiter(Pattern.compile("\\s*\\u0002\\n\\s*"));
