@@ -45,7 +45,6 @@ public String load_ftdna_csv_files(
         
         { 
         double tm = System.currentTimeMillis();
-//String cq = "match (p1:Person{RN:" + rn1 + "})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(p2:Person{RN:" + rn2 + "}) with mrca.fullname + ' [' + mrca.RN + '] (' + left(mrca.BD,4) +'-' + left(mrca.DD,4) +')' as mrca_indv return collect(mrca_indv) as mrca" ;    
         load_ftdna_files(root_directory, curated_file, db);
         double tmelapsed = System.currentTimeMillis() - tm;
         return "Completed in " + tmelapsed + " msec";
@@ -63,20 +62,20 @@ public String load_ftdna_csv_files(
         neo4j_info.neo4j_var(); //initialize user information
         
         //set up neo4j indices
-//        neo4j_qry.CreateIndex("Kit","Kit", db);
-//        neo4j_qry.CreateIndex("Kit","RN", db);
-//        neo4j_qry.CreateIndex("DNA_Match","fullname", db);
-//        neo4j_qry.CreateIndex("DNA_Match","RN", db);
-//        neo4j_qry.CreateIndex("DNA_Match","kit", db);
-//        neo4j_qry.CreateIndex("YMatch","fullname", db);
-//        neo4j_qry.CreateIndex("Segment","Indx", db);
-//        neo4j_qry.CreateIndex("Segment","cm", db);
-//        neo4j_qry.CreateIndex("Segment","snp", db);
-//        neo4j_qry.CreateIndex("str","name", db);
-//        neo4j_qry.CreateIndex("tg","tgid", db);
-//        neo4j_qry.CreateIndex("tg","strt_pos", db);
-//        neo4j_qry.CreateIndex("tg","end_pos", db);
-//        neo4j_qry.CreateIndex("email","fullname", db);
+        neo4j_qry.CreateIndex("Kit","Kit", db);
+        neo4j_qry.CreateIndex("Kit","RN", db);
+        neo4j_qry.CreateIndex("DNA_Match","fullname", db);
+        neo4j_qry.CreateIndex("DNA_Match","RN", db);
+        neo4j_qry.CreateIndex("DNA_Match","kit", db);
+        neo4j_qry.CreateIndex("YMatch","fullname", db);
+        neo4j_qry.CreateIndex("Segment","Indx", db);
+        neo4j_qry.CreateIndex("Segment","cm", db);
+        neo4j_qry.CreateIndex("Segment","snp", db);
+        neo4j_qry.CreateIndex("str","name", db);
+        neo4j_qry.CreateIndex("tg","tgid", db);
+        neo4j_qry.CreateIndex("tg","strt_pos", db);
+        neo4j_qry.CreateIndex("tg","end_pos", db);
+        neo4j_qry.CreateIndex("email","fullname", db);
         //neo4j_qry.CreateIndex(, db);
         
         //load curation file
@@ -90,7 +89,10 @@ public String load_ftdna_csv_files(
           }
         });
         
-       //System.out.println(Arrays.toString(directories));
+       
+        String FileDNA_Match = "";
+        String FileSegs = "";
+        String kit_fullname="";
         
         // iterating over subdirectories holding DNA data files
         for (int i = 0; i < directories.length; i++) {
@@ -100,13 +102,12 @@ public String load_ftdna_csv_files(
             String[] paths;
             File f = new File(root_dir + directories[i]);
             paths = f.list();
-            String kit;
+            String kit="";
             Long kit_rn =  Long.valueOf(0L);
-            String kit_fullname="";
             int ct = 0;
-
-                //        System.out.print(paths + "\n");
-
+            Boolean hasDNAMatch = false;
+            Boolean hasSegs = false;
+            
             //iterate over DNA data files, distinguishing their type before processing
             for (String pathitem : paths) {
                 if (ct == 0){
@@ -116,40 +117,59 @@ public String load_ftdna_csv_files(
                     ct = ct + 1;
                     
                      try{kit_fullname = neo4j_qry.qry_str("match (l:Lookup{kit:'" + kit + "'}) return l.fullname as fullname", db);}
-                    catch (Exception e) {};
+                    catch (Exception e) {kit_fullname="";};
    
                     try{kit_rn =Long.parseLong(neo4j_qry.qry_str("match (l:Lookup{kit:'" + kit + "'}) return case when l.RN is null then 0 else l.RN end as kit_rn", db));}
-                    catch (Exception e) {};
+                    catch (Exception e) {kit_rn=Long.valueOf(0L);};
                   
                   
                     //placeholder match needed to create edges before full match set up
                     try
                     {
-                        neo4j_qry.qry_write("merge (m:DNA_Match{fullname:'" + kit_fullname + "'}) set m.kit='" + kit + "', m.RN=" + kit_rn, db);
+                    neo4j_qry.qry_write("merge (m:DNA_Match{fullname:'" + kit_fullname + "'}) set m.kit='" + kit + "', m.RN=" + kit_rn, db);
                     
-                    neo4j_qry.qry_write("merge (k:Kit{kit:'" + kit + "', vendor:'ftdna, fullname:'" + kit_fullname + "' , RN:" + kit_rn + ", kit_desc:'" + pathitem + "})'", db);
                 }
                 catch (Exception e) {};
-                    
-//                    neo4j_qry.qry_str("", db);
-//                    neo4j_qry.qry_str("", db);
-//                    neo4j_qry.qry_str("", db);
-//                    neo4j_qry.qry_str("", db);
-                    
+     
+                                   try
+                    {
+                    neo4j_qry.qry_write("merge (k:Kit{kit:'" + kit + "', vendor:'ftdna', fullname:'" + kit_fullname + "' , RN:" + kit_rn + ", kit_desc:'" + directories[i] + "'})", db);
+                }
+                catch (Exception e) {};
+     
+                
                  }
                 else{ct=ct+1;}
           
                 try{
-                //System.out.println("\t" + pathitem );
-            
+       
+                //******************************************************************************
+                //************  Family Finder: at-DNA  *****************************************
+                //******************************************************************************
+          
                 if (pathitem.contains("Family_Finder")){
+                    hasDNAMatch=true;
+                    FileDNA_Match = pathitem;
                     file_lib.get_file_transform_put_in_import_dir(root_dir + directories[i] + "\\" + pathitem,  pathitem);
-    
-                }
+                    
+                    //Load kit at-DNA matches
+                    String cq = "LOAD CSV WITH HEADERS FROM 'file:///" + FileDNA_Match  + "' AS line FIELDTERMINATOR '|' merge (f:DNA_Match{fullname:toString(case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end)}) set f.first_name=toString(case when line.First_Name is null then '' else line.First_Name end), f.middle_name=toString(case when line.Middle_Name is null then '' else line.Middle_Name end), f.surname=toString(case when line.Last_Name is null then '' else line.Last_Name end)";
+                    neo4j_qry.qry_write(cq,db);
  
+                    //Kit - match edges
+                     cq = "LOAD CSV WITH HEADERS FROM 'file:///" + FileDNA_Match + "' AS line FIELDTERMINATOR '|' match (f:DNA_Match{fullname:toString(case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end)}) match (k:Kit{kit:'" + kit + "'})  merge (k)-[r:KitMatch{suggested_relationship:toString(case when line.Suggested_Relationship is null then '' else line.Suggested_Relationship end), sharedCM:toFloat(case when line.Shared_cM is null then 0.0 else line.Shared_cM end), longest_block:toFloat(case when line.Longest_Block is null then 0.0 else line.Longest_Block end), linked_relationship:toString(case when line.Linked_Relationship is null then '' else line.Linked_Relationship end)}]->(f)";
+                    neo4j_qry.qry_write(cq,db);
+                    
+                }
+
+                //******************************************************************************
+                //***********  Chromosome Browser  *********************************************
+                //******************************************************************************
                 if (pathitem.contains("Chromosome_Browser")){
+                    hasSegs = true;
+                    FileSegs = pathitem;
                     String c = file_lib.readFileByLine(root_dir + directories[i] + "\\" + pathitem);
-                    c = c.replace("|"," ").replace(",","|");
+                    c = c.replace("|"," ").replace(",","|").replace("\"", "`");
                     String[] cc = c.split("\n");
                     String header = cc[0].replace(" ","_");
                     c = c.replace(cc[0], header);
@@ -180,8 +200,16 @@ public String load_ftdna_csv_files(
                     fw.close();
 }
  
+                //Load unique chromosome segments shared by matches and currently iterated kit
+                 String cq = "LOAD CSV WITH HEADERS FROM 'file:///" + FileSegs + "' AS line FIELDTERMINATOR '|' merge (l:Segment{Indx:ltrim(toString(case when line.Chromosome is null then '' else line.Chromosome end)) + ':' + toInteger(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toInteger(case when line.End_Location is null then 0 else line.End_Location end)  ,chr:toString(case when line.Chromosome is null then '' else line.Chromosome end), strt_pos:toInteger(case when line.Start_Location is null then 0 else line.Start_Location end), end_pos:toInteger(case when line.End_Location is null then 0 else line.End_Location end),cm:apoc.math.round(toFloat(case when line.Centimorgans is null then 0 else line.Centimorgans end),1),snp:toInteger(case when line.Matching_SNPs is null then 0 else line.Matching_SNPs end)})";
+                 neo4j_qry.qry_write(cq,db);
                                
-                if (pathitem.contains("Y_DNA")){
+  
+                
+                //******************************************************************************
+                //***************  Y-DNA   *****************************************************
+                //******************************************************************************
+               if (pathitem.contains("Y_DNA")){
                     file_lib.get_file_transform_put_in_import_dir(root_dir + directories[i] + "\\" + pathitem, pathitem);
     
                 }
@@ -191,10 +219,51 @@ public String load_ftdna_csv_files(
                 catch (Exception e){}
                 }
             
-                
-            
-        }   
         
-        System.out.print("\n\nHere!!");
-    }
+        
+//******************************************************************************
+//***********  Graph Enhancements  *********************************************
+//******************************************************************************
+        
+if (hasSegs==true){
+        //line 391 in VB.NET
+        //match_segment edges with phasing paramenters m (match) and p (propositus)
+        String lc = "LOAD CSV WITH HEADERS FROM 'file:///" + FileSegs + "' as line FIELDTERMINATOR '|' return line ";
+        String cq = " match (s:Segment{Indx:toString(case when line.Chromosome is null then '' else line.Chromosome end) + ':' + toString(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toString(case when line.End_Location is null then 0 else line.End_Location end) }) match (m:DNA_Match{fullname:toString(line.Match_Name)}) merge (m)-[r:match_segment{hops:1,p:'" +  kit_fullname + "',m:toString(line.Match_Name),cm:toFloat(line.Centimorgans),snp_ct:toInteger(case when line.Matching_SNPs is null then 0 else line.Matching_SNPs end)}]->(s)";
+        neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000, db);
+}
+
+//Line 397 in VB.NET
+        //Kit-Match edges
+        if (hasDNAMatch==true) {
+           String cq = "LOAD CSV WITH HEADERS FROM 'file:///" + FileDNA_Match + "' AS line FIELDTERMINATOR '|' match (f:DNA_Match{fullname:toString(case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end)}) match (k:Kit{kit:'" + kit + "'})  merge (k)-[r:KitMatch{suggested_relationship:toString(case when line.Suggested_Relationship is null then '' else line.Suggested_Relationship end), sharedCM:toFloat(case when line.Shared_cM is null then 0.0 else line.Shared_cM end), longest_block:toFloat(case when line.Longest_Block is null then 0.0 else line.Longest_Block end), linked_relationship:toString(case when line.Linked_Relationship is null then '' else line.Linked_Relationship end)}]->(f)";
+            neo4j_qry.qry_write(cq, db);
+    
+        }
+
+        //Line 406 in VB.NET
+        //match-segments 2 unphased
+        if (hasSegs==true) {
+            String lc = "LOAD CSV WITH HEADERS FROM 'file:///" + FileSegs + "' as line FIELDTERMINATOR '|' return line ";
+            String  cq = "match (s:Segment{Indx:toString(case when line.Chromosome is null then '' else line.Chromosome end) + ':' + toString(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toString(case when line.End_Location is null then 0 else line.End_Location end) }) match (m:DNA_Match{fullname:'" + kit_fullname + "'}) merge (m)-[r:match_segment{hops:1,p:'" + kit_fullname + "',m:toString(line.Match_Name),cm:toFloat(line.Centimorgans),snp_ct:toInteger(case when line.Matching_SNPs is null then 0 else line.Matching_SNPs end)}]->(s)";
+                neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000, db);
+            
+        }
+        
+} // next kit   
+
+
+        //Line 419 in VB.NET
+        //shared match csv
+        String cq = "MATCH (k:DNA_Match)-[r:match_segment]->(s:Segment) where k.fullname=r.p with r.p as Match1,r.m as Match2,count(*) as seg_ct, toInteger(sum((s.end_pos-s.strt_pos)/1000000.0)) as mbp, toFloat(sum(s.cm)) as cm,toFloat(min(s.cm)) as shortest_segment,toFloat(max(s.cm)) as longest_segment RETURN Match1,Match2,seg_ct,mbp,cm,shortest_segment,longest_segment order by cm desc";
+         neo4j_qry.qry_to_csv(cq, db, "shared_matches.csv" );
+          
+        //Line 422 in VB.Net
+        //shared match edges
+         cq = "Using periodic commit 5000 LOAD CSV With HEADERS FROM 'file:///shared_matches.csv' AS line FIELDTERMINATOR ',' match (m1:DNA_Match{fullname:toString(line.Match1)}) match (m2:DNA_Match{fullname:toString(line.Match2)}) merge (m1)-[r:shared_match{seg_ct:toInteger(line.seg_ct),cm:toInteger(line.cm), mbp:toFloat(line.mbp),longest_seg:toFloat(line.longest_segment),shortest_seg:toFloat(line.shortest_segment)}]-(m2)"; 
+         neo4j_qry.qry_write(cq, db);
+         
+      
+         
+        }
 }
