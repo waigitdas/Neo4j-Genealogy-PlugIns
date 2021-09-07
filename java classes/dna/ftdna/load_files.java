@@ -44,10 +44,10 @@ public String load_ftdna_csv_files(
     {
         
         { 
-        float tm = System.currentTimeMillis();
+        double tm = System.currentTimeMillis();
 //String cq = "match (p1:Person{RN:" + rn1 + "})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(p2:Person{RN:" + rn2 + "}) with mrca.fullname + ' [' + mrca.RN + '] (' + left(mrca.BD,4) +'-' + left(mrca.DD,4) +')' as mrca_indv return collect(mrca_indv) as mrca" ;    
         load_ftdna_files(root_directory, curated_file, db);
-        float tmelapsed = System.currentTimeMillis() - tm;
+        double tmelapsed = System.currentTimeMillis() - tm;
         return "Completed in " + tmelapsed + " msec";
             }
      }
@@ -81,7 +81,7 @@ public String load_ftdna_csv_files(
         
         //load curation file
         file_lib.get_file_transform_put_in_import_dir(root_dir + curated_file, "RN_for_Matches.csv");
-        neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS line FIELDTERMINATOR '|' merge (l:Lookup{fullname:toString(line.Match_Name),RN:toInteger(line.Curated_RN),kit:toString(line.Kit)})", db);
+        neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS line FIELDTERMINATOR '|' merge (l:Lookup{fullname:toString(line.Match_Name),RN:toInteger(case when line.Curated_RN is null then 0 else line.Curated_RN end),kit:toString(case when line.Kit is null then '' else line.Kit end)})", db);
         
         File file = new File(root_dir);
         String[] directories = file.list(new FilenameFilter() {
@@ -112,22 +112,22 @@ public String load_ftdna_csv_files(
                 if (ct == 0){
                     String p[] = pathitem.split("_");
                     kit = p[0].strip();
-                    System.out.println(db + " ---- match (l:Lookup{kit:'" + kit + "'}) return l.fullname as fullname");
+                    
                     ct = ct + 1;
-                    //neo4j_qry.qry_str("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS line FIELDTERMINATOR '|' match (l:Lookup{kit:'" + kit + "'}) return l.fullname as fullname", db);
+                    
                      try{kit_fullname = neo4j_qry.qry_str("match (l:Lookup{kit:'" + kit + "'}) return l.fullname as fullname", db);}
                     catch (Exception e) {};
-    System.out.println(db);
-                                    try{kit_rn =Long.parseLong(neo4j_qry.qry_str("match (l:Lookup{kit:'" + kit + "'}) return case when l.RN is null then 0 else l.RN end as kit_rn", db));}
+   
+                    try{kit_rn =Long.parseLong(neo4j_qry.qry_str("match (l:Lookup{kit:'" + kit + "'}) return case when l.RN is null then 0 else l.RN end as kit_rn", db));}
                     catch (Exception e) {};
-                   System.out.println(kit_rn);
+                  
                   
                     //placeholder match needed to create edges before full match set up
                     try
                     {
-                        neo4j_qry.qry_write("merge (m:FT_Match{fullname:'" + kit_fullname + "'}) set m.kit='" + kit + "' case when m.RN is null then '' else m.RN end", db);
+                        neo4j_qry.qry_write("merge (m:DNA_Match{fullname:'" + kit_fullname + "'}) set m.kit='" + kit + "', m.RN=" + kit_rn, db);
                     
-                    neo4j_qry.qry_write("merge (k:Kit{kit:'" + kit + "', fullname:'" + kit_fullname + "' , RN:" + kit_rn + ", kit_desc:'" + pathitem + "})'", db);
+                    neo4j_qry.qry_write("merge (k:Kit{kit:'" + kit + "', vendor:'ftdna, fullname:'" + kit_fullname + "' , RN:" + kit_rn + ", kit_desc:'" + pathitem + "})'", db);
                 }
                 catch (Exception e) {};
                     

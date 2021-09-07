@@ -77,7 +77,7 @@ public class upload_gedcom {
                   //create person node
                     try {
                         //System.out.println(person_node_from_gedmatch_I(i));
-                        fwp.write(person_node_from_gedmatch_I(i) + "\n");
+                        fwp.write(person_node_from_gedmatch_I(i, FAM_Str_Id) + "\n");
                     }
                     catch (IOException e) {
                         fwp.write("Error");
@@ -105,11 +105,11 @@ public class upload_gedcom {
             fwu.close();
       
             //Load Persons
-            String cqp = "LOAD CSV WITH HEADERS FROM 'file:///person.csv' AS line FIELDTERMINATOR '|' merge (p:Person{RN:toInteger(line.rn),fullname:toString(line.fullname),first_name:toString(case when line.first_name is null then '' else line.first_name end),surname:toString(case when line.surname is null then '' else line.surname end),BDGed:toString(line.bd),BP:toString(line.bp),DD:toString(line.dd),DP:toString(line.dp),nm:toInteger(case when line.nm is null then -1 else line.nm end),union_id:toInteger(case when line.uid is null then 0 else line.uid end),sex:toString(line.sex)})";
+            String cqp = "LOAD CSV WITH HEADERS FROM 'file:///person.csv' AS line FIELDTERMINATOR '|' merge (p:Person{RN:toInteger(line.rn),fullname:toString(line.fullname),first_name:toString(case when line.first_name is null then '' else line.first_name end),surname:toString(case when line.surname is null then '' else line.surname end),BDGed:toString(line.bd),BP:toString(line.bp),DD:toString(line.dd),DP:toString(line.dp),nm:toInteger(case when line.nm is null then -1 else line.nm end),uid:toInteger(case when line.uid is null then 0 else line.uid end),sex:toString(line.sex)})";
            neo4j_qry.qry_write(cqp,db);
 
            //Load unions/marriages
-           String cqu = "LOAD CSV WITH HEADERS FROM 'file:///union.csv' AS line FIELDTERMINATOR '|' merge (u:Union{UID:toInteger(line.uid),U1:toInteger(line.u1),U2:toInteger(line.u2),UDGed:toString(line.ud),Union_Place:toString(line.up)})";
+           String cqu = "LOAD CSV WITH HEADERS FROM 'file:///union.csv' AS line FIELDTERMINATOR '|' merge (u:Union{uid:toInteger(line.uid),U1:toInteger(line.u1),U2:toInteger(line.u2),UDGed:toString(line.ud),Union_Place:toString(line.up)})";
            neo4j_qry.qry_write(cqu,db);
 
            //Create place nodes using extant data
@@ -120,9 +120,9 @@ public class upload_gedcom {
            neo4j_qry.qry_write(cqplup,db);
            
            //create child edges using extant data
-           String pu = "match (p:Person) where p.union_id>1 return p.RN as rn,p.union_id as uid";
+           String pu = "match (p:Person) where p.uid>1 return p.RN as rn,p.uid as uid";
            neo4j_qry.qry_to_csv(pu, db, "child.csv");
-           String puup = "LOAD CSV WITH HEADERS FROM 'file:///child.csv' AS line FIELDTERMINATOR '|' match (p:Person{RN:toInteger(line.rn)}) match (u:Union{union_id:toInteger(line.uid)}) merge (p)-[r:child]-(u)";
+           String puup = "LOAD CSV WITH HEADERS FROM 'file:///child.csv' AS line FIELDTERMINATOR '|' match (p:Person{RN:toInteger(line.rn)}) match (u:Union{uid:toInteger(line.uid)}) merge (p)-[r:child]-(u)";
            neo4j_qry.qry_write(puup,db);
 
            //create father-union edges using extant data
@@ -156,7 +156,7 @@ public class upload_gedcom {
          }
 
     
-    private static String person_node_from_gedmatch_I(String ged) {
+    private static String person_node_from_gedmatch_I(String ged,String FAM_Str_Id) {
         //process @INDV@ tag data in GEDCOM
         String[] s = ged.split("\n");
         String rn = s[0].split("(?=\\D)")[0].replace("I",""); 
@@ -173,7 +173,7 @@ public class upload_gedcom {
         String bp = EventPlace(ged,"BIRT");
         String dd = EventDate(ged,"DEAT");
         String dp = EventPlace(ged,"DEAT");
-        String uid =getUID(ged);
+        String uid =getUID(ged, FAM_Str_Id);
         String nmar = getNumberMarriages(ged);
         
         sout=sout + first + " " + surname + "|" + first + "|" + surname + "|" + sex + "|" + bd + "|" + bp  + "|" + dd + "|" + dp + "|" + uid + "|" + nmar + "|";
@@ -267,13 +267,13 @@ public class upload_gedcom {
                 else{return s;}
         }
   
-        private static String getUID(String ged){
+        private static String getUID(String ged,String FAM_Str_Id){
             //gets union id of person from GEDCOM
             String s = "0";
             if (ged.contains("FAMC")){
             String[] ss = ged.split("FAMC")[1].split("\n");
-            if (ss.length==2) {
-                return ss[0].replace("@","").strip().substring(1);
+            if (ss.length>0) {
+                return ss[0].replace("@","").replace(FAM_Str_Id, "").strip();
                 
             }            else {return s;}
             }
