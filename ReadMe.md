@@ -36,6 +36,17 @@ dbms.transaction.timeout=30m
            </blockquote>
          </ol>
          <li>Finally, you must set up a configuration file about your specific project so that the Gen_UUDF knows where to find key facts unique to your environment. 
+           <ol>
+             <li>Download this <a href="https://blobswai.blob.core.windows.net/gen-udf/neo4j-template.wai" target="new">file</a> and store it in this specific required directory: "c://Genealogy/Neo4j/"  It is very important that you use the capitalization as specified because java is case sensitive.
+             <li>Open the file in a text editor and edit the information to the right of the colons with your specific information:
+               <ol>
+                 <li>neo4j_username: leave this a neo4j unless you changed it, which is not advised.
+                 <li>neo4j_password: the password you entered at your initial login (above).
+                 <li>Import_Dir: the neo4j import directory. The format is important! You must use / rather than \ which may come from a copying of the directory path. You must also have the last character as / so the Gen-UDF knows this is a directory. Here is how to get the import directory path. The Neo4j application opens to a "home page" from which you can open the Configuration folder. The link is in the "...." icon to the right of your project "Open" button. The navigation is "...." > Open Folder > Configuration.  
+                 <li>Save the file and rename: c://Genealogy/Neo4j/neo4j.wai. Note, template has been removed from the name. 
+                 <li>This file isolates your personal information from those developing the Gen-UDF, preserving your privacy. It is read locally on your computer and not viewed or stored offsite.  
+               </ol>
+           </ol>
     </ol>
 
 <li><b>Step 2</b>. Install the Genealogy User Defined Function.
