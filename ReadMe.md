@@ -35,6 +35,7 @@ dbms.transaction.timeout=30m
            dbms.memory.heap.max_size=4G
            </blockquote>
          </ol>
+         <li>Finally, you must set up a configuration file about your specific project so that the Gen_UUDF knows where to find key facts unique to your environment. 
     </ol>
 
 <li><b>Step 2</b>. Install the Genealogy User Defined Function.
