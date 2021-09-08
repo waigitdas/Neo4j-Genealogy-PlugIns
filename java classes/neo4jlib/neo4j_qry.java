@@ -6,6 +6,7 @@
  */
 package gen.neo4jlib;
     import gen.auth.AuthInfo;
+    import gen.genlib.listStrToStr;
     import java.util.ArrayList;
     import org.neo4j.driver.Driver;
     import org.neo4j.driver.GraphDatabase;
@@ -28,7 +29,7 @@ public class neo4j_qry {
     public static void CreateIndex(String nodeNm,String propertyNm,String db){
             try{
                 String cq ="CREATE INDEX " + nodeNm + "_" + propertyNm + " FOR (n:" + nodeNm + ") ON (n." + propertyNm + ")";
-                qry_str(cq,db);
+                qry_write(cq,db);
             }
             catch (Exception e) {}
     }   
@@ -44,7 +45,9 @@ public class neo4j_qry {
             {
                 session.writeTransaction( tx -> {
                    Result result = tx.run( cq );
-                    return 1;
+//                   session.close();
+//                   driver.close();
+                return 1;
                 } );
             }
             
@@ -69,7 +72,8 @@ public class neo4j_qry {
             {
                 names.add( result.next().get( 0 ).asString() );
             }
-            //System.out.println(names);
+//            java_session.close();
+//            driver.close();
             return names;
         } );
     }
@@ -92,22 +96,20 @@ public class neo4j_qry {
             {
                 names.add(result.next().get( 0 ).asLong() );
             }
+//            java_session.close();
+//            driver.close();
             return names;
         } );
     }
    }
    
   
-    //****************************************************
-   
-   public static String qry_str(String cq,String db) {
-           System.out.println(cq);
-                 
-       var myToken = AuthInfo.getToken();
+  
+      public static String qry_str(String cq,String db) {
+        var myToken = AuthInfo.getToken();
         Driver driver;
         driver = GraphDatabase.driver( "bolt://localhost:7687", myToken );
         driver.session(SessionConfig.builder().withDefaultAccessMode(AccessMode.READ).build());
-//        Session session = driver.session() ;
         try ( Session java_session = driver.session(SessionConfig.forDatabase(db)) )
         { 
             String javasession = java_session.writeTransaction(new TransactionWork<String>()
@@ -117,7 +119,6 @@ public class neo4j_qry {
                 {
                     Result rslt = tx.run( cq,
                             parameters( "message", cq ) );
-
                     
                     String output = "";
                         while (rslt.hasNext())
@@ -125,8 +126,12 @@ public class neo4j_qry {
                             output = output + rslt.next().values().toString() + "; ";
                         
                         }
-                        System.out.println(output + "***");
-	                return output;
+                        
+//                       java_session.close();
+//                       driver.close();
+                       output = output.replace("[", "").replace("]", "").replace("\"", "");
+                       output = output.substring(0, output.length()-2);
+                       return output;
                             
                     
                 }
@@ -154,7 +159,9 @@ public class neo4j_qry {
             tx.run(q);
   
             //file_lib.writeFile(names, csv_File);
-                            
+                        
+            java_session.close();
+            driver.close();    
             return names;
         } 
             );
@@ -164,5 +171,10 @@ public class neo4j_qry {
    }
    
  
+public static void APOCPeriodicIterateCSV(String LoadCSV, String ReplaceCypher, int batchsize, String db) {
+    String Q = "\"";
+    String cq = "CALL apoc.periodic.iterate(" + Q + LoadCSV + Q + ", " + Q + ReplaceCypher + Q + ",{batchSize: " + batchsize + ", parallel:true, iterateList:true, retries:25})";
+    qry_write(cq,db);
+}
 }
         
