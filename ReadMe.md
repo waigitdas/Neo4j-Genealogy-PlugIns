@@ -1,5 +1,9 @@
 <h1>Neo4j Genealogy PlugIn</h1>
 
+<h3>Evangelizing Graphs for Genealogists</h3>
+
+Most genealogists are using data tools such as Excel, relational databases, various note taking software and commercial consumer genealogy software. Graph mehods have been difficult for genealogist to use because of the step learning curve. This effort attempts to address this hurdle by providing a plugin, specifically designed for genealogists, to an industry leading graph database, Neo4j. This step-by-step guide should allow you to get you genealogy and some DNA data into Neo4j within a short time frame. You don't need to know the mechanics of graph methods to get started. Indeed, if we can get a sufficient number of geeks engage, the kit of easy to use tools should expand over time. Your <a href:mailto:"dave@wai.md" subject="Genealogy User Defined Function">feedback<.a> is encouraged.<br>
+
 This introduction has two maor audiences: alpha testers and developers. The background is avaialble at <a href="http://gfg.md/blogpost/7" target="new">http://gfg.md/blogpost/7</a>. 
 
 <h3>Setting Up the Graph Environment</h3>
