@@ -70,6 +70,39 @@ where name STARTS WITH 'gen'
     <blockquote>match (n)-[r]-() return type(r), count(*) order by type(r)
 </blockquote>
   </ol>
+<li><b>Step 4</b>. Upload your Family Tree DNA (FTDNA) downloadable csv files with results.
+  <ol>
+     <li>The naming of the directories and files is very important. Please assiduously follow the convention outlined here.
+    <li>Create a directory dedicated to your project using a name you select. This is the root directory used by the Gen-UDF.
+    <li>Set up a sub-directory within the root directory for each FTDNA kit whose data you will downloaded. The name of this directory will be used in the Neo4j data, so make it discerable and discrete.
+    <li>Log in to a FTDNA project or to a specific kit and download the following files to the sub-directory you created for the kit. Take care not to modify the name of the downloaded file because its content is parsed to ket the kit number and the type of data in the file.
+      <ol>
+        <li>Family Finder matches. Example name: B51965_Family_Finder_Matches_2021-07-20.csv
+        <li>Chromosome browser. Example name: B51965_Chromosome_Browser_Results_20210719.csv
+        <li>Y-DNA matches; not Big Y. Set the view to Y-37 and then download the csv. Example name: 792577_YDNA_Matches_20210125.csv
+        <li>Repeat this process for each kit, using a new sub-directory of the root directory for each.   
+      </ol>
+    <li>Prepared a curated file to link your GEDCOM to the DNA data. You will have two different graphs, the genealogy family history and the DNA data. One of the power aspects of graph analytics is their analytics using multiple graphs. But they need help from expert curation until such a time that we can automate the links.
+      <ol>
+        <li>Download this <a href="https://blobswai.blob.core.windows.net/gen-udf/Family ftdna curation file.xlsx" target'="new">template file</a>.
+        <li>Enter the match name, kit number and curated_RN (record number). The curated RN is the GEDCOM number for each person. The GEDCOM number is found at 0 @I###@ INDI. The ### is what you want. The match name is tricky. The latest formating of the FTDNA downloads does not mae this easy. You must find the match name in the file of a match. Thus, if John Doe is the kit, you'd have to find him in the kit of Jane Doe was a match and copy that name into the curation template. If you do not have the person in your GEDCOM, leave that field blank.
+         <li>Save the template. The path and its name will be used as a variable in running the Gen-UDF.
+      </ol>
+    <li>Upload your FTDNA data to Neo4j.
+      <ol>
+        <li>In the Neo4j browser, run this command:
+          <blockquote>
+              return gen.dna.ftdna.load_ftdna_csv_files("path to root directory using / including tailing /",'your curated.csv',"database name")
+          </blockquote>
+      </ol>
+      <li>Check to see that you have new data
+        <blockquote>
+          match (n) return labels(n), count(*) order by labels(n)
+        </blockquote><br>
+        <blockquote>
+          match (n)-[r]-() return type(r), count(*) order by type(r)
+        </blockquote>
+  </ol>
 
          
  </ol>
