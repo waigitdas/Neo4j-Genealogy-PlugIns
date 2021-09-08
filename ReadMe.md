@@ -62,7 +62,13 @@ where name STARTS WITH 'gen'
          
  </ol>
   
-         <h2>Developer Notes</h2>
-Neo4j supports plugins for user defined functions and procedures. This project is developing a UDF supporting genealogy graphs. The development is done in Java 11 (Neo4j requirement). I am using Maven. The pom.xml contained the required dependencies and build parameters. The class (*.java) files will be added as they are developed. In setting up Maven, use the pom.xml and add the desired *.java files; then compile to produce your *.jar file. The default name of the jar is gen-##, where ## is the version number. 
+         
+<h3>Developer Notes</h3>
+         
+Neo4j supports plugins for user defined functions and procedures. This project is developing a UDF supporting genealogy graphs. The development is done in Java 11 (Neo4j requirement). I am using Maven. The pom.xml contained the required dependencies and build parameters. The class (*.java) files will be added as they are developed. In setting up Maven, use the pom.xml and add the desired *.java files; then compile to produce your *.jar file. The default name of the jar is wai.neo4j.gen-##, where ## is the version number. The end user jar will need to be moderated, a role I will manage initially. That is, do NOT add jar files to the jar directory. Rather, add java classes and notify me when they are mature. I can then add then to the project and regenerate the end user jar.<br><br>
+         
+The project priorities will depend, in part, on developer interests and requests from end users. These are summarized at <a href="http://gfg.md/blogpost/7" target="new">http://gfg.md/blogpost/7</a>, which will be updated periodically. But for project management by developers, we should use GitHub functionalities.
+         
+         
 
 <br><br>
