@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 
+ * Copyright 2021
  * David A Stumpf, MD, PhD
  * Who Am I -- Graphs for Genealogists
  * Woodstock, IL 60098 USA
@@ -8,12 +8,6 @@ package gen.gedcom;
     import gen.neo4jlib.neo4j_qry;
     import gen.neo4jlib.file_lib;
     import gen.neo4jlib.neo4j_info;
-//   import java.io.IOException;
-//    import java.nio.charset.StandardCharsets;
-//    import java.nio.file.Files;
-//    import java.nio.file.Paths;
-//    import java.util.stream.Stream;
-    //import org.neo4j.graphdb.Node;
     import java.io.File;
     import java.io.FileWriter;
     import java.io.IOException;    
@@ -23,14 +17,9 @@ package gen.gedcom;
    
 public class upload_gedcom {
         @UserFunction
-        @Description("")
+        @Description("Load a GEDCOM into Neo4j creating Person, Union and Place nodes and the edges connecting them.")
                     
-    /**
-     *
-     * @param rn_list
-     * @param generations
-     * @param db
-     */
+    
     public String gedcom_to_neo4j(
         @Name("db")
             String db,

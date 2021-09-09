@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 
+ * Copyright 2021 
  * David A Stumpf, MD, PhD
  * Who Am I -- Graphs for Genealogists
  * Woodstock, IL 60098 USA
@@ -24,21 +24,29 @@ public static void neo4j_var() {
             
     String c = file_lib.readFileByLine("C:\\Genealogy\\Neo4j\\neo4j.wai");
     String[] s = c.split("\n");
-
-    neo4j_username = getItem(s[1]);
-    neo4j_password = getItem(s[2]);
-    Import_Dir=s[3].replace("neo4j import_directory: ", "");
-    //startDriver();
+    for (int i=1; i < s.length; i++) {  //first row is comment
+        String[] ss = s[i].split(":");
+        switch (ss[0]){
+            case "neo4j_user name": neo4j_username = ss[1].strip();
+            case "neo4j_password": neo4j_password = ss[1].strip();
+            case "neo4j import_directory": Import_Dir = ss[1].strip();
+        }
+        
+//    neo4j_username = getItem(s[1]);
+//    neo4j_password = getItem(s[2]);
+//    Import_Dir=s[3].replace("neo4j import_directory: ", "");
+//    //startDriver();
+    }
   } 
 
   
 
 
-private static String getItem(String s) {
-    String[] c = s.split(":");
-    return c[1].strip();
-
-}
+//private static String getItem(String s) {
+//    String[] c = s.split(":");
+//    return c[1].strip();
+//
+//}
 
 
 //public static void startDriver(){
