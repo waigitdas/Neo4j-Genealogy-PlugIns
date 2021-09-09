@@ -14,24 +14,16 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.*;
 
-/**
- *
- * @author david
- */
-public class file_lib {
 
-    /**
-     * @param args the command line arguments
-     */
+public class file_lib {
+    
     public static String readFileByLine(String filePath) {
         StringBuilder contentBuilder = new StringBuilder();
  
@@ -81,7 +73,7 @@ try{
         }
     
    }
-       //System.out.println(s);
+       
    fw.write(s + "\n");
    ct = ct +1;
    }
