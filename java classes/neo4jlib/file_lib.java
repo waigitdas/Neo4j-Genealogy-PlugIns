@@ -15,6 +15,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVFormat;
@@ -61,13 +64,10 @@ public class file_lib {
 public static void get_file_transform_put_in_import_dir(String filePathRead, String filePathSave){
 
 try{        
-    Reader fileReader = new FileReader(filePathRead);
-
-   
+   Reader fileReader = new FileReader(filePathRead);
+   //Iterable<CSVRecord> records = CSVFormat.RFC4180.parse(fileReader);
    Iterable<CSVRecord> records = CSVFormat.RFC4180.parse(fileReader);
-  
    File fn = new File(neo4j_info.Import_Dir +  filePathSave);
-    
    FileWriter fw = new FileWriter(fn);
             
         
@@ -81,6 +81,7 @@ try{
         }
     
    }
+       //System.out.println(s);
    fw.write(s + "\n");
    ct = ct +1;
    }
@@ -89,31 +90,57 @@ try{
        fw.close();
        fileReader.close();
 }
-     catch (Exception e) {System.out.println("Error!");};
+     catch (Exception e) {System.out.println(e.getMessage());};
     }
    
- 
-//public static void get_file_transform_put_in_import_dir(String filePathRead, String filePathSave){
-//    String c = file_lib.readFileByLine(filePathRead);
-//    //System.out.println(c);
-//    
-//    c = c.replace("|","").replace(",","|").replace("\"", " ");
-//    String[] cc = c.split("\n");
-//    String ccc = cc[0].replace(" ","_");
-//    c = c.replace(cc[0], ccc);
-//    //System.out.println(c);
-//    file_lib.writeFile(c,neo4j_info.Import_Dir +  filePathSave);
-//     
-// }
+public static String getFileNameFromPath(String FileName) {
+    String[] s = FileName.split("/");
+    return s[s.length-1];
+}
+
+public static void parse_chr_containing_csv_save_to_import_folder(String FileName,int ChrColNumber){
+    FileWriter fw = null;
+        gen.neo4jlib.neo4j_info.neo4j_var();
+        try {
+            String c = file_lib.readFileByLine(FileName);
+            c = c.replace("|"," ").replace(",","|").replace("\"", "`");
+            System.out.println("\n" + neo4j_info.Import_Dir);
+            String[] cc = c.split("\n");
+            String header = cc[0].replace(" ","_");
+            c = c.replace(cc[0], header);
+            String[] ccc = c.split("\n");
+            String SaveFileName = getFileNameFromPath(FileName);
+            File fn = new File(neo4j_info.Import_Dir + SaveFileName);
+            fw = new FileWriter(fn);
+            fw.write(header + "\n");
+            for (int ii=1; ii<ccc.length; ii++){
+                String[] xxx = ccc[ii].split(Pattern.quote("|"));
+                
+                String s = "";
+                for(int j=0; j<xxx.length; j++) {
+                    if (j==ChrColNumber) {  //chr
+                        if (xxx[j].strip().length()==1) {
+                            xxx[j] = "0" + xxx[j].strip();
+                        }
+                        else {xxx[j]=xxx[j].strip();}
+                    }
+                    s = s + xxx[j] + "|";
+                }
+                s = s +  "\n";
+                fw.write(s);
+            }
+            fw.flush();
+            fw.close();
+        } catch (IOException ex) {
+            Logger.getLogger(file_lib.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                fw.close();
+            } catch (IOException ex) {
+                Logger.getLogger(file_lib.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+}
+}
  
 
-//    public static String readFileWithEscChar(String filePath){
-//        File f = new File("C:\\Users\\SV7104\\Desktop\\sampletest.txt");
-//Scanner sc = new Scanner(f).useDelimiter(Pattern.compile("\\s*\\u0002\\n\\s*"));
-//            while (sc.hasNext()) {
-//                System.out.print(1);
-//                System.out.println(sc.next().toString().replaceAll("\\u0001\\n", " "));
-//
-//            }
-//    }
-}
