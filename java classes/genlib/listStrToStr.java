@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 
+ * Copyright 2021 
  * David A Stumpf, MD, PhD
  * Who Am I -- Graphs for Genealogists
  * Woodstock, IL 60098 USA
@@ -11,6 +11,8 @@ package gen.genlib;
 
 public class listStrToStr {
 
+    
+    
     
       public static String list_to_string(List<String> ListStr) {
         String s ="";
