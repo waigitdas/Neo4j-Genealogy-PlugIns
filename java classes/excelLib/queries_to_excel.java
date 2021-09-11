@@ -20,9 +20,11 @@ package gen.excelLib;
     import jxl.format.PageOrientation;
     import jxl.format.UnderlineStyle;
     import jxl.Cell;
+import jxl.Range;
     import jxl.write.Formula;
     import jxl.write.Label;
     import jxl.write.Number;
+import jxl.write.NumberFormat;
     import jxl.write.WritableCellFormat;
     import jxl.write.WritableFont;
     import jxl.write.WritableSheet;
@@ -58,7 +60,7 @@ public static String qry_to_excel(String cq,String db,String FileNm,String Sheet
     WritableWorkbook w;
     
     //create csv from results
-     gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited(cq,db,FileNm + ".csv");  //uses apoc and save defaults to import dir
+     //gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited(cq,db,FileNm + ".csv");  //uses apoc and save defaults to import dir
      //get and parse lines of csv
      String c = gen.neo4jlib.file_lib.readFileByLine(csvFile);
 
@@ -85,17 +87,32 @@ public static String qry_to_excel(String cq,String db,String FileNm,String Sheet
      WritableSheet excelSheet = w.createSheet(SheetName, SheetNumber);
     //WritableSheet excelSheet = w.getSheet(0);
     createLabel(excelSheet);
- 
+     excelSheet.getSettings().setVerticalFreeze(1);
     //iterate through lines to create excel worksheets within a workbook
     String[] rws = c.split("\n");
     for (int rw=0 ; rw < rws.length; rw++ ) {
         String cols[] = rws[rw].split(Pattern.quote("|"));
-        System.out.println(cols[1] + "\t" + rw);
+        //System.out.println(cols[1] + "\t" + rw);
         for (int col=0; col < cols.length; col++) {
             addLabel(excelSheet, col, rw , fixCellStr(cols[col]));
         }  // next j
     }  // next i
 
+    int rows = rws.length;
+    int colct = excelSheet.getColumns();
+    System.out.println(rows);   
+    System.out.println(colct);   
+    excelSheet.setName(excelSheet.getName() + "-" + rows);
+    
+    if (colNumberFormat !="") {
+        String[] cnf = colNumberFormat.split(Pattern.quote(";"));
+        for (int i=0; i<cnf.length; i++){
+            String[] cnfi = cnf[i].split(Pattern.quote(":"));
+            NumberFormat nf = new NumberFormat(cnfi[1]); 
+            Cell[] nc = excelSheet.getColumn(Integer.parseInt(cnfi[0]));
+            //Range r = ;
+        }
+    }
 
     w.write();
     w.close();
@@ -109,7 +126,7 @@ public static String qry_to_excel(String cq,String db,String FileNm,String Sheet
      
 public static void createLabel(WritableSheet sheet)
             throws WriteException {
-        WritableFont times10pt = new WritableFont(WritableFont.TIMES, 10);
+        WritableFont times10pt = new WritableFont(WritableFont.createFont("Calibri"), 10);
          times = new WritableCellFormat(times10pt);
         //times.setWrap(true);
 
