@@ -19,12 +19,15 @@ package gen.excelLib;
     import jxl.SheetSettings;
     import jxl.format.PageOrientation;
     import jxl.format.UnderlineStyle;
+
     import jxl.Cell;
-import jxl.Range;
+import jxl.*;
+    import jxl.format.*;
+    import jxl.Range;
     import jxl.write.Formula;
     import jxl.write.Label;
     import jxl.write.Number;
-import jxl.write.NumberFormat;
+    import jxl.write.NumberFormat;
     import jxl.write.WritableCellFormat;
     import jxl.write.WritableFont;
     import jxl.write.WritableSheet;
@@ -43,8 +46,8 @@ public class queries_to_excel {
      */
     public static void main(String args[]) {
         String cq = "MATCH p=(m:DNA_Match)-[r:match_tg]->(t:tg) where m.RN is not null with t,m,  trim(m.fullname)  as mm with t,m,mm order by mm with t,collect(mm + ';') as matches,collect(m.RN) as rns \n with t,matches   RETURN t.tgid as tg,t.chr as chr, t.strt_pos as strt_pos,t.end_pos as end_pos,t.cm as cm,size(matches) as ct,matches order by chr,strt_pos,end_pos";
-        String e =qry_to_excel(cq,"test","tg_summary","Item 1",1,"","","",false);
-        qry_to_excel(cq,"test","Neo4jPersonNodes","Item 25",2,"","",e, true);
+        String e =qry_to_excel(cq,"test","tg_summary","Item 1",1, "3:66", "2:###.#;3:###,###,###", "", false);
+        qry_to_excel(cq,"test","Neo4jPersonNodes","Item 25",2,"","0:##,###",e, true);
     }
     
 //public static newWorkbook()    
@@ -88,7 +91,41 @@ public static String qry_to_excel(String cq,String db,String FileNm,String Sheet
     //WritableSheet excelSheet = w.getSheet(0);
     createLabel(excelSheet);
      excelSheet.getSettings().setVerticalFreeze(1);
-    //iterate through lines to create excel worksheets within a workbook
+
+         //**************************************** 
+
+         if (colNumberFormat !="") {
+        String[] cnf = colNumberFormat.split(Pattern.quote(";"));
+        for (int i=0; i<cnf.length; i++){
+            //System.out.println(colNumberFormat);
+            String[] cnfi = cnf[i].split(Pattern.quote(":"));
+            NumberFormat nf = new NumberFormat(cnfi[1]); 
+            WritableCellFormat cellFormat = new WritableCellFormat(nf);   
+            CellView cellView = new CellView();
+            
+            //numberformat cannot be converted to cellformat
+            excelSheet.setColumnView(Integer.valueOf(cnfi[0]), cellView);
+ 
+//            Cell[] nc = excelSheet.getColumn(Integer.parseInt(cnfi[0]));
+//            nc.setCellFormat(cellFormat);
+//            for (int k=0; k< nc.length; k++) {
+//                Number numberCell = new Number(0, 0, 25, cellFormat);
+//                  nc[k].setCellFormat(cellFormat);
+//            }
+//           //WritableCellFormat cellFormat = new WritableCellFormat();        
+//            CellView cellView = new CellView();
+//            cellView.setFormat(cellFormat);
+//            excelSheet.setColumnView(Integer.valueOf(cnfi[0]), cellView);
+              //System.out.println(cnfi[1]);
+
+
+        }
+}
+
+    //**************************************** 
+
+
+//iterate through lines to create excel worksheets within a workbook
     String[] rws = c.split("\n");
     for (int rw=0 ; rw < rws.length; rw++ ) {
         String cols[] = rws[rw].split(Pattern.quote("|"));
@@ -100,20 +137,30 @@ public static String qry_to_excel(String cq,String db,String FileNm,String Sheet
 
     int rows = rws.length;
     int colct = excelSheet.getColumns();
-    System.out.println(rows);   
-    System.out.println(colct);   
+    //System.out.println(rows);   
+    //System.out.println(colct);   
     excelSheet.setName(excelSheet.getName() + "-" + rows);
-    
-    if (colNumberFormat !="") {
-        String[] cnf = colNumberFormat.split(Pattern.quote(";"));
-        for (int i=0; i<cnf.length; i++){
-            String[] cnfi = cnf[i].split(Pattern.quote(":"));
-            NumberFormat nf = new NumberFormat(cnfi[1]); 
-            Cell[] nc = excelSheet.getColumn(Integer.parseInt(cnfi[0]));
-            //Range r = ;
-        }
+ 
+        //**************************************** 
+    CellView cv = new CellView();
+    cv.setAutosize(true);
+    for (int i=0; i < colct; i++){
+        excelSheet.setColumnView(i, cv);
     }
+    //**************************************** 
+    if (ColWidths !="") {
+         String[] cwf = ColWidths.split(Pattern.quote(";"));
+        for (int i=0; i<cwf.length; i++){
+            String[] cwfi = cwf[i].split(Pattern.quote(":"));
+            WritableCellFormat cellFormat = new WritableCellFormat();        
+            CellView cellView = new CellView();
+            cellView.setSize(256 * Integer.valueOf(cwfi[1]));
+            excelSheet.setColumnView(Integer.valueOf(cwfi[0]), cellView);
+        }
+    }    
+    //**************************************** 
 
+    
     w.write();
     w.close();
     Desktop.getDesktop().open(new File(excelFileNm));
