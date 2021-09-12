@@ -6,7 +6,6 @@
  */
 package gen.neo4jlib;
     import gen.auth.AuthInfo;
-    import gen.genlib.listStrToStr;
     import java.util.ArrayList;
     import org.neo4j.driver.Driver;
     import org.neo4j.driver.GraphDatabase;
@@ -142,7 +141,7 @@ public class neo4j_qry {
    
     //****************************************************
  
- public static String qry_to_csv(String cq,String db,String csv_File) {
+ public static String qry_to_pipe_delimited(String cq,String db,String csv_File) {
         //NEED KEYS AND VALUES
         var myToken = AuthInfo.getToken();
         Driver driver;
@@ -170,7 +169,38 @@ public class neo4j_qry {
       
    }
    
+    //****************************************************
  
+ public static String qry_to_csv(String cq,String db,String csv_File) {
+        //NEED KEYS AND VALUES
+        var myToken = AuthInfo.getToken();
+        Driver driver;
+        driver = GraphDatabase.driver( "bolt://localhost:7687", myToken );
+        driver.session(SessionConfig.builder().withDefaultAccessMode(AccessMode.READ).build());
+
+         try ( Session java_session = driver.session(SessionConfig.forDatabase(db)) )
+        { 
+            return java_session.readTransaction( tx -> {
+            String names = "";
+            
+            String q = "call apoc.export.csv.query(\"" + cq+ "\",'" + csv_File + "' , {delim:',', quotes: true, format: 'plain'})"; 
+                        
+            tx.run(q);
+  
+            //file_lib.writeFile(names, csv_File);
+                        
+            java_session.close();
+            driver.close();    
+            return csv_File;
+        } 
+            );
+           
+         }
+      
+   }
+   
+ 
+
 public static void APOCPeriodicIterateCSV(String LoadCSV, String ReplaceCypher, int batchsize, String db) {
     String Q = "\"";
     String cq = "CALL apoc.periodic.iterate(" + Q + LoadCSV + Q + ", " + Q + ReplaceCypher + Q + ",{batchSize: " + batchsize + ", parallel:true, iterateList:true, retries:25})";

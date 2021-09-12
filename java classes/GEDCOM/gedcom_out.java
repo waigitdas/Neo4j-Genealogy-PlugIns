@@ -6,7 +6,6 @@
  */
 package gen.gedcom;
     import gen.neo4jlib.neo4j_qry;
-    import gen.genlib.*;
     import java.util.List;       
     import org.neo4j.procedure.Description;
     import org.neo4j.procedure.Name;

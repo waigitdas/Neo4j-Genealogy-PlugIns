@@ -46,8 +46,8 @@ public class queries_to_excel {
      */
     public static void main(String args[]) {
         String cq = "MATCH p=(m:DNA_Match)-[r:match_tg]->(t:tg) where m.RN is not null with t,m,  trim(m.fullname)  as mm with t,m,mm order by mm with t,collect(mm + ';') as matches,collect(m.RN) as rns \n with t,matches   RETURN t.tgid as tg,t.chr as chr, t.strt_pos as strt_pos,t.end_pos as end_pos,t.cm as cm,size(matches) as ct,matches order by chr,strt_pos,end_pos";
-        String e =qry_to_excel(cq,"test","tg_summary","Item 1",1, "3:66", "2:###.#;3:###,###,###", "", false);
-        qry_to_excel(cq,"test","Neo4jPersonNodes","Item 25",2,"","0:##,###",e, true);
+        String e =qry_to_excel(cq,"test","tg_report","Item 1",1, "3:66", "2:###.#;3:###,###,###", "", false);
+        qry_to_excel(cq,"test","tg_report","Item 25",2,"","0:##,###",e, true);
     }
     
 //public static newWorkbook()    
@@ -56,7 +56,7 @@ public static String qry_to_excel(String cq,String db,String FileNm,String Sheet
 
       //System.out.println(SheetNumber);
     gen.neo4jlib.neo4j_info.neo4j_var();
-    String csvFile = gen.neo4jlib.neo4j_info.Import_Dir + "QryCSVSheet" + SheetNumber + ".csv";
+    String csvFile = gen.neo4jlib.neo4j_info.Import_Dir + FileNm + ".csv";
     String excelFile = "";
     String excelFileNm = "" ;
     File file;
@@ -66,7 +66,7 @@ public static String qry_to_excel(String cq,String db,String FileNm,String Sheet
      //gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited(cq,db,FileNm + ".csv");  //uses apoc and save defaults to import dir
      //get and parse lines of csv
      String c = gen.neo4jlib.file_lib.readFileByLine(csvFile);
-
+System.out.println(c);
     //set up excel
      try{
     if (ExcelFile=="") {
@@ -90,11 +90,11 @@ public static String qry_to_excel(String cq,String db,String FileNm,String Sheet
      WritableSheet excelSheet = w.createSheet(SheetName, SheetNumber);
     //WritableSheet excelSheet = w.getSheet(0);
     createLabel(excelSheet);
-     excelSheet.getSettings().setVerticalFreeze(1);
+    excelSheet.getSettings().setVerticalFreeze(1);
 
          //**************************************** 
 
-         if (colNumberFormat !="") {
+        if (colNumberFormat !="") {
         String[] cnf = colNumberFormat.split(Pattern.quote(";"));
         for (int i=0; i<cnf.length; i++){
             //System.out.println(colNumberFormat);
@@ -139,13 +139,15 @@ public static String qry_to_excel(String cq,String db,String FileNm,String Sheet
     int colct = excelSheet.getColumns();
     //System.out.println(rows);   
     //System.out.println(colct);   
-    excelSheet.setName(excelSheet.getName() + "-" + rows);
+    int rr = rows-1;
+    excelSheet.setName(excelSheet.getName() + "-" + rr);
  
         //**************************************** 
     CellView cv = new CellView();
     cv.setAutosize(true);
     for (int i=0; i < colct; i++){
         excelSheet.setColumnView(i, cv);
+        
     }
     //**************************************** 
     if (ColWidths !="") {

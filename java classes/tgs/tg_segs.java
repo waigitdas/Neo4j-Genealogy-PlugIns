@@ -41,7 +41,7 @@ public class tg_segs {
     )
 
         {
-        String qry = "match (t:tg{tgid:" + tg + "})-[r:tg_seg]-(s:CB_Segment) return s.Indx as Indx order by s.Indx";
+        String qry = "match (t:tg{tgid:" + tg + "})-[r:tg_seg]-(s:Segment) return s.Indx as Indx order by s.Indx";
         List r =tg_qry(qry,tg, db);
         return r;
             }

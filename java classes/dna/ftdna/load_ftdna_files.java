@@ -81,6 +81,7 @@ public String load_ftdna_csv_files(
         //load curation file
         file_lib.get_file_transform_put_in_import_dir(root_dir + curated_file, "RN_for_Matches.csv");
         neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS line FIELDTERMINATOR '|' merge (l:Lookup{fullname:toString(line.Match_Name),RN:toInteger(case when line.Curated_RN is null then 0 else line.Curated_RN end),kit:toString(case when line.Kit is null then '' else line.Kit end)})", db);
+        gen.ref.family_relationships.load_family_relationships(db);
         
         File file = new File(root_dir);
         String[] directories = file.list(new FilenameFilter() {
@@ -257,7 +258,7 @@ if (hasSegs==true){
         //Line 419 in VB.NET
         //shared match csv
         String cq = "MATCH (k:DNA_Match)-[r:match_segment]->(s:Segment) where k.fullname=r.p with r.p as Match1,r.m as Match2,count(*) as seg_ct, toInteger(sum((s.end_pos-s.strt_pos)/1000000.0)) as mbp, toFloat(sum(s.cm)) as cm,toFloat(min(s.cm)) as shortest_segment,toFloat(max(s.cm)) as longest_segment RETURN Match1,Match2,seg_ct,mbp,cm,shortest_segment,longest_segment order by cm desc";
-         neo4j_qry.qry_to_csv(cq, db, "shared_matches.csv" );
+         neo4j_qry.qry_to_pipe_delimited(cq, db, "shared_matches.csv" );
           
         //Line 422 in VB.Net
         //shared match edges

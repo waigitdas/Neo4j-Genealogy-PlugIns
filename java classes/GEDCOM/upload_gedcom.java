@@ -94,7 +94,7 @@ public class upload_gedcom {
             fwu.close();
       
             //Load Persons
-            String cqp = "LOAD CSV WITH HEADERS FROM 'file:///person.csv' AS line FIELDTERMINATOR '|' merge (p:Person{RN:toInteger(line.rn),fullname:toString(line.fullname),first_name:toString(case when line.first_name is null then '' else line.first_name end),surname:toString(case when line.surname is null then '' else line.surname end),BDGed:toString(line.bd),BP:toString(line.bp),DD:toString(line.dd),DP:toString(line.dp),nm:toInteger(case when line.nm is null then -1 else line.nm end),uid:toInteger(case when line.uid is null then 0 else line.uid end),sex:toString(line.sex)})";
+            String cqp = "LOAD CSV WITH HEADERS FROM 'file:///person.csv' AS line FIELDTERMINATOR '|' merge (p:Person{RN:toInteger(line.rn),fullname:toString(line.fullname),first_name:toString(case when line.first_name is null then '' else line.first_name end),surname:toString(case when line.surname is null then '' else line.surname end),BDGed:toString(line.bd),BP:toString(line.bp),DDGed:toString(line.dd),DP:toString(line.dp),nm:toInteger(case when line.nm is null then -1 else line.nm end),uid:toInteger(case when line.uid is null then 0 else line.uid end),sex:toString(line.sex)})";
            neo4j_qry.qry_write(cqp,db);
 
            //Load unions/marriages
@@ -103,26 +103,26 @@ public class upload_gedcom {
 
            //Create place nodes using extant data
            String cqpl =  "match (p1:Person) with 'b' as type, p1.BP as Place return type,Place union match (p2:Person) with 'd' as type,p2.DP as Place return type, Place union match (u:Union) with 'u' as type,u.UDP as Place where Place is not null return type,Place" ;
-           neo4j_qry.qry_to_csv(cqpl, db, "places.csv");
+           neo4j_qry.qry_to_pipe_delimited(cqpl, db, "places.csv");
 
            String cqplup = "LOAD CSV WITH HEADERS FROM 'file:///places.csv' AS line FIELDTERMINATOR '|' merge (p:Place{desc:toString(line.Place)})";
            neo4j_qry.qry_write(cqplup,db);
            
            //create child edges using extant data
            String pu = "match (p:Person) where p.uid>1 return p.RN as rn,p.uid as uid";
-           neo4j_qry.qry_to_csv(pu, db, "child.csv");
+           neo4j_qry.qry_to_pipe_delimited(pu, db, "child.csv");
            String puup = "LOAD CSV WITH HEADERS FROM 'file:///child.csv' AS line FIELDTERMINATOR '|' match (p:Person{RN:toInteger(line.rn)}) match (u:Union{uid:toInteger(line.uid)}) merge (p)-[r:child]-(u)";
            neo4j_qry.qry_write(puup,db);
 
            //create father-union edges using extant data
            String fu = "match (p:Person)-[r:child]->(u:Union) where u.U1 >0 return p.RN as rn,u.U1 as father";
-           neo4j_qry.qry_to_csv(fu, db, "father.csv");
+           neo4j_qry.qry_to_pipe_delimited(fu, db, "father.csv");
            String fuup = "LOAD CSV WITH HEADERS FROM 'file:///father.csv' AS line FIELDTERMINATOR '|' match (p:Person{RN:toInteger(line.rn)}) match (u:Union{U1:toInteger(line.father)}) merge (p)-[r:ufather]-(u)";
            neo4j_qry.qry_write(fuup,db);
 
            //create mother-union edges using extant data
            String mu = "match (p:Person)-[r:child]->(u:Union) where u.U2 >0 return p.RN as rn,u.U2 as mother";
-           neo4j_qry.qry_to_csv(mu, db, "mother.csv");
+           neo4j_qry.qry_to_pipe_delimited(mu, db, "mother.csv");
            String muup = "LOAD CSV WITH HEADERS FROM 'file:///mother.csv' AS line FIELDTERMINATOR '|' match (p:Person{RN:toInteger(line.rn)}) match (u:Union{U2:toInteger(line.mother)}) merge (p)-[r:umother]-(u)";
            neo4j_qry.qry_write(muup,db);
 
@@ -142,6 +142,11 @@ public class upload_gedcom {
         catch (IOException e){
              //System.out.println( e);
              }
+        //create genealogy dates from gedcom dates using User Defined Function
+        neo4j_qry.qry_write("MATCH (p:Person) with p,p.BDGed as ged,gen.genlib.ged_to_gen_date(p.BDGed,'" + db + "') as gen   set p.BD = gen ",db);
+        neo4j_qry.qry_write("MATCH (p:Person) with p,p.DDGed as ged,gen.genlib.ged_to_gen_date(p.DDGed,'" + db + "') as gen   set p.DD = gen ",db);
+        neo4j_qry.qry_write("MATCH (u:Union) with u,u.UDGed as ged,gen.genlib.ged_to_gen_date(u.UDGed,'" + db + "') as gen   set u.UD = gen)",db);
+        
          }
 
     

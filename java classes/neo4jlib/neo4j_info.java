@@ -18,6 +18,7 @@ public class neo4j_info {
     public static String Import_Dir;
     public static String neo4j_username;
     public static String neo4j_password;
+    public static String tg_logic ;
     //public static Driver driver_instance;
     
 public static void neo4j_var() {
@@ -39,6 +40,9 @@ public static void neo4j_var() {
        
 
     }
+    
+    tg_logic = "s.chr=t.chr and t.strt_pos<=s.strt_pos and t.end_pos>=s.end_pos and s.cm>=7 and s.snp>=500";
+
 //// testing results    
 // System.out.println(neo4j_username);
 // System.out.println(neo4j_password);

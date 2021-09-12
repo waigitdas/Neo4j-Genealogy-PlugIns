@@ -40,7 +40,7 @@ public class seg_tg {
     )
 
         {
-        String qry = "match (s:CB_Segment{Indx:'" + segment_indx + "'})-[:tg_seg]-(t:tg{project:'" + project + "'}) with distinct t as td order by td.tgid  return td.tgid";
+        String qry = "match (s:Segment{Indx:'" + segment_indx + "'})-[:tg_seg]-(t:tg{project:'" + project + "'}) with distinct t as td order by td.tgid  return td.tgid";
         List<Long> r =tg_qry(qry, db);
         return r;
             }
