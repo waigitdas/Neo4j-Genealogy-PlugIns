@@ -114,6 +114,12 @@ where name STARTS WITH 'gen'
         <blockquote>
           match (n)-[r]-() return type(r), count(*) order by type(r)
         </blockquote>
+    <li>Other functions are available to illustrate what is possible. This list will expand over time and suggestions are aooreciated.
+      <ol>
+        <li>Start with the Gen_UDF functions see with this query<br><blockquote>Show Functions yield name, signature, description,returnDescription,aggregating
+where name STARTS WITH 'gen'
+          return name, signature, description,returnDescription,aggregating</blockquote>
+      </ol>  
   </ol>
 
          
