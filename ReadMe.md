@@ -142,4 +142,5 @@ The project priorities will depend, in part, on developer interests and requests
          Professional Genealogists<br>
          Professor Emeritus, Northwestern University<br>
          email: <a href="mailto:dave@wai.md?subject=Neo4j Genealogy User Defined Function">dave@wai.md</a><br>
-         &copy;2021
+         &copy;2021<br>
+         <img src="https://blobswai.blob.core.windows.net/wai/WAI.jpg"/>
