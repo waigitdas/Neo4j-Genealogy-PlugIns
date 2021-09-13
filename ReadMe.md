@@ -10,7 +10,7 @@ This introduction has two major audiences: alpha testers and developers. The bac
 
 Below is a detailed set of steps for setting up a graph environment. But before getting to them, consider the specific items (prerequisites) required to take full advantage of the tools:
 <ol>
-  <li>A simple Excel workbook (template provided) which contains information about your local enviroment needed to run the tools.
+  <li>A simple text file (template provided) which contains information about your local enviroment needed to run the tools.
   <li>Your GEDCOM file providing your family's historical and conventional genealogy.
   <li>Y- and at-DNA results from Family Tree DNA, preferably from multiple kits.
   <li>A curated Excel file (template provided) linking GEDCOM person identifiers (from the @I###@ tags) with DNA results (names and kit numbers). This takes some effort but the benefits are notable and actionable.
