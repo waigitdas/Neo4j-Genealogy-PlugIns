@@ -119,6 +119,7 @@ where name STARTS WITH 'gen'
         <li>Start with the Gen_UDF functions see with this query<br><blockquote>Show Functions yield name, signature, description,returnDescription,aggregating
 where name STARTS WITH 'gen'
           return name, signature, description,returnDescription,aggregating</blockquote>
+          <li>Find other queries at these <a href="http://stumpf.org/genealogy-blog/tag/neo4j>blog pages</a>.
       </ol>  
   </ol>
 
