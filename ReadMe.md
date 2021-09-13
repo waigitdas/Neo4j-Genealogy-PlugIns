@@ -139,7 +139,7 @@ The project priorities will depend, in part, on developer interests and requests
 <br><br>
          -------------------------------------------<br>
          David A Stumpf, MD., PhD<br>
-         Professional Genealogists<br>
+         Professional Genealogist<br>
          Professor Emeritus, Northwestern University<br>
          email: <a href="mailto:dave@wai.md?subject=Neo4j Genealogy User Defined Function">dave@wai.md</a><br>
          &copy;2021<br>
