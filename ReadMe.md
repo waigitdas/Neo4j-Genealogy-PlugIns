@@ -22,7 +22,7 @@ Several steps are required to implement the genealogy user defined function (Gen
 <ol>
   <li><b>Step 1</b>. Install Neo4j Enterprise Edition, version 4.x. 
     <ol>
-      <li>The process starts <a href="https://neo4j.com/download-neo4j-now/" target="new"><b color="red">here</b></a>. 
+      <li>The process starts <a href="https://neo4j.com/download-neo4j-now/" target="new"><span style="color:red">here</span></a>. 
       <li>When you first open the software you see the "home page." You do not yet have your database. 
        <li>From the home page you create a project with a name of your chosing. A project can hold numerous databases which might support projects on several family lines.
        <li>Create your first database by opening the Neo4j browser, selecting the system database and typing this command: create database <your database name>. The name must be only lower letters. You can create other databases by repeating this command. To delete a database type drop database <name>.
