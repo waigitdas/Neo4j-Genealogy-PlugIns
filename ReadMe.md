@@ -94,7 +94,7 @@ where name STARTS WITH 'gen'
         <li>Y-DNA matches; not Big Y. Set the view to Y-37 and then download the csv. Example name: 792577_YDNA_Matches_20210125.csv
         <li>Repeat this process for each kit, using a new sub-directory of the root directory for each.   
       </ol>
-    <li>Prepared a curated file to link your GEDCOM to the DNA data. You will have two different graphs, the genealogy family history and the DNA data. One of the power aspects of graph analytics is their analytics using multiple graphs. But they need help from expert curation until such a time that we can automate the links.
+    <li>Prepare a curated file to link your GEDCOM to the DNA data. You will have two different graphs, the genealogy family history and the DNA data. One of the powerful aspects of graph methods is their analytics using multiple graphs. But they need help from expert curation until such a time that we can automate the links.
       <ol>
         <li>Download this <a href="https://blobswai.blob.core.windows.net/gen-udf/Family ftdna curation file.xlsx" target'="new">template file</a>.
         <li>Enter the match name, kit number and curated_RN (record number). The curated RN is the GEDCOM number for each person. The GEDCOM number is found at 0 @I###@ INDI. The ### is what you want. The match name is tricky. The latest formating of the FTDNA downloads does not mae this easy. You must find the match name in the file of a match. Thus, if John Doe is the kit, you'd have to find him in the kit of Jane Doe was a match and copy that name into the curation template. If you do not have the person in your GEDCOM, leave that field blank.
