@@ -34,21 +34,19 @@ public class seg_tg {
         @Name("segment_indx") 
             String segment_indx,
         @Name("project") 
-            String project,
-        @Name("db")
-            String db
+            String project
     )
 
         {
         String qry = "match (s:Segment{Indx:'" + segment_indx + "'})-[:tg_seg]-(t:tg{project:'" + project + "'}) with distinct t as td order by td.tgid  return td.tgid";
-        List<Long> r =tg_qry(qry, db);
+        List<Long> r =tg_qry(qry);
         return r;
             }
     
    
-    public List<Long> tg_qry(String qry,String db) 
+    public List<Long> tg_qry(String qry) 
     {
-        return neo4j_qry.qry_long_list(qry, db);
+        return neo4j_qry.qry_long_list(qry);
 //  
 }
               

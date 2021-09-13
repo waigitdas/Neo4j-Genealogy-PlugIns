@@ -35,20 +35,18 @@ public class tg_segs {
         
     public List tg_segments(
         @Name("tg") 
-            Long tg,
-        @Name("db") 
-            String db
+            Long tg
     )
 
         {
         String qry = "match (t:tg{tgid:" + tg + "})-[r:tg_seg]-(s:Segment) return s.Indx as Indx order by s.Indx";
-        List r =tg_qry(qry,tg, db);
+        List r =tg_qry(qry,tg);
         return r;
             }
     
    
-    public List<String> tg_qry(String qry,long tg ,String db) 
+    public List<String> tg_qry(String qry,long tg ) 
     {
-        return neo4j_qry.qry_str_list(qry, db);
+        return neo4j_qry.qry_str_list(qry);
     }
 }

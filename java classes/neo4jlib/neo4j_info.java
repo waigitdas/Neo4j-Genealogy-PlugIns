@@ -19,6 +19,7 @@ public class neo4j_info {
     public static String neo4j_username;
     public static String neo4j_password;
     public static String tg_logic ;
+    public static String user_database ;
     //public static Driver driver_instance;
     
 public static void neo4j_var() {
@@ -35,7 +36,7 @@ public static void neo4j_var() {
             break;
             case "neo4j_password": neo4j_password = ss[1].strip();
             break;
-        }
+            case "user_database": user_database = ss[1].strip();        }
         ct = ct + 1;
        
 
@@ -43,14 +44,17 @@ public static void neo4j_var() {
     
     tg_logic = "s.chr=t.chr and t.strt_pos<=s.strt_pos and t.end_pos>=s.end_pos and s.cm>=7 and s.snp>=500";
 
-//// testing results    
-// System.out.println(neo4j_username);
-// System.out.println(neo4j_password);
-// System.out.println(Import_Dir);
+// testing results    
+ System.out.println(neo4j_username);
+ System.out.println(neo4j_password);
+ System.out.println(Import_Dir);
+ System.out.println(user_database);
   } 
 
   
-
+public static void main(String args[]){
+    neo4j_var();
+}
 
 //private static String getItem(String s) {
 //    String[] c = s.split(":");

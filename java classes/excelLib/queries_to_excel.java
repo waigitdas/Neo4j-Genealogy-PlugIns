@@ -46,13 +46,13 @@ public class queries_to_excel {
      */
     public static void main(String args[]) {
         String cq = "MATCH p=(m:DNA_Match)-[r:match_tg]->(t:tg) where m.RN is not null with t,m,  trim(m.fullname)  as mm with t,m,mm order by mm with t,collect(mm + ';') as matches,collect(m.RN) as rns \n with t,matches   RETURN t.tgid as tg,t.chr as chr, t.strt_pos as strt_pos,t.end_pos as end_pos,t.cm as cm,size(matches) as ct,matches order by chr,strt_pos,end_pos";
-        String e =qry_to_excel(cq,"test","tg_report","Item 1",1, "3:66", "2:###.#;3:###,###,###", "", false);
-        qry_to_excel(cq,"test","tg_report","Item 25",2,"","0:##,###",e, true);
+        String e =qry_to_excel(cq,"tg_report","Item 1",1, "3:66", "2:###.#;3:###,###,###", "", false);
+        qry_to_excel(cq,"tg_report","Item 25",2,"","0:##,###",e, true);
     }
     
 //public static newWorkbook()    
     
-public static String qry_to_excel(String cq,String db,String FileNm,String SheetName, int SheetNumber, String ColWidths, String colNumberFormat, String ExcelFile, Boolean OpenFile ) {
+public static String qry_to_excel(String cq,String FileNm,String SheetName, int SheetNumber, String ColWidths, String colNumberFormat, String ExcelFile, Boolean OpenFile ) {
 
       //System.out.println(SheetNumber);
     gen.neo4jlib.neo4j_info.neo4j_var();
@@ -63,7 +63,7 @@ public static String qry_to_excel(String cq,String db,String FileNm,String Sheet
     WritableWorkbook w;
     
     //create csv from results
-     //gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited(cq,db,FileNm + ".csv");  //uses apoc and save defaults to import dir
+     gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited(cq,FileNm + ".csv");  //uses apoc and save defaults to import dir
      //get and parse lines of csv
      String c = gen.neo4jlib.file_lib.readFileByLine(csvFile);
 System.out.println(c);

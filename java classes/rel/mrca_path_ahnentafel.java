@@ -6,16 +6,47 @@
  */
 package gen.rel;
 
-/**
- *
- * @author david
- */
-public class mrca_path_ahnentafel {
+import java.util.List;
+import org.neo4j.procedure.Description;
+import org.neo4j.procedure.Name;
+import org.neo4j.procedure.UserFunction;
+import gen.rel.base2to10;
+import java.util.ArrayList;
 
-    /**
-     * @param args the command line arguments
-     */
+public class mrca_path_ahnentafel {
+    @UserFunction
+    @Description("Parses based 2 ahnentafel to ahnentafel (in base 10) at each hop in the path to the most distant ancestor")
+
+public List<Long> ahn_path(
+    @Name("ahnentafel") 
+        String ahnentafel
+        
+  )
+    
+        
+        { 
+        List<Long> aa = ahnentafel_path( ahnentafel);
+        return aa;
+        }
+
+
+
+
+    
     public static void main(String args[]) {
-        // TODO code application logic here
+        ahnentafel_path("1011011");
     }
+    
+    public static List<Long> ahnentafel_path(String ahnentafel) {
+        List<Long> ahn = new ArrayList() ;
+        for (int i=1; i < ahnentafel.length()+1; i++) {
+            Long x = Long.parseLong(ahnentafel.substring(0,i),2);
+            //System.out.println(x);
+            ahn.add(x);
+        }
+        //System.out.println(ahn);
+        return ahn;
+    }
+    
 }
+        

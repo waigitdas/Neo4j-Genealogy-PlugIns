@@ -18,7 +18,7 @@ public class get_family_tree_data {
         // TODO code application logic here
     }
     
-    public static String getPersonFromRN(Long RN, String db) {
+    public static String getPersonFromRN(Long RN) {
         //String s = gen.neo4jlib.neo4j_qry.qry_str("match (p:Person{RN:1}) return p.fullname + ' [' + p.RN + '] (' + right(p.BDGed,4) +'-' + right(p.DDGed,4) + ')'", db);
         //return s;
         return "xxx";

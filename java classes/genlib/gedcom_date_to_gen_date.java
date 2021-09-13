@@ -12,35 +12,30 @@ import org.neo4j.procedure.UserFunction;
 import static org.parboiled.common.StringUtils.right;
 import static org.parboiled.common.StringUtils.substring;
 
-/**
- *
- * @author david
- */
+
 public class gedcom_date_to_gen_date {
        @UserFunction
         @Description("Converts GEDCOM date to ccyymmdd")
 
 public String ged_to_gen_date(
         @Name("gedcom_date") 
-            String gedcom_date,
-       @Name("db") 
-            String db
+            String gedcom_date
         
   )
     {
         
         { 
-       String newDate = convert_date(gedcom_date, db);
+       String newDate = convert_date(gedcom_date);
         return newDate;
         }
      }
    
     
     public static void main(String args[]) {
-        convert_date("BET JUL 1945 and 10 May 1946","test");
+        convert_date("BET JUL 1945 and 10 May 1946");
     }
     
-    public static String convert_date(String gedcom_date,String db) {
+    public static String convert_date(String gedcom_date) {
         String d = fix_date(gedcom_date).strip();
         String y ="0000";
         String dy = "00";

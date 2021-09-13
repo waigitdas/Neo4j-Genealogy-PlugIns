@@ -25,25 +25,23 @@ import gen.neo4jlib.neo4j_qry;
         @Name("path2") 
             Long path2,
         @Name("mrca_ct") 
-            Long mrca_ct,
-        @Name("db") 
-            String db
+            Long mrca_ct
   )
 
          { 
         try{
         if (mrca_ct >2) {return "n/a"; }
         String cq = "match (f:fam_rel) where f.nmrca=" + mrca_ct + " and f.path1=" + path1 + " and f.path2=" +path2 + " return f.relationship" ;    
-        String r =mrca_qry(cq,db);
+        String r =mrca_qry(cq);
         if (r =="") {r = "n/a";}
         return r;
         }
         catch (Exception e) {return "n/a";}
      }
    
-    public String mrca_qry(String cq,String db) 
+    public String mrca_qry(String cq) 
     {
-        return neo4j_qry.qry_str(cq, db);
+        return neo4j_qry.qry_str(cq);
     }
 
     
