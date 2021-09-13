@@ -2,31 +2,39 @@
 
 <h3>Evangelizing Graphs for Genealogists</h3>
 
-Most genealogists are using data tools such as Excel, relational databases, various note taking software and commercial consumer genealogy software. Graph mehods have been difficult for genealogist to use because of the step learning curve. This effort attempts to address this hurdle by providing a plugin, specifically designed for genealogists, to an industry leading graph database, Neo4j. This step-by-step guide should allow you to get you genealogy and some DNA data into Neo4j within a short time frame. You don't need to know the mechanics of graph methods to get started. Indeed, if we can get a sufficient number of geeks engage, the kit of easy to use tools should expand over time. Your <a href="mailto:dave@wai.md?subject=Neo4j Genealogy User Defined Function">feedback</a> is encouraged.<br>
+Most genealogists are using data tools such as Excel, relational databases, various note taking software and commercial consumer genealogy software. Graph mehods have been difficult for genealogist to use because of the steep learning curve. This effort attempts to address this hurdle by providing a plugin, specifically designed for genealogists. It enhances the caabilities of an industry leading native graph database, Neo4j. This step-by-step guide should allow you to get your genealogy and DNA data into Neo4j within a short time frame and see some immediate value. You don't need to know the mechanics of graph methods to get started. If we can get a sufficient number of geeks engaged, the kit of easy to use tools should expand over time. Your <a href="mailto:dave@wai.md?subject=Neo4j Genealogy User Defined Function">feedback</a> is encouraged.<br>
 
-This introduction has two maor audiences: alpha testers and developers. The background is avaialble at <a href="http://gfg.md/blogpost/7" target="new">http://gfg.md/blogpost/7</a>. 
+This introduction has two major audiences: alpha testers and developers. The background is avaialble at <a href="http://gfg.md/blogpost/7" target="new">http://gfg.md/blogpost/7</a>. There are additional links at that site if you'd like more background.
 
 <h3>Setting Up the Graph Environment</h3>
+
+Below is a detailed set of steps for setting up a graph environment. But before getting to them, consider the specific items (prerequisites) required to take full advantage of the tools:
+<ol>
+  <li>A simple Excel workbook (template provided) which contains information about your local enviroment needed to run the tools.
+  <li>Your GEDCOM file providing your family's historical and conventional genealogy.
+  <li>Y- and at-DNA results from Family Tree DNA, preferably from multiple kits.
+  <li>A curated Excel file (template provided) linking GEDCOM person identifiers (from the @I###@ tags) with DNA results (names and kit numbers). This takes some effort but the benefits are notable and actionable.
+  <li>A famly relationship lookup file (provided) used to report relationships (1C, 3C1R, etc.).It needs to be in a specified directory on the PC running the tools  
+</ol>
 
 Several steps are required to implement the genealogy user defined function (Gen-UDF).<br><br>
 
 <ol>
   <li><b>Step 1</b>. Install Neo4j Enterprise Edition, version 4.x. 
     <ol>
-      <li>The process starts <a href="https://neo4j.com/download-neo4j-now/" target="new">here</a>. 
-      <li>When you first open the database you start with the user name neo4j and passwords neo4j. You will then create your own password. Leave the username as neo4j. 
-       <li>Create a project with a name of your chosing.
+      <li>The process starts <a href="https://neo4j.com/download-neo4j-now/" target="new"><b color="red">here</b></a>. 
+      <li>When you first open the software you see the "home page." You do not yet have your database. 
+       <li>From the home page you create a project with a name of your chosing. A project can hold numerous databases which might support projects on several family lines.
        <li>Create your first database by opening the Neo4j browser, selecting the system database and typing this command: create database <your database name>. The name must be only lower letters. You can create other databases by repeating this command. To delete a database type drop database <name>.
-       <li>Verify that you can start and stop the project database. This is important because the next step may damage the functionality. Thus, be careful with this step
+       <li>Verify that you can start and stop the project database from the home page. This is important because the next steps may damage the functionality and you'd like to learn where this happened. Thus, be careful with this step.
        <li>Modify the neo4j configuration file to accomodate the project requirements. 
          <ol>
            <li>Open the configuration folder. The Neo4j application opens to a "home page" from which you can open the Configuration folder. The link is in the "...." icon to the right of your project "Open" button. The navigation is "...." > Open Folder > Configuration.
-           <li>Open the file neo4j.conf in a text editor (Notepad or Notepad++; not Word or other tools that add extraneous text). Save this original file in cse something goes awry and you need to revert to it.
-           <li>At the bottom of the file paste these lines:<blockquote>
+           <li>Open the file neo4j.conf in a text editor (Notepad or Notepad++; not Word or other tools that add extraneous text). Save this original file in case something goes awry and you need to revert to it.
+           <li>At the bottom of the config file paste these lines:<blockquote>
              apoc.export.file.enabled=true<br>
 dbms.security.procedures.unrestricted=jwt.security.*,apoc.*,gds.*,gen.*<br>
 dbms.security.procedures.allowlist=jwt.security.*,gds.*,apoc.*, gen.*<br>
-
 dbms.checkpoint.interval.time=30s<br>
 dbms.checkpoint.interval.tx=1<br>
 dbms.tx_log.rotation.retention_policy=false<br>
@@ -39,7 +47,7 @@ dbms.transaction.timeout=30m
            dbms.memory.heap.max_size=4G
            </blockquote>
          </ol>
-         <li>Finally, you must set up a configuration file about your specific project so that the Gen_UUDF knows where to find key facts unique to your environment. 
+         <li>Finally, you must set up a Excel file with configuration information about your specific project so that the Gen_UDF knows where to find key facts unique to your environment. 
            <ol>
              <li>Download this <a href="https://blobswai.blob.core.windows.net/gen-udf/neo4j-template.wai" target="new">file</a> and store it in this specific required directory: "c://Genealogy/Neo4j/"  It is very important that you use the capitalization as specified because java is case sensitive.
              <li>Open the file in a text editor and edit the information to the right of the colons with your specific information:
@@ -47,7 +55,7 @@ dbms.transaction.timeout=30m
                  <li>neo4j_username: leave this a neo4j unless you changed it, which is not advised.
                  <li>neo4j_password: the password you entered at your initial login (above).
                  <li>Import_Dir: the neo4j import directory. The format is important! You must use / rather than \ which may come from a copying of the directory path. You must also have the last character as / so the Gen-UDF knows this is a directory. Here is how to get the import directory path. The Neo4j application opens to a "home page" from which you can open the Configuration folder. The link is in the "...." icon to the right of your project "Open" button. The navigation is "...." > Open Folder > Configuration.  
-                 <li>Save the file and rename: c://Genealogy/Neo4j/neo4j.wai. Note, template has been removed from the name. 
+                 <li>Save the file and rename: c://Genealogy/Neo4j/neo4j.wai. Note, "template" should be removed from the name. 
                  <li>This file isolates your personal information from those developing the Gen-UDF, preserving your privacy. It is read locally on your computer and not viewed or stored offsite.  
                </ol>
            </ol>
