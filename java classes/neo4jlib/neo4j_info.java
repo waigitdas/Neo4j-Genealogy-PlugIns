@@ -45,10 +45,10 @@ public static void neo4j_var() {
     tg_logic = "s.chr=t.chr and t.strt_pos<=s.strt_pos and t.end_pos>=s.end_pos and s.cm>=7 and s.snp>=500";
 
 // testing results    
- System.out.println(neo4j_username);
- System.out.println(neo4j_password);
- System.out.println(Import_Dir);
- System.out.println(user_database);
+// System.out.println(neo4j_username);
+// System.out.println(neo4j_password);
+// System.out.println(Import_Dir);
+// System.out.println(user_database);
   } 
 
   

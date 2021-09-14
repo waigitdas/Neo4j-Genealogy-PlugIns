@@ -103,6 +103,30 @@ public class neo4j_qry {
     }
    }
    
+    public static List<Object> qry_obj_list(String cq) {
+        
+        var myToken = AuthInfo.getToken();
+           
+        Driver driver;
+        driver = GraphDatabase.driver( "bolt://localhost:7687", myToken );
+        driver.session(SessionConfig.builder().withDefaultAccessMode(AccessMode.READ).build());
+ 
+        try ( Session java_session = driver.session(SessionConfig.forDatabase(gen.neo4jlib.neo4j_info.user_database)) )
+                {
+        return java_session.readTransaction( tx -> {
+            List<Object> names = new ArrayList<>();
+            Result result = tx.run(cq );
+            while ( result.hasNext() )
+            {
+                names.add(result.next().get( 0 ).asObject() );
+            }
+//            java_session.close();
+//            driver.close();
+            return names;
+        } );
+    }
+   }
+   
   
   
       public static String qry_str(String cq) {
@@ -129,7 +153,7 @@ public class neo4j_qry {
                         
 //                       java_session.close();
 //                       driver.close();
-                       output = output.replace("[", "").replace("]", "").replace("\"", "");
+                       //output = output.replace("[", "").replace("]", "").replace("\"", "");
                        output = output.substring(0, output.length()-2);
                        return output;
                             
@@ -139,6 +163,42 @@ public class neo4j_qry {
       return javasession;
         }
    }
+   
+//    //****************************************************
+//      public static List<Long> qry_long(String cq) {
+//        var myToken = AuthInfo.getToken();
+//        Driver driver;
+//        driver = GraphDatabase.driver( "bolt://localhost:7687", myToken );
+//        driver.session(SessionConfig.builder().withDefaultAccessMode(AccessMode.READ).build());
+//        try ( Session java_session = driver.session(SessionConfig.forDatabase(gen.neo4jlib.neo4j_info.user_database)) )
+//        { 
+//            String javasession = java_session.writeTransaction(new TransactionWork<String>()
+//            {
+//                @Override
+//                public String execute( Transaction tx )
+//                {
+//                    Result rslt = tx.run( cq,
+//                            parameters( "message", cq ) );
+//                    
+//                        List<Long> output;
+//                        while (rslt.hasNext())
+//                        { 
+//                            output.add(rslt.next().get(arg0, arg1)) ;
+//                        
+//                        }
+//                        
+////                       java_session.close();
+////                       driver.close();
+//                       //output = output.replace("[", "").replace("]", "").replace("\"", "");
+//                       output = output.substring(0, output.length()-2);
+//                       return output;
+//                            
+//                    
+//                }
+//            } );
+//      return javasession;
+//        }
+//   }
    
     //****************************************************
  

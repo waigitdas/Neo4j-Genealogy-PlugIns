@@ -21,7 +21,6 @@ package gen.excelLib;
     import jxl.format.UnderlineStyle;
 
     import jxl.Cell;
-import jxl.*;
     import jxl.format.*;
     import jxl.Range;
     import jxl.write.Formula;
@@ -34,7 +33,6 @@ import jxl.*;
     import jxl.write.WritableWorkbook;
     import jxl.write.WriteException;
     import jxl.write.biff.RowsExceededException;
-import net.bytebuddy.implementation.bind.annotation.Default;
 
 public class queries_to_excel {
     public static WritableCellFormat timesBoldUnderline;
@@ -66,7 +64,7 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
      gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited(cq,FileNm + ".csv");  //uses apoc and save defaults to import dir
      //get and parse lines of csv
      String c = gen.neo4jlib.file_lib.readFileByLine(csvFile);
-System.out.println(c);
+//System.out.println(c);
     //set up excel
      try{
     if (ExcelFile=="") {
@@ -120,6 +118,8 @@ System.out.println(c);
 
 
         }
+            excelSheet.getSettings().setVerticalFreeze(1);
+
 }
 
     //**************************************** 

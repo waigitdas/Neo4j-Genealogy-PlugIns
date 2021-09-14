@@ -31,7 +31,14 @@ import gen.neo4jlib.neo4j_qry;
          { 
         try{
         if (mrca_ct >2) {return "n/a"; }
-        String cq = "match (f:fam_rel) where f.nmrca=" + mrca_ct + " and f.path1=" + path1 + " and f.path2=" +path2 + " return f.relationship" ;    
+        String cq="";
+        if (path1<path2){
+        cq = "match (f:fam_rel) where f.nmrca=" + mrca_ct + " and f.path1=" + path1 + " and f.path2=" +path2 + " return f.relationship" ;    
+        }
+        else{
+         cq = "match (f:fam_rel) where f.nmrca=" + mrca_ct + " and f.path1=" + path2 + " and f.path2=" +path1 + " return f.relationship" ;    
+           
+        }
         String r =mrca_qry(cq);
         if (r =="") {r = "n/a";}
         return r;

@@ -6,6 +6,7 @@
  */
 package gen.rel;
 import gen.neo4jlib.neo4j_qry;
+import java.util.List;
 //    import org.neo4j.driver.AuthTokens;
 //    import org.neo4j.driver.net.ServerAddress;
    
@@ -15,11 +16,11 @@ import gen.neo4jlib.neo4j_qry;
   
             
       
-    public class mrca1 {          
+    public class mrca2 {          
         @UserFunction
-        @Description("Input 2 RNs and get list of MRCAs")
+        @Description("Input 2 RNs and get list of mrca RNs")
         
-    public String mrca_str(
+    public String mrca_rn(
         @Name("rn1") 
             Long rn1,
         @Name("rn2") 
@@ -28,13 +29,13 @@ import gen.neo4jlib.neo4j_qry;
     {
          { 
         gen.neo4jlib.neo4j_info.neo4j_var();
-        String cq = "match (p1:Person{RN:" + rn1 + "})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(p2:Person{RN:" + rn2 + "}) with mrca order by mrca.sex desc with mrca.fullname + ' [' + mrca.RN + '] (' + left(mrca.BD,4) +'-' + left(mrca.DD,4) +')' as mrca_indv return collect(mrca_indv) as mrca" ;    
-        String r =mrca_qry(cq).replace("[[", "").replace("]]", ",").replace("\"", "");
+        String cq = "match (p1:Person{RN:" + rn1 + "})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(p2:Person{RN:" + rn2 + "})  with mrca order by mrca.sex desc return mrca.RN" ;    
+        String r =mrca_qry_rn(cq).replace("]; [", ", ");
         return r;
             }
      }
    
-    public String mrca_qry(String cq) 
+    public String mrca_qry_rn(String cq) 
     {
         return neo4j_qry.qry_str(cq);
     }
