@@ -10,10 +10,9 @@ import gen.auth.AuthInfo;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
 
-/**
- *
- * @author david
- */
+//reads text file with user name, password, folders relevant to the functions. 
+//this strategy mitigates the need for users to input this info into the function calls
+
 public class neo4j_info {
     public static String Import_Dir;
     public static String neo4j_username;
