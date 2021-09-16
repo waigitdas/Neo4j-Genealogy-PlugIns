@@ -1,7 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Copyright 2021 
+ * David A Stumpf, MD, PhD
+ * Who Am I -- Graphs for Genealogists
+ * Woodstock, IL 60098 USA
  */
 package gen.excelLib;
 
