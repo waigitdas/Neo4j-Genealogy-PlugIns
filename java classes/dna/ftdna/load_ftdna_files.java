@@ -117,7 +117,7 @@ public String load_ftdna_csv_files(
                     
                     ct = ct + 1;
                     
-                     try{kit_fullname = neo4j_qry.qry_str("match (l:Lookup{kit:'" + kit + "'}) return l.fullname as fullname");}
+                     try{kit_fullname = neo4j_qry.qry_str("match (l:Lookup{kit:'" + kit + "'}) return l.fullname as fullname").replace("[", "").replace("]", "").replace("\"", "");}
                     catch (Exception e) {kit_fullname="";};
    
                     try{kit_rn =Long.parseLong(neo4j_qry.qry_str("match (l:Lookup{kit:'" + kit + "'}) return case when l.RN is null then 0 else l.RN end as kit_rn"));}

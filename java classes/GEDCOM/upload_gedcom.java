@@ -57,7 +57,7 @@ public class upload_gedcom {
         try{
             FileWriter fwp = new FileWriter(fnp);
             FileWriter fwu = new FileWriter(fnu);
-            fwp.write("rn|fullname|first_name|last_name|sex|bd|bp|dd|dp|uid|nmar|\n");
+            fwp.write("rn|fullname|first_name|surname|sex|bd|bp|dd|dp|uid|nmar|\n");
             fwu.write("uid|u1|u2|ud|up|\n");
             for (String i : s){
                 if (i.substring(0, 1).equals("I")) {
