@@ -33,7 +33,7 @@ Several steps are required to implement the genealogy user defined function (Gen
            <li>Open the file neo4j.conf in a text editor (Notepad or Notepad++; not Word or other tools that add extraneous text). Save this original file in case something goes awry and you need to revert to it.
            <li>At the bottom of the config file paste these lines:<blockquote>
              apoc.export.file.enabled=true<br>
-dbms.security.procedures.unrestricted=jwt.security.*,apoc.*,gds.*,gen.*<br>
+             dbms.security.procedures.unrestricted=jwt.security.*,apoc.*,gds.*,<br>gen.*</b><br>
 dbms.security.procedures.allowlist=jwt.security.*,gds.*,apoc.*, gen.*<br>
 dbms.checkpoint.interval.time=30s<br>
 dbms.checkpoint.interval.tx=1<br>
