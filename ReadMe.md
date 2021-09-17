@@ -47,7 +47,7 @@ dbms.transaction.timeout=30m
            dbms.memory.heap.max_size=4G
            </blockquote>
          </ol>
-         <li>Finally, you must set up a Excel file with configuration information about your specific project so that the Gen_UDF knows where to find key facts unique to your environment. 
+         <li>Finally, you must set up a text file with configuration information about your specific project so that the Gen_UDF knows where to find key facts unique to your environment. 
            <ol>
              <li>Download this <a href="https://blobswai.blob.core.windows.net/gen-udf/neo4j-template.wai" target="new">file</a> and store it in this specific required directory: "c://Genealogy/Neo4j/"  It is very important that you use the capitalization as specified because java is case sensitive.
              <li>Open the file in a text editor and edit the information to the right of the colons with your specific information:
