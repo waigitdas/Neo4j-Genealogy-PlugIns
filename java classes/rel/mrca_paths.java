@@ -14,7 +14,7 @@ import gen.neo4jlib.neo4j_qry;
 
 public class mrca_paths {
        @UserFunction
-        @Description("Load a GEDCOM into Neo4j creating Person, Union and Place nodes and the edges connecting them.")
+        @Description("Still in development. Uses other User Defined Function to speed triangulation report computations. ")
                     
     
     public List<Object> mrca_with_path_facts (

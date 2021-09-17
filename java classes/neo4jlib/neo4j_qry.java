@@ -45,6 +45,8 @@ public class neo4j_qry {
             {
                 session.writeTransaction( tx -> {
                    Result result = tx.run( cq );
+//                   session.close();
+//                   driver.close();
                 return 1;
                 } );
             }
@@ -70,7 +72,9 @@ public class neo4j_qry {
             {
                 names.add( result.next().get( 0 ).asString() );
             }
-          return names;
+//            java_session.close();
+//            driver.close();
+            return names;
         } );
     }
    }
@@ -92,7 +96,8 @@ public class neo4j_qry {
             {
                 names.add(result.next().get( 0 ).asLong() );
             }
-            driver.close();
+//            java_session.close();
+//            driver.close();
             return names;
         } );
     }
@@ -115,7 +120,8 @@ public class neo4j_qry {
             {
                 names.add(result.next().get( 0 ).asObject() );
             }
-            driver.close();
+//            java_session.close();
+//            driver.close();
             return names;
         } );
     }
@@ -145,7 +151,8 @@ public class neo4j_qry {
                         
                         }
                         
-                       driver.close();
+//                       java_session.close();
+//                       driver.close();
                        //output = output.replace("[", "").replace("]", "").replace("\"", "");
                        output = output.substring(0, output.length()-2);
                        return output;
@@ -157,7 +164,42 @@ public class neo4j_qry {
         }
    }
    
-
+//    //****************************************************
+//      public static List<Long> qry_long(String cq) {
+//        var myToken = AuthInfo.getToken();
+//        Driver driver;
+//        driver = GraphDatabase.driver( "bolt://localhost:7687", myToken );
+//        driver.session(SessionConfig.builder().withDefaultAccessMode(AccessMode.READ).build());
+//        try ( Session java_session = driver.session(SessionConfig.forDatabase(gen.neo4jlib.neo4j_info.user_database)) )
+//        { 
+//            String javasession = java_session.writeTransaction(new TransactionWork<String>()
+//            {
+//                @Override
+//                public String execute( Transaction tx )
+//                {
+//                    Result rslt = tx.run( cq,
+//                            parameters( "message", cq ) );
+//                    
+//                        List<Long> output;
+//                        while (rslt.hasNext())
+//                        { 
+//                            output.add(rslt.next().get(arg0, arg1)) ;
+//                        
+//                        }
+//                        
+////                       java_session.close();
+////                       driver.close();
+//                       //output = output.replace("[", "").replace("]", "").replace("\"", "");
+//                       output = output.substring(0, output.length()-2);
+//                       return output;
+//                            
+//                    
+//                }
+//            } );
+//      return javasession;
+//        }
+//   }
+   
     //****************************************************
  
  public static String qry_to_pipe_delimited(String cq,String csv_File) {

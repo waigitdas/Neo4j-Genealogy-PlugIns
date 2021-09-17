@@ -15,7 +15,7 @@ import org.neo4j.procedure.UserFunction;
  */
 public class tg_report_set {
         @UserFunction
-        @Description("Loads FTDNA DNA result CSV files from a named directory and specifically structured subdirectories. File names must NOT be altered after downloaded.")
+        @Description("Persons in a triangulation group with segment data, ahnentafel path from a propositus to the common anestor and phasing of common ancestors to a specific ancestor defining the triangulation group.")
 
 public String tg_report(
         @Name("tgif") 

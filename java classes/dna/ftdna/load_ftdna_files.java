@@ -43,7 +43,7 @@ public String load_ftdna_csv_files(
     }
     
     public static void load_ftdna_files(String root_dir,String curated_file) {
-        neo4j_info.neo4j_var(); //initialize user information
+       neo4j_info.neo4j_var(); //initialize user information
         
         //set up neo4j indices
         neo4j_qry.CreateIndex("Kit","Kit");
@@ -81,7 +81,7 @@ public String load_ftdna_csv_files(
         String YMatch = "";
         
         String kit_fullname="";
-        
+//        
         // iterating over subdirectories holding DNA data files
         for (int i = 0; i < directories.length; i++) {
             String x = directories[i];
@@ -114,7 +114,9 @@ public String load_ftdna_csv_files(
                   System.out.println(kit_fullname);
                   System.out.println(kit_rn);
   
-                  try{kit_rn =Long.parseLong(neo4j_qry.qry_str("match (l:Lookup{kit:'" + kit + "'}) return case when l.RN is null then 0 else l.RN end as kit_rn"));}
+                  try{
+                      kit_rn =Long.parseLong(neo4j_qry.qry_str("match (l:Lookup{kit:'" + kit + "'}) return case when l.RN is null then 0 else l.RN end as kit_rn"));
+                  }
                     catch (Exception e) {kit_rn=Long.valueOf(0L);};
                   
                    //placeholder match needed to create edges before full match set up
@@ -134,18 +136,18 @@ public String load_ftdna_csv_files(
                 
                  }
                 else{ct=ct+1;}
-          
+        
                 try{
        
                 //******************************************************************************
                 //************  Family Finder: at-DNA  *****************************************
                 //******************************************************************************
-          
                 if (pathitem.contains("Family_Finder")){
+                         
                     hasDNAMatch=true;
                     FileDNA_Match = pathitem;
                     file_lib.get_file_transform_put_in_import_dir(root_dir + directories[i] + "\\" + pathitem,  pathitem);
-                    
+                    System.out.println("Here!");
                     //Load kit at-DNA matches
                     String cq = "LOAD CSV WITH HEADERS FROM 'file:///" + FileDNA_Match  + "' AS line FIELDTERMINATOR '|' merge (f:DNA_Match{fullname:toString(case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end)}) set f.first_name=toString(case when line.First_Name is null then '' else line.First_Name end), f.middle_name=toString(case when line.Middle_Name is null then '' else line.Middle_Name end), f.surname=toString(case when line.Last_Name is null then '' else line.Last_Name end)";
                     neo4j_qry.qry_write(cq);
@@ -160,14 +162,16 @@ public String load_ftdna_csv_files(
                 //***********  Chromosome Browser  *********************************************
                 //******************************************************************************
                 if (pathitem.contains("Chromosome_Browser")){
-                    hasSegs = true;
+           //System.out.println(pathitem + "**");
+                   hasSegs = true;
                     FileSegs = pathitem;
                     String c = file_lib.readFileByLine(root_dir + directories[i] + "\\" + pathitem);
                     c = c.replace("|"," ").replace(",","|").replace("\"", "`");
                     String[] cc = c.split("\n");
                     String header = cc[0].replace(" ","_");
                     c = c.replace(cc[0], header);
-                    
+          //System.out.println(neo4j_info.Import_Dir + pathitem);
+                     
                     String[] ccc = c.split("\n");
                     File fn = new File(neo4j_info.Import_Dir + pathitem);
                     FileWriter fw = new FileWriter(fn);
@@ -281,11 +285,12 @@ if (hasSegs==true){
          //match_by_segment
          String mbsf =  "match_by_segment.csv";
          cq=   "call apoc.export.csv.query('MATCH (k: DNA_Match)-[r:match_segment]-(s:Segment) with r.p as Match1,r.m as Match2,collect(distinct (s.end_pos-s.strt_pos)/1000000.0) as m,count(*) as segment_ct with Match1,Match2,m,segment_ct,apoc.coll.min(m) as shortest_segment,apoc.coll.max(m) as longest_segment with Match1,Match2,apoc.coll.sum(m) as mbp,segment_ct,shortest_segment,longest_segment RETURN Match1,Match2,segment_ct,mbp,shortest_segment,longest_segment order by mbp desc','" + mbsf + "', {delim:'|', quotes: false, format: 'plain'}) ";
-        neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
-        
-        cq = "Using periodic commit 5000 LOAD CSV With HEADERS FROM 'file:///" + mbsf + "' AS line FIELDTERMINATOR '|' match (m1:DNA_Match{fullname:toString(line.Match1)}) match (m2:DNA_Match{fullname:toString(line.Match2)})  merge (m1)-[rz:match_by_segment{mbp:toFloat(line.mbp),seg_ct:toInteger(line.segment_ct),shortest_seg:toFloat(line.shortest_segment),longest_seg:toFloat(line.longest_segment)}]-(m2) ";
         neo4j_qry.qry_write(cq);
         
+       lc = "LOAD CSV WITH HEADERS FROM 'file:///" + mbsf + "' as line FIELDTERMINATOR '|' return line ";
+        cq = " match (m1:DNA_Match{fullname:toString(line.Match1)}) match (m2:DNA_Match{fullname:toString(line.Match2)})  merge (m1)-[rz:match_by_segment{mbp:toFloat(line.mbp),seg_ct:toInteger(line.segment_ct),shortest_seg:toFloat(line.shortest_segment),longest_seg:toFloat(line.longest_segment)}]-(m2) ";
+           neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
+       
         
         
         }

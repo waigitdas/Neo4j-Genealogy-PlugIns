@@ -1,7 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Copyright 2021 
+ * David A Stumpf, MD, PhD
+ * Who Am I -- Graphs for Genealogists
+ * Woodstock, IL 60098 USA
  */
 package gen.gedcom;
 
@@ -10,13 +11,9 @@ import org.neo4j.procedure.Name;
 import org.neo4j.procedure.UserFunction;
 
   
-/**
- *
- * @author david
- */
 public class get_family_tree_data {
     @UserFunction
-    @Description("Load a GEDCOM into Neo4j creating Person, Union and Place nodes and the edges connecting them.")
+    @Description("Create a list of Persons their RN and kit number for curation.")
 
 
     public String person_from_rn(
@@ -32,10 +29,6 @@ public class get_family_tree_data {
             }
     
 
-
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
         // TODO code application logic here
     }
