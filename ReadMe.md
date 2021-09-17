@@ -34,7 +34,7 @@ Several steps are required to implement the genealogy user defined function (Gen
            <li>At the bottom of the config file paste these lines:<blockquote>
              apoc.export.file.enabled=true<br>
              dbms.security.procedures.unrestricted=jwt.security.*,apoc.*,gds.*,<b>gen.*</b><br>
-dbms.security.procedures.allowlist=jwt.security.*,gds.*,apoc.*, gen.*<br>
+             dbms.security.procedures.allowlist=jwt.security.*,gds.*,apoc.*, <b>gen.*</b><br>
 dbms.checkpoint.interval.time=30s<br>
 dbms.checkpoint.interval.tx=1<br>
 dbms.tx_log.rotation.retention_policy=false<br>
