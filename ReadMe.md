@@ -33,8 +33,8 @@ Several steps are required to implement the genealogy user defined function (Gen
            <li>Open the file neo4j.conf in a text editor (Notepad or Notepad++; not Word or other tools that add extraneous text). Save this original file in case something goes awry and you need to revert to it.
            <li>At the bottom of the config file paste these lines:<blockquote>
              apoc.export.file.enabled=true<br>
-dbms.security.procedures.unrestricted=jwt.security.*,apoc.*,gds.*,gen.*<br>
-dbms.security.procedures.allowlist=jwt.security.*,gds.*,apoc.*, gen.*<br>
+             dbms.security.procedures.unrestricted=jwt.security.*,apoc.*,gds.*,<b>gen.*</b><br>
+             dbms.security.procedures.allowlist=jwt.security.*,gds.*,apoc.*, <b>gen.*</b><br>
 dbms.checkpoint.interval.time=30s<br>
 dbms.checkpoint.interval.tx=1<br>
 dbms.tx_log.rotation.retention_policy=false<br>
@@ -47,7 +47,7 @@ dbms.transaction.timeout=30m
            dbms.memory.heap.max_size=4G
            </blockquote>
          </ol>
-         <li>Finally, you must set up a Excel file with configuration information about your specific project so that the Gen_UDF knows where to find key facts unique to your environment. 
+         <li>Finally, you must set up a text file with configuration information about your specific project so that the Gen_UDF knows where to find key facts unique to your environment. 
            <ol>
              <li>Download this <a href="https://blobswai.blob.core.windows.net/gen-udf/neo4j-template.wai" target="new">file</a> and store it in this specific required directory: "c://Genealogy/Neo4j/"  It is very important that you use the capitalization as specified because java is case sensitive.
              <li>Open the file in a text editor and edit the information to the right of the colons with your specific information:
