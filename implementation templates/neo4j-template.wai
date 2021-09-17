@@ -2,4 +2,4 @@
 user_database: name you choose
 neo4j_user name: neo4j
 neo4j_password: your_password
-neo4j import_directory: your import directory. Use / separator and NOT \
+neo4j_import_directory: your import directory. Use / separator and NOT \
