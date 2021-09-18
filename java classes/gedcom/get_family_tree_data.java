@@ -34,7 +34,7 @@ public class get_family_tree_data {
     }
     
     public static String getPersonFromRN(Long rn) {
-        String s = gen.neo4jlib.neo4j_qry.qry_str("match (p:Person{RN:" + rn + "}) return p.fullname + ' [' + p.RN + '] (' + right(p.BDGed,4) +'-' + right(p.DDGed,4) + ')'");
+        String s = gen.neo4jlib.neo4j_qry.qry_str("match (p:Person{RN:" + rn + "}) return p.fullname + ' \u298B' + p.RN + '\u298C (' + right(p.BDGed,4) +'-' + right(p.DDGed,4) + ')'");
         return s.replace("[", "").replace("]", "").replace("\"", "");
         //return "xxx";
 }

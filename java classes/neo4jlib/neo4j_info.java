@@ -19,7 +19,7 @@ public class neo4j_info {
     public static String neo4j_password;
     public static String tg_logic ;
     public static String user_database ;
-    //public static Driver driver_instance;
+   //public static Driver driver_instance;
     
 public static void neo4j_var() {
             
@@ -49,6 +49,7 @@ public static void neo4j_var() {
 // System.out.println(Import_Dir);
 // System.out.println(user_database);
   } 
+
 
   
 public static void main(String args[]){

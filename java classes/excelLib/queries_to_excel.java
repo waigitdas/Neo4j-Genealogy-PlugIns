@@ -41,12 +41,10 @@ public class queries_to_excel {
     public static WritableCellFormat times;
     public static String excelFile;
 
-     /**
-     * @param args the command line arguments
-     */
+    //main is for testing only. Must comment out database calls and use a properly formated file in the Import Neo4j folder
     public static void main(String args[]) {
         String cq = "MATCH p=(m:DNA_Match)-[r:match_tg]->(t:tg) where m.RN is not null with t,m,  trim(m.fullname)  as mm with t,m,mm order by mm with t,collect(mm + ';') as matches,collect(m.RN) as rns \n with t,matches   RETURN t.tgid as tg,t.chr as chr, t.strt_pos as strt_pos,t.end_pos as end_pos,t.cm as cm,size(matches) as ct,matches order by chr,strt_pos,end_pos";
-        String e =qry_to_excel(cq,"tg_report","Item 1",1, "3:66", "2:###.#;3:###,###,###", "", false);
+        String e =qry_to_excel(cq,"tg_report","Item 1",1, "3:66;4:15", "2:###.#;3:###,###,###", "", false);
         qry_to_excel(cq,"tg_report","Item 25",2,"","0:##,###",e, true);
     }
     
@@ -54,9 +52,8 @@ public class queries_to_excel {
     
 public static String qry_to_excel(String cq,String FileNm,String SheetName, int SheetNumber, String ColWidths, String colNumberFormat, String ExcelFile, Boolean OpenFile ) {
 
-      //System.out.println(SheetNumber);
-    gen.neo4jlib.neo4j_info.neo4j_var();
-    String csvFile = gen.neo4jlib.neo4j_info.Import_Dir + FileNm + ".csv";
+    gen.neo4jlib.neo4j_info.neo4j_var();  // initialize user variable
+    String csvFile = gen.neo4jlib.neo4j_info.Import_Dir + FileNm + ".csv";  // intermediate file to be saved
     String excelFile = "";
     String excelFileNm = "" ;
     File file;
@@ -66,8 +63,8 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
      gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited(cq,FileNm + ".csv");  //uses apoc and save defaults to import dir
      //get and parse lines of csv
      String c = gen.neo4jlib.file_lib.readFileByLine(csvFile);
-//System.out.println(c);
-    //set up excel
+
+    //set up excel. Create new or open prior if there are to be multiple worksheets
      try{
     if (ExcelFile=="") {
     excelFile = gen.neo4jlib.neo4j_info.Import_Dir + FileNm + ".xls";;
@@ -88,85 +85,58 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
      }
    
      WritableSheet excelSheet = w.createSheet(SheetName, SheetNumber);
-    //WritableSheet excelSheet = w.getSheet(0);
     createLabel(excelSheet);
     excelSheet.getSettings().setVerticalFreeze(1);
 
-         //**************************************** 
-
-//        if (colNumberFormat !="") {
-//        String[] cnf = colNumberFormat.split(Pattern.quote(";"));
-//        for (int i=0; i<cnf.length; i++){
-//            //System.out.println(colNumberFormat);
-//            String[] cnfi = cnf[i].split(Pattern.quote(":"));
-//           
-////            ColumnInfoRecord cir = getColumnInfo(cnfi[0]);
-////            CellView cv = new CellView();
-//            
-////            NumberFormat nf = new NumberFormat(cnfi[1]); 
-////            WritableCellFormat cellFormat = new WritableCellFormat(nf);   
-////            CellView cellView = new CellView();
-////            //cellView.setFormat(cellFormat);
-////            
-////            //numberformat cannot be converted to cellformat
-////            excelSheet.setColumnView(Integer.valueOf(cnfi[0]), cellView);
-//// 
-////            Cell[] nc = excelSheet.getColumn(Integer.parseInt(cnfi[0]));
-////            nc.setCellFormat(cellFormat);
-////            for (int k=0; k< nc.length; k++) {
-////                Number numberCell = new Number(0, 0, 25, cellFormat);
-////                  nc[k].setCellFormat(cellFormat);
-////            }
-////           //WritableCellFormat cellFormat = new WritableCellFormat();        
-////            CellView cellView = new CellView();
-////            cellView.setFormat(cellFormat);
-////            excelSheet.setColumnView(Integer.valueOf(cnfi[0]), cellView);
-//              //System.out.println(cnfi[1]);
-//
-//
-//        }
-            //excelSheet.getSettings().setVerticalFreeze(1);
-
-//}
-
-    //**************************************** 
+     //**************************************** 
 
  
-//iterate through lines to create excel worksheets within a workbook
+//iterate through csv lines to create excel worksheets within the active workbook
     String[] rws = c.split("\n");
     int rows = rws.length;
     int colct = rws[0].split(Pattern.quote("|")).length;
-    //String[] cnf = null;
-    String[][] colformat = new String[colct][2];  //col - format
+
+    //************************************************************************
+    //instantiate the formating from the function call variables
+    //initialize column numeric formats
+       String[][] colformat = new String[colct][2];  //col - numeric format
+    String[][] colwidth = new String[colct][2];  //col - width
     
-  
-    if (colNumberFormat.strip() != "") {
-        //initialize column numeric formats
+    //column number formats
        for (int i=0;i<colformat.length ;i++){
            colformat[i][0]=String.valueOf(i);
            colformat[i][1]="";
        }
-        
+  
+       if (colNumberFormat.strip() != "") {
+       
         String[] cwf = colNumberFormat.split(Pattern.quote(";"));
         for (int i=0; i<cwf.length; i++) {
             String[] cc = cwf[i].split(Pattern.quote(":"));
-            //System.out.println(cc[0] + " : " + cc[1] + " ---- " + Integer.parseInt(cc[0]) );
             colformat[Integer.parseInt(cc[0])][0] = cc[0];
             colformat[Integer.parseInt(cc[0])][1] = cc[1];
             
        }
     }
 
+        //initialize column numeric formats
+       for (int i=0;i<colwidth.length ;i++){
+           colwidth[i][0]=String.valueOf(i);
+           colwidth[i][1]="";
+       }
+ 
+       if (ColWidths.strip() != "") {
+       
+        String[] cww = ColWidths.split(Pattern.quote(";"));
+        for (int i=0; i<cww.length; i++) {
+            String[] cc = cww[i].split(Pattern.quote(":"));
+            colwidth[Integer.parseInt(cc[0])][0] = cc[0];
+            colwidth[Integer.parseInt(cc[0])][1] = cc[1];
+       }
+    }
+    //************************************************************************
 
-//        //String[] cnf = colNumberFormat.split(Pattern.quote(";"));
-//       //}
-//        for (int col=0; col < colct; col++) {
-//            for (int rw=0 ; rw < rws.length; rw++ ) {
-//            
-//        }
-//      
-    
-    //System.out.println("Here!!");
+    //iterate rows and each column in the row and create either text or number entry. Number datatype derived from function call variable 
     for (int rw=0 ; rw < rws.length; rw++ ) {
         String cols[] = rws[rw].split(Pattern.quote("|"));
         for (int col=0; col < cols.length; col++) {
@@ -176,32 +146,31 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
             }
             else {
                 addLabel(excelSheet, col, rw , fixCellStr(cols[col]));}
+
         }  // next col
     }  // next rw
 
+    
+      //column widths as specified, otherwise auto
+            for (int col=0; col < colct; col++) {
+                if (colwidth[col][1] != "" ) {
+                    WritableCellFormat cellFormat = new WritableCellFormat();        
+                    CellView cellView = new CellView();
+                    cellView.setSize(256 * Integer.parseInt(colwidth[col][1]));
+                    excelSheet.setColumnView(Integer.parseInt(colwidth[col][0]), cellView);
+                }
+                else {
+                 CellView cell=excelSheet.getColumnView(col);
+                cell.setAutosize(true);
+                excelSheet.setColumnView(col, cell);}
+            }
+            
+    //label excel tab, include number of rows
     int rr = rows-1;
     excelSheet.setName(excelSheet.getName() + "-" + rr);
  
-        //**************************************** 
-    CellView cv = new CellView();
-    cv.setAutosize(true);
-    for (int i=0; i < colct; i++){
-        excelSheet.setColumnView(i, cv);
-    }
-    //**************************************** 
-    if (ColWidths !="") {
-         String[] cwf = ColWidths.split(Pattern.quote(";"));
-        for (int i=0; i<cwf.length; i++){
-            String[] cwfi = cwf[i].split(Pattern.quote(":"));
-            WritableCellFormat cellFormat = new WritableCellFormat();        
-            CellView cellView = new CellView();
-            cellView.setSize(256 * Integer.valueOf(cwfi[1]));
-            excelSheet.setColumnView(Integer.valueOf(cwfi[0]), cellView);
-        }
-    }    
-    //**************************************** 
 
-    
+    //wrap up and open file
     w.write();
     w.close();
     Desktop.getDesktop().open(new File(excelFileNm));
@@ -215,27 +184,7 @@ public static void createLabel(WritableSheet sheet)
             throws WriteException {
         WritableFont times10pt = new WritableFont(WritableFont.createFont("Calibri"), 10);
          times = new WritableCellFormat(times10pt);
-        //times.setWrap(true);
-
-        // create create a bold font with unterlines
-        WritableFont times10ptBoldUnderline = new WritableFont(
-                WritableFont.TIMES, 10, WritableFont.BOLD, false,
-                UnderlineStyle.SINGLE);
-//        timesBoldUnderline = new WritableCellFormat(times10ptBoldUnderline);
-//        // Lets automatically wrap the cells
-//        timesBoldUnderline.setWrap(true);
-
-//        CellView cv = new CellView();
-//        cv.setFormat(times);
-//        cv.setFormat(timesBoldUnderline);
-//        cv.setAutosize(true);
-//
-//        // Write a few headers
-//        addCaption(sheet, 0, 0, "Header 1");
-//        addCaption(sheet, 1, 0, "This is another header");
-
-
-    }
+   }
 
    public static void addCaption(WritableSheet sheet, int column, int row, String s)
             throws RowsExceededException, WriteException {
@@ -255,11 +204,7 @@ public static void createLabel(WritableSheet sheet)
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
-//        Number number;
-//        number = new Number(column, row, nbr, times);
-//        sheet.addCell(number);
-    }
+       }
 
     public static void addLabel(WritableSheet sheet, int column, int row, String s)
             throws WriteException, RowsExceededException {
