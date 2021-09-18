@@ -17,7 +17,7 @@ import gen.neo4jlib.neo4j_qry;
       
     public class relationship {          
         @UserFunction
-        @Description("Input 2 RNs and get list of MRCAs")
+        @Description("Input length of path of two descendants to the common ancestor and the number of common ancestors. Returns the relationship is MRCA count <3. Used in other queries to simplify query and speed processing")
         
     public String relationship_from_path(
         @Name("path1") 

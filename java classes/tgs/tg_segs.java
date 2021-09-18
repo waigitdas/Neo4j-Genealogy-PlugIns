@@ -31,7 +31,7 @@ import gen.neo4jlib.neo4j_qry;
  */
 public class tg_segs {          
     @UserFunction
-    @Description("Segments within a triangultion group; returns Indx which is concatenated chr:strt_pos:end_pos.")
+    @Description("Segments within a triangultion group; returns Indx which is concatenated chr:strt_pos:end_pos. Used within other query to speed processing.")
         
     public List tg_segments(
         @Name("tg") 

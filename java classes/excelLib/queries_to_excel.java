@@ -24,6 +24,7 @@ package gen.excelLib;
     import jxl.Cell;
     import jxl.format.*;
     import jxl.Range;
+import jxl.read.biff.ColumnInfoRecord;
     import jxl.write.Formula;
     import jxl.write.Label;
     import jxl.write.Number;
@@ -93,53 +94,91 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
 
          //**************************************** 
 
-        if (colNumberFormat !="") {
-        String[] cnf = colNumberFormat.split(Pattern.quote(";"));
-        for (int i=0; i<cnf.length; i++){
-            //System.out.println(colNumberFormat);
-            String[] cnfi = cnf[i].split(Pattern.quote(":"));
-            NumberFormat nf = new NumberFormat(cnfi[1]); 
-            WritableCellFormat cellFormat = new WritableCellFormat(nf);   
-            CellView cellView = new CellView();
-            
-            //numberformat cannot be converted to cellformat
-            excelSheet.setColumnView(Integer.valueOf(cnfi[0]), cellView);
- 
-//            Cell[] nc = excelSheet.getColumn(Integer.parseInt(cnfi[0]));
-//            nc.setCellFormat(cellFormat);
-//            for (int k=0; k< nc.length; k++) {
-//                Number numberCell = new Number(0, 0, 25, cellFormat);
-//                  nc[k].setCellFormat(cellFormat);
-//            }
-//           //WritableCellFormat cellFormat = new WritableCellFormat();        
-//            CellView cellView = new CellView();
-//            cellView.setFormat(cellFormat);
-//            excelSheet.setColumnView(Integer.valueOf(cnfi[0]), cellView);
-              //System.out.println(cnfi[1]);
+//        if (colNumberFormat !="") {
+//        String[] cnf = colNumberFormat.split(Pattern.quote(";"));
+//        for (int i=0; i<cnf.length; i++){
+//            //System.out.println(colNumberFormat);
+//            String[] cnfi = cnf[i].split(Pattern.quote(":"));
+//           
+////            ColumnInfoRecord cir = getColumnInfo(cnfi[0]);
+////            CellView cv = new CellView();
+//            
+////            NumberFormat nf = new NumberFormat(cnfi[1]); 
+////            WritableCellFormat cellFormat = new WritableCellFormat(nf);   
+////            CellView cellView = new CellView();
+////            //cellView.setFormat(cellFormat);
+////            
+////            //numberformat cannot be converted to cellformat
+////            excelSheet.setColumnView(Integer.valueOf(cnfi[0]), cellView);
+//// 
+////            Cell[] nc = excelSheet.getColumn(Integer.parseInt(cnfi[0]));
+////            nc.setCellFormat(cellFormat);
+////            for (int k=0; k< nc.length; k++) {
+////                Number numberCell = new Number(0, 0, 25, cellFormat);
+////                  nc[k].setCellFormat(cellFormat);
+////            }
+////           //WritableCellFormat cellFormat = new WritableCellFormat();        
+////            CellView cellView = new CellView();
+////            cellView.setFormat(cellFormat);
+////            excelSheet.setColumnView(Integer.valueOf(cnfi[0]), cellView);
+//              //System.out.println(cnfi[1]);
+//
+//
+//        }
+            //excelSheet.getSettings().setVerticalFreeze(1);
 
-
-        }
-            excelSheet.getSettings().setVerticalFreeze(1);
-
-}
+//}
 
     //**************************************** 
 
-
+ 
 //iterate through lines to create excel worksheets within a workbook
     String[] rws = c.split("\n");
+    int rows = rws.length;
+    int colct = rws[0].split(Pattern.quote("|")).length;
+    //String[] cnf = null;
+    String[][] colformat = new String[colct][2];  //col - format
+    
+  
+    if (colNumberFormat.strip() != "") {
+        //initialize column numeric formats
+       for (int i=0;i<colformat.length ;i++){
+           colformat[i][0]=String.valueOf(i);
+           colformat[i][1]="";
+       }
+        
+        String[] cwf = colNumberFormat.split(Pattern.quote(";"));
+        for (int i=0; i<cwf.length; i++) {
+            String[] cc = cwf[i].split(Pattern.quote(":"));
+            //System.out.println(cc[0] + " : " + cc[1] + " ---- " + Integer.parseInt(cc[0]) );
+            colformat[Integer.parseInt(cc[0])][0] = cc[0];
+            colformat[Integer.parseInt(cc[0])][1] = cc[1];
+            
+       }
+    }
+
+
+//        //String[] cnf = colNumberFormat.split(Pattern.quote(";"));
+//       //}
+//        for (int col=0; col < colct; col++) {
+//            for (int rw=0 ; rw < rws.length; rw++ ) {
+//            
+//        }
+//      
+    
+    //System.out.println("Here!!");
     for (int rw=0 ; rw < rws.length; rw++ ) {
         String cols[] = rws[rw].split(Pattern.quote("|"));
-        //System.out.println(cols[1] + "\t" + rw);
         for (int col=0; col < cols.length; col++) {
-            addLabel(excelSheet, col, rw , fixCellStr(cols[col]));
-        }  // next j
-    }  // next i
+            if (colformat[col][1] != "") {
+                if (rw==0) {addLabel(excelSheet, col, rw , fixCellStr(cols[col]));}
+                else {addNumber(excelSheet, col, rw , Double.parseDouble(fixCellStr(cols[col])),colformat[col][1]);}
+            }
+            else {
+                addLabel(excelSheet, col, rw , fixCellStr(cols[col]));}
+        }  // next col
+    }  // next rw
 
-    int rows = rws.length;
-    int colct = excelSheet.getColumns();
-    //System.out.println(rows);   
-    //System.out.println(colct);   
     int rr = rows-1;
     excelSheet.setName(excelSheet.getName() + "-" + rr);
  
@@ -148,7 +187,6 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
     cv.setAutosize(true);
     for (int i=0; i < colct; i++){
         excelSheet.setColumnView(i, cv);
-        
     }
     //**************************************** 
     if (ColWidths !="") {
@@ -167,7 +205,6 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
     w.write();
     w.close();
     Desktop.getDesktop().open(new File(excelFileNm));
-
     }
     catch (Exception e) {}
      
@@ -208,10 +245,20 @@ public static void createLabel(WritableSheet sheet)
     }
 
     public static void addNumber(WritableSheet sheet, int column, int row,
-        Integer integer) throws WriteException, RowsExceededException {
-        Number number;
-        number = new Number(column, row, integer, times);
-        sheet.addCell(number);
+        double nbr,String ColFormat) throws WriteException, RowsExceededException {
+        try{
+        NumberFormat cf = new NumberFormat(ColFormat); 
+        WritableCellFormat numberFormat = new WritableCellFormat(cf);
+        Number numberCell = new Number(column, row, nbr,numberFormat); 
+        sheet.addCell(numberCell);
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+//        Number number;
+//        number = new Number(column, row, nbr, times);
+//        sheet.addCell(number);
     }
 
     public static void addLabel(WritableSheet sheet, int column, int row, String s)
@@ -222,6 +269,6 @@ public static void createLabel(WritableSheet sheet)
     }
 
     public static String fixCellStr(String s) {
-        return s.replace("\"","");
+        return s.replace("\"","").replace("[","").replace("]","");
     }
 }

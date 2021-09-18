@@ -17,7 +17,7 @@ import gen.excelLib.write_open_csv;
  */
 public class project_persons {
        @UserFunction
-        @Description("Persons in the genealogy at Neo4j")
+        @Description("Persons in the genealogy at Neo4j. Use in other queries to speed processing")
         
     public String project_persons(
 //        @Name("rn1") 
