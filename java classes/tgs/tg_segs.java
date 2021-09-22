@@ -6,7 +6,7 @@
  */
 package gen.tgs;
     import org.neo4j.driver.AuthToken;
-    import gen.auth.AuthInfo;
+    import gen.conn.AuthInfo;
 import gen.neo4jlib.neo4j_qry;
     import java.util.ArrayList;
     import org.neo4j.driver.Driver;

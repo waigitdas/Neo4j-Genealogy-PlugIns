@@ -5,6 +5,7 @@
  * Woodstock, IL 60098 USA
  */
 package gen.gedcom;
+    import gen.conn.connTest;
     import gen.neo4jlib.neo4j_qry;
     import gen.neo4jlib.file_lib;
     import gen.neo4jlib.neo4j_info;
@@ -15,29 +16,31 @@ package gen.gedcom;
     import org.neo4j.procedure.Name;
     import org.neo4j.procedure.UserFunction;
    
-public class upload_gedcom {
+public  class upload_gedcom {
         @UserFunction
         @Description("Load a GEDCOM into Neo4j creating Person, Union and Place nodes and the edges connecting them.")
                     
     
     public String gedcom_to_neo4j(
-        @Name("file_path") 
-             String file_path,
+//        @Name("file_path") 
+//             String file_path,
         @Name("FAM_Str_Id") 
             String FAM_Str_Id
        )
       {
-        double tm = System.currentTimeMillis();
-        load_gedcom(file_path, FAM_Str_Id);
-        double tmelapsed= System.currentTimeMillis() - tm;
-        return "completed in " + tmelapsed + " msec.";
+        //double tm = System.currentTimeMillis();
+        load_gedcom(FAM_Str_Id);
+        //double tmelapsed= System.currentTimeMillis() - tm;
+        return "Completed";
       }
   
     
-    public static void load_gedcom (String filePath ,String FAM_Str_Id ) 
+    public static void load_gedcom (String FAM_Str_Id ) 
    
     {
-        gen.neo4jlib.neo4j_info.neo4j_var();  //initialize variables
+        //gen.neo4jlib.neo4j_info.neo4j_var();  //initialize variables
+        gen.conn.connTest.cstatus();
+        String filePath =  gen.neo4jlib.neo4j_info.gedcom_file;
         //create indices to speed upload using merge
         neo4j_qry.CreateIndex("Person", "RN");
         neo4j_qry.CreateIndex("Person", "fullname");
@@ -136,6 +139,11 @@ public class upload_gedcom {
            String hwup = "LOAD CSV WITH HEADERS FROM 'file:///union.csv' AS line FIELDTERMINATOR '|' match (p1:Person{RN:toInteger(line.u1)}) match (p2:Person{RN:toInteger(line.u2)}) merge (p1)-[r:spouse]-(p2)";
            neo4j_qry.qry_write(hwup);
 
+           //create edges of Person & Union events to places
+           neo4j_qry.qry_write("match (p:Person) with p Match (l:Place) where l.desc=p.BP create (p)-[r:person_place{type:'bp'}]->(l) ");
+           neo4j_qry.qry_write("match (p:Person) with p Match (l:Place) where l.desc=p.DP create (p)-[r:person_place{type:'dp'}]->(l) ");
+           neo4j_qry.qry_write("match (p:Union) with p Match (l:Place) where l.desc=p.Union_Place create (p)-[r:person_place{type:'up'}]->(l) ");
+           
         }
         catch (IOException e){
              //System.out.println( e);

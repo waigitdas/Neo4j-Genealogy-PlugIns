@@ -69,7 +69,7 @@ try{
        for (int i=0; i < record.size(); i++) {
         if (ct==0) {s = s + record.get(i).replace(" ","_") + "|";}
         else {
-            s = s + record.get(i).replace("\"","`")  + "|";
+            s = s + record.get(i).replace("\"","")  + "|";
         }
     
    }
@@ -95,7 +95,7 @@ public static void parse_chr_containing_csv_save_to_import_folder(String FileNam
         gen.neo4jlib.neo4j_info.neo4j_var();
         try {
             String c = file_lib.readFileByLine(FileName);
-            c = c.replace("|"," ").replace(",","|").replace("\"", "`");
+            c = c.replace("|"," ").replace(",","|").replace("\"", "");
             System.out.println("\n" + neo4j_info.Import_Dir);
             String[] cc = c.split("\n");
             String header = cc[0].replace(" ","_");

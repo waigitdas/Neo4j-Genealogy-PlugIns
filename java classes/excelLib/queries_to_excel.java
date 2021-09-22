@@ -52,7 +52,9 @@ public class queries_to_excel {
     
 public static String qry_to_excel(String cq,String FileNm,String SheetName, int SheetNumber, String ColWidths, String colNumberFormat, String ExcelFile, Boolean OpenFile ) {
 
-    gen.neo4jlib.neo4j_info.neo4j_var();  // initialize user variable
+    //gen.neo4jlib.neo4j_info.neo4j_var();  // initialize user variable
+    gen.conn.connTest.cstatus();
+    
     String csvFile = gen.neo4jlib.neo4j_info.Import_Dir + FileNm + ".csv";  // intermediate file to be saved
     String excelFile = "";
     String excelFileNm = "" ;

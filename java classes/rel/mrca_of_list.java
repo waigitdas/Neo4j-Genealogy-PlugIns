@@ -10,7 +10,8 @@ package gen.rel;
     import org.neo4j.procedure.Name;
     import org.neo4j.procedure.UserFunction;
     import org.neo4j.procedure.Description;
-  
+     import gen.conn.connTest;
+ 
     import java.util.List;        
       
 

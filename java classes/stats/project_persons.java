@@ -37,7 +37,9 @@ public class project_persons {
     
     
         public static String people() {
-        gen.neo4jlib.neo4j_info.neo4j_var();
+        //gen.neo4jlib.neo4j_info.neo4j_var();
+       gen.conn.connTest.cstatus();
+        
         String cq = "match (p:Person) where p.surname>'A' return p.fullname as Name, p.RN as RN, p.BDGed as BD,p.DDGed as DD, p.kit as Kit order by p.surname, p.first_name, p.middle_name";
        
         gen.excelLib.queries_to_excel.qry_to_excel(cq,"people","People at Neo4j", 1, "", "", "", true);
