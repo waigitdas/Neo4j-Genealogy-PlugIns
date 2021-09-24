@@ -24,7 +24,8 @@ public class neo4j_info {
     public static String gedcom_file ;
     public static String Curated_rn_gedcom_file;
     public static String tg_file;
-//public static Driver driver_instance;
+    public static String alt_left_bracket ;
+    public static String alt_right_bracket ;
     
 public static Boolean neo4j_var() {
     Boolean WasFilled =false;
@@ -55,6 +56,8 @@ public static Boolean neo4j_var() {
         ct = ct + 1;
     }
     tg_logic = "s.chr=t.chr and t.strt_pos<=s.strt_pos and t.end_pos>=s.end_pos";
+    alt_left_bracket = "\u298B";
+    alt_right_bracket = "\u298C";
 
     }
     else {

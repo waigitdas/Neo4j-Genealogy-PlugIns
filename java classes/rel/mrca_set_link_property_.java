@@ -30,20 +30,20 @@ public class mrca_set_link_property_ {
     
     public String set_property(Long ancestor_rn) {
         //create indices
-//        gen.neo4jlib.neo4j_qry.CreateIndex("DNA_Match", "match_ancestor");
-//        gen.neo4jlib.neo4j_qry.CreateIndex("Person", "person_ancestor");
-//        gen.neo4jlib.neo4j_qry.CreateIndex("Kit", "kit_ancestor");
+        gen.neo4jlib.neo4j_qry.CreateIndex("DNA_Match", "ancestor_rn");
+        gen.neo4jlib.neo4j_qry.CreateIndex("Person", "ancestor_rn");
+        gen.neo4jlib.neo4j_qry.CreateIndex("Kit", "ancestor_rn");
+
         //re-set existing property
+        gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match) remove m.ancestor_rn ");
+        gen.neo4jlib.neo4j_qry.qry_write("match (m:Person) remove m.ancestor_rn ");
+        gen.neo4jlib.neo4j_qry.qry_write("match (m:Kit) remove m.ancestor_rn ");
         
-//        gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match) remove m.match_ancestor ");
-//        gen.neo4jlib.neo4j_qry.qry_write("match (m:Person) remove m.person_ancestor ");
-//        gen.neo4jlib.neo4j_qry.qry_write("match (m:Kit) remove m.kit_ancestor ");
-//        
         //set property with new common ancestor phasing
-        gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match) where m.RN is not null with m, gen.rel.mrca_str(m.RN," + ancestor_rn + ") as mrca set m.match_ancestor=" + ancestor_rn );
-        gen.neo4jlib.neo4j_qry.qry_write("match (m:Person) where m.kit is not null with m, gen.rel.mrca_str(m.RN," + ancestor_rn + ") as mrca set m.person_ancestor" + ancestor_rn );
-        gen.neo4jlib.neo4j_qry.qry_write("match (m:Kit) where m.RN is not null with m, gen.rel.mrca_str(m.RN," + ancestor_rn + ") as mrca set m.kit_ancestor=" + ancestor_rn);           gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match) where m.RN >0 set m:DNA_Match_RN");
-          gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match) where m.RN is not null with m , gen.rel.mrca_str(m.RN," + ancestor_rn + ") as mrca set m:Match_mrca");
-          return "Completed";
+         gen.neo4jlib.neo4j_qry.qry_write("match (p1:Person)-[r:father|mother*0..15]->(p2:Person{RN:" + ancestor_rn + "}) set  p1.ancestor_rn=case when p2 is not null then " + ancestor_rn + " else 0 end");
+        gen.neo4jlib.neo4j_qry.qry_write("match (p:Person{ancestor_rn:" + ancestor_rn + "})-[r:Gedcom_DNA]-(m:DNA_Match) set m.ancestor_rn=" + ancestor_rn );
+        gen.neo4jlib.neo4j_qry.qry_write("match (p:Person{ancestor_rn:" + ancestor_rn + "})-[r:Gedcom_Kit]-(k:Kit) set k.ancestor_rn=" + ancestor_rn );
+         
+        return "Completed";
     } 
 }

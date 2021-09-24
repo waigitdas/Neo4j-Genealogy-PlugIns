@@ -28,7 +28,7 @@ public class bracketedRN {
         
         
     public static String getBracketedRN(Long rn) {
-        String x = " \u298B" + String.valueOf(rn) + "\u298C ";  //space refix and suffix; unicode for []
+        String x = " " + gen.neo4jlib.neo4j_info.alt_left_bracket + String.valueOf(rn) + gen.neo4jlib.neo4j_info.alt_right_bracket;  //space refix and suffix; unicode for []
         return x;
     }
     public static void main(String args[]) {

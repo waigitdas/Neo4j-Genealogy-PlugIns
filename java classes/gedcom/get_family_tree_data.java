@@ -9,7 +9,7 @@ package gen.gedcom;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
 import org.neo4j.procedure.UserFunction;
-
+import gen.neo4jlib.neo4j_info;
   
 public class get_family_tree_data {
     @UserFunction
@@ -34,7 +34,7 @@ public class get_family_tree_data {
     }
     
     public static String getPersonFromRN(Long rn) {
-        String s = gen.neo4jlib.neo4j_qry.qry_str("match (p:Person{RN:" + rn + "}) return p.fullname + ' \u298B' + p.RN + '\u298C (' + right(p.BDGed,4) +'-' + right(p.DDGed,4) + ')'");
+        String s = gen.neo4jlib.neo4j_qry.qry_str("match (p:Person{RN:" + rn + "}) return p.fullname + ' " + gen.neo4jlib.neo4j_info.alt_left_bracket + "' + p.RN + '" + gen.neo4jlib.neo4j_info.alt_right_bracket + " (' + right(p.BDGed,4) +'-' + right(p.DDGed,4) + ')'");
         return s.replace("[", "").replace("]", "").replace("\"", "");
         //return "xxx";
 }
