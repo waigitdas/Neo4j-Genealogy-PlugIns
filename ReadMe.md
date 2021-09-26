@@ -10,10 +10,10 @@ This introduction has two major audiences: alpha testers and developers. The bac
 
 Below is a detailed set of steps for setting up a graph environment. But before getting to them, consider the specific items (prerequisites) required to take full advantage of the tools:
 <ol>
-  <li>A simple text file (template provided) which contains information about your local enviroment needed to run the tools.
+  <li>A simple text file (<a href="https://github.com/waigitdas/Neo4j-Genealogy-PlugIns/blob/main/implementation%20templates/neo4j-template.wai">template provided</a>) which contains information about your local enviroment needed to run the tools.
   <li>Your GEDCOM file providing your family's historical and conventional genealogy.
   <li>Y- and at-DNA results from Family Tree DNA, preferably from multiple kits.
-  <li>A curated Excel file (<a href="https://github.com/waigitdas/Neo4j-Genealogy-PlugIns/blob/main/implementation%20templates/neo4j-template.wai">template provided</a>) linking GEDCOM person identifiers (from the @I###@ tags) with DNA results (names and kit numbers). This takes some effort but the benefits are notable and actionable.
+  <li>A curated Excel file (<a href="https://github.com/waigitdas/Neo4j-Genealogy-PlugIns/blob/main/implementation%20templates/Family%20ftdna%20curation%20file.xlsx">template provided</a>) linking GEDCOM person identifiers (from the @I###@ tags) with DNA results (names and kit numbers). This takes some effort but the benefits are notable and actionable.
   <!--<li>A family relationship lookup file (provided) used to report relationships (1C, 3C1R, etc.).It needs to be in a specified directory on the PC running the tools  -->
 </ol>
 
