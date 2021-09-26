@@ -13,8 +13,8 @@ Below is a detailed set of steps for setting up a graph environment. But before 
   <li>A simple text file (template provided) which contains information about your local enviroment needed to run the tools.
   <li>Your GEDCOM file providing your family's historical and conventional genealogy.
   <li>Y- and at-DNA results from Family Tree DNA, preferably from multiple kits.
-  <li>A curated Excel file (template provided) linking GEDCOM person identifiers (from the @I###@ tags) with DNA results (names and kit numbers). This takes some effort but the benefits are notable and actionable.
-  <li>A famly relationship lookup file (provided) used to report relationships (1C, 3C1R, etc.).It needs to be in a specified directory on the PC running the tools  
+  <li>A curated Excel file (<a href="https://blobswai.blob.core.windows.net/gen-udf/neo4j-template.wai">template provided</a>) linking GEDCOM person identifiers (from the @I###@ tags) with DNA results (names and kit numbers). This takes some effort but the benefits are notable and actionable.
+  <!--<li>A family relationship lookup file (provided) used to report relationships (1C, 3C1R, etc.).It needs to be in a specified directory on the PC running the tools  -->
 </ol>
 
 Several steps are required to implement the genealogy user defined function (Gen-UDF).<br><br>
