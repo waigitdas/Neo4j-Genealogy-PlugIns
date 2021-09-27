@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>wai.neo4j.gen</groupId>
     <artifactId>wai.neo4j.gen</artifactId>
-    <version>1.6</version>
+    <version>0.2.8</version>
     <packaging>jar</packaging>
     <name>gen</name>
     <properties>
@@ -17,13 +17,18 @@
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <assertj.version>3.18.1</assertj.version>
    </properties>
-
+   <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+   
     <dependencies>
 <!--necessary to start neo4j-->
         <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j</artifactId>
-            <!--<version>4.2.7</version>-->
             <version>4.3.0</version>
             <scope>provided</scope> 
         </dependency>
@@ -34,10 +39,10 @@
             <version>4.3.0</version>
             <scope>provided</scope> 
         </dependency>
-        <dependency>
+       <dependency>
             <groupId>org.neo4j.test</groupId>
             <artifactId>neo4j-harness</artifactId>
-            <version>${neo4j.version}</version>
+            <version>4.3.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -51,6 +56,52 @@
             <artifactId>javatuples</artifactId>
             <version>1.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.8.0</version>
+        </dependency>
+        <dependency>
+           <groupId>org.apache.commons</groupId>
+           <artifactId>commons-lang3</artifactId>
+           <version>3.11</version>
+       </dependency>       
+        <!-- https://mvnrepository.com/artifact/net.sourceforge.jexcelapi/jxl -->
+        <dependency>
+            <groupId>net.sourceforge.jexcelapi</groupId>
+            <artifactId>jxl</artifactId>
+            <version>2.6.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20210307</version>
+        </dependency>
+ 
+        <!--<dependency>
+         <groupId>org.neo4j</groupId>
+         <artifactId>neo4j-kernel</artifactId>
+         <version>4.3.0</version>
+       </dependency>       -->
+        <!-- poi is too large and crashed restart db 
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+-->
+
+     
         <!-- https://mvnrepository.com/artifact/org.neo4j/neo4j-auth-plugin-api 
         <dependency>
             <groupId>org.neo4j</groupId>
@@ -70,6 +121,12 @@
             <groupId>org.neo4j.neo4j_genealogy</groupId>
             <artifactId>org.neo4j.neo4j_genealogy</artifactId>
             <version>0.1</version>
+            <type>jar</type>
+        </dependency>-->
+        <!--<dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>5.1.9.RELEASE</version>
             <type>jar</type>
         </dependency>-->
     </dependencies>
