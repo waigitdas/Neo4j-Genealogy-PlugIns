@@ -18,7 +18,7 @@ import gen.neo4jlib.neo4j_qry;
       
     public class mrca1 {          
         @UserFunction
-        @Description("Input 2 RNs and get list of MRCAs")
+        @Description("Input 2 RNs and get list of MRCA names")
         
     public String mrca_str(
         @Name("rn1") 

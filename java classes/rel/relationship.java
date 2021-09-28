@@ -17,7 +17,7 @@ import gen.neo4jlib.neo4j_qry;
       
     public class relationship {          
         @UserFunction
-        @Description("Input length of path of two descendants to the common ancestor and the number of common ancestors. Returns the relationship is MRCA count <3. Used in other queries to simplify query and speed processing")
+        @Description("Input length of path of two descendants to the common ancestor and the number of common ancestors. Returns the relationship if MRCA count <3. Used in other queries to simplify query and speed processing")
         
     public String relationship_from_path(
         @Name("path1") 
@@ -30,7 +30,7 @@ import gen.neo4jlib.neo4j_qry;
 
          { 
         try{
-        if (mrca_ct >2) {return "n/a"; }
+        if (mrca_ct >2) {return "--"; }
         String cq="";
         if (path1<path2){
         cq = "match (f:fam_rel) where f.nmrca=" + mrca_ct + " and f.path1=" + path1 + " and f.path2=" +path2 + " return f.relationship" ;    
@@ -40,10 +40,10 @@ import gen.neo4jlib.neo4j_qry;
            
         }
         String r =mrca_qry(cq);
-        if (r =="") {r = "n/a";}
+        if (r =="") {r = "--";}
         return r;
         }
-        catch (Exception e) {return "n/a";}
+        catch (Exception e) {return "--";}
      }
    
     public String mrca_qry(String cq) 

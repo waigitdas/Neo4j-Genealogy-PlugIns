@@ -16,7 +16,7 @@ package gen.load;
 
 public class load_all_files {
     @UserFunction
-    @Description("Loads GEDCOM, FTDNA files, triangulation groups using lookup file for locations of files.")
+    @Description("Not working. Loads GEDCOM, FTDNA files, triangulation groups using lookup file for locations of files.")
 
     public String load_everything(
         @Name("Gedcom_Fam_Tag") 

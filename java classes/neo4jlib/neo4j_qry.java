@@ -35,6 +35,29 @@ public class neo4j_qry {
             catch (Exception e) {}
     }   
 
+    public static void CreateCompositeIndex(String nodeNm,String propertyNmList){
+            try{
+                String[] n = propertyNmList.split(",");
+                String s = "";
+                for (int i=0; i < n.length; i++) {
+                    s = s + "n." + n[i];
+                    if (i<n.length-1) {s = s + ",";}
+                }
+                String cq ="CREATE INDEX " + nodeNm + "_" + s.replace(",","_") + " FOR (n:" + nodeNm + ") ON (" + s + ")";
+                qry_write(cq); 
+            }
+            catch (Exception e) {}
+    }   
+
+
+    public static void CreateRelationshipIndex(String relationship_type,String relationship_property){
+            try{
+                String cq ="CREATE INDEX rel_" + relationship_type + "_" + relationship_property + " FOR ()-[r:" + relationship_type + "]-() ON (k." + relationship_property + ")";
+                qry_write(cq);
+            }
+            catch (Exception e) {}
+    }   
+
     
     public static void qry_write (String cq) {
         gen.conn.connTest.cstatus();

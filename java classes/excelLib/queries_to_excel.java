@@ -70,7 +70,6 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
      //System.out.println(c);
      }
      catch (Exception e) {
-         System.out.println(e.getMessage() + "$$$");
      }
     //set up excel. Create new or open prior if there are to be multiple worksheets
      try{

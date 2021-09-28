@@ -16,7 +16,7 @@ import gen.tgs.tg_label;
  */
 public class tg_report_set1 {
         @UserFunction
-        @Description("Persons in a triangulation group with segment data, ahnentafel path from a propositus to the common ancestor. Variables are:\nTriangulation group ID\nPropositus: the person whose ahnentafel path is reported\ncommon ancestor: RN if specified (phasing done), zero (0) if not\nanonymized: true or false. ")
+        @Description("Persons in a triangulation group with segment data, ahnentafel path from a propositus to the common ancestor. Variables are:\r\nTriangulation group ID\r\nPropositus: the person whose ahnentafel path is reported\r\ncommon ancestor: RN if specified (phasing done), zero (0) if not\r\nanonymized: true or false. ")
 
 public String tg_report(
         @Name("tgid") 

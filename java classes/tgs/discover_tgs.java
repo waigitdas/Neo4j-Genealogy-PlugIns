@@ -17,9 +17,9 @@ import java.util.regex.Pattern;
 
 public class discover_tgs {
     @UserFunction
-    @Description("Identifies triangulation group candidates")
+    @Description("In development: Identifies triangulation group candidates")
 
-    public String tg_disc (
+    public String tg_discovery (
         @Name("ancestor_rn") 
             Long ancestor_rn
 //         @Name("ged_file") 

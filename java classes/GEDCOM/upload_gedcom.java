@@ -38,7 +38,7 @@ public  class upload_gedcom {
     public static void load_gedcom (String FAM_Str_Id ) 
    
     {
-        //gen.neo4jlib.neo4j_info.neo4j_var();  //initialize variables
+        gen.neo4jlib.neo4j_info.neo4j_var();  //initialize variables
         gen.conn.connTest.cstatus();
         String filePath =  gen.neo4jlib.neo4j_info.gedcom_file;
         //create indices to speed upload using merge
@@ -48,7 +48,8 @@ public  class upload_gedcom {
         neo4j_qry.CreateIndex("Union", "U1");
         neo4j_qry.CreateIndex("Union", "U2");
         neo4j_qry.CreateIndex("Place", "desc");
- 
+        neo4j_qry.CreateRelationshipIndex("person_place","type");
+
         String c =  file_lib.readFileByLine( filePath );
         String[] s = c.replace("|","^").split("0 @");
         

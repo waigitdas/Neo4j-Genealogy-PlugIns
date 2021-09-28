@@ -35,7 +35,7 @@ public class ancestor_dna_matches {
      
         String cq = "match (n:Person)-[z:Gedcom_DNA]->(m)   with collect(m.RN) + collect(n.RN) as DM optional match path=(p:Person{RN:" + rn + "})<-[:father|mother*0..99]-(q:Person) where q.RN in DM with p,path,collect(last(nodes(path))) as cEnds optional match (q:Person)-[r:Gedcom_DNA]->(s:Person) where q in cEnds with r,p,[m in cEnds|m.fullname + gen.neo4jlib.RNwithBrackets(m.RN)] as E,[n in nodes(path)|n.fullname +  gen.neo4jlib.RNwithBrackets(n.RN) + '(' + left(n.BD,4) + '-' +  left(n.DD,4) + ')  ' ] as N return distinct p.fullname + gen.neo4jlib.RNwithBrackets(p.RN) as MRCA, E as Descendant_DNA_Tester,size(N) as generations, N as Path_to_Descendant_Tester";
        
-        gen.excelLib.queries_to_excel.qry_to_excel(cq,"descendant_matches","Descenants", 1, "", "2:####", "", true);
+        gen.excelLib.queries_to_excel.qry_to_excel(cq,"descendant_matches","Descendants", 1, "2:10;3:75", "2:####;2:####", "", true);
         return "completed";
     }
     
