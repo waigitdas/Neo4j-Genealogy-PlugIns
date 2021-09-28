@@ -220,7 +220,7 @@ public class neo4j_qry {
 public static void APOCPeriodicIterateCSV(String LoadCSV, String ReplaceCypher, int batchsize) {
     //use parallel = false to avoid deadlocks!
     String Q = "\"";
-    String cq = "CALL apoc.periodic.iterate(" + Q + LoadCSV + Q + ", " + Q + ReplaceCypher + Q + ",{batchSize: " + batchsize + ", parallel:true, iterateList:false, retries:25})";
+    String cq = "CALL apoc.periodic.iterate(" + Q + LoadCSV + Q + ", " + Q + ReplaceCypher + Q + ",{batchSize: " + batchsize + ", parallel:false, iterateList:true, retries:25})";
     qry_write(cq);
 }
 }

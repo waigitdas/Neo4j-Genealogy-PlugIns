@@ -58,20 +58,20 @@ public String load_ftdna_csv_files(
         neo4j_qry.CreateIndex("DNA_Match","kit");
         neo4j_qry.CreateIndex("YMatch","fullname");
         neo4j_qry.CreateIndex("Segment","Indx");
-        neo4j_qry.CreateIndex("Segment","cm");
-        neo4j_qry.CreateIndex("Segment","snp");
+        //neo4j_qry.CreateIndex("Segment","cm");
+        //neo4j_qry.CreateIndex("Segment","snp");
         neo4j_qry.CreateIndex("str","name");
         neo4j_qry.CreateIndex("tg","tgid");
         neo4j_qry.CreateIndex("tg","strt_pos");
         neo4j_qry.CreateIndex("tg","end_pos");
         neo4j_qry.CreateIndex("email","fullname");
-        neo4j_qry.CreateRelationshipIndex("match_segment","cm");
-        neo4j_qry.CreateRelationshipIndex("match_segment","snp_ct");
-        neo4j_qry.CreateRelationshipIndex("match_segment","m");
-        neo4j_qry.CreateRelationshipIndex("match_segment","p");
-        neo4j_qry.CreateRelationshipIndex("match_by_segment","cm");
-        neo4j_qry.CreateCompositeIndex("Segment", "chr,strt_pos,end_pos");
-        neo4j_qry.CreateCompositeIndex("Segment", "strt_pos,end_pos");
+//        neo4j_qry.CreateRelationshipIndex("match_segment","cm");
+//        neo4j_qry.CreateRelationshipIndex("match_segment","snp_ct");
+//        neo4j_qry.CreateRelationshipIndex("match_segment","m");
+//        neo4j_qry.CreateRelationshipIndex("match_segment","p");
+//        neo4j_qry.CreateRelationshipIndex("match_by_segment","cm");
+//        neo4j_qry.CreateCompositeIndex("Segment", "chr,strt_pos,end_pos");
+//        neo4j_qry.CreateCompositeIndex("Segment", "strt_pos,end_pos");
         //neo4j_qry.CreateIndex();
         
         //load curation file
