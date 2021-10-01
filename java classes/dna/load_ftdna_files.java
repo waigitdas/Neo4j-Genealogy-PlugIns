@@ -65,13 +65,13 @@ public String load_ftdna_csv_files(
         neo4j_qry.CreateIndex("tg","strt_pos");
         neo4j_qry.CreateIndex("tg","end_pos");
         neo4j_qry.CreateIndex("email","fullname");
-//        neo4j_qry.CreateRelationshipIndex("match_segment","cm");
-//        neo4j_qry.CreateRelationshipIndex("match_segment","snp_ct");
-//        neo4j_qry.CreateRelationshipIndex("match_segment","m");
-//        neo4j_qry.CreateRelationshipIndex("match_segment","p");
-//        neo4j_qry.CreateRelationshipIndex("match_by_segment","cm");
-//        neo4j_qry.CreateCompositeIndex("Segment", "chr,strt_pos,end_pos");
-//        neo4j_qry.CreateCompositeIndex("Segment", "strt_pos,end_pos");
+        neo4j_qry.CreateRelationshipIndex("match_segment","cm");
+        neo4j_qry.CreateRelationshipIndex("match_segment","snp_ct");
+        neo4j_qry.CreateRelationshipIndex("match_segment","m");
+        neo4j_qry.CreateRelationshipIndex("match_segment","p");
+        neo4j_qry.CreateRelationshipIndex("match_by_segment","cm");
+        neo4j_qry.CreateCompositeIndex("Segment", "chr,strt_pos,end_pos");
+        neo4j_qry.CreateCompositeIndex("Segment", "strt_pos,end_pos");
         //neo4j_qry.CreateIndex();
         
         //load curation file
@@ -124,9 +124,7 @@ public String load_ftdna_csv_files(
                     kit_fullname=kit_fullname.replace("[", "").replace("]", "").replace("\"", "");
                     }
                     catch (Exception e) {kit_fullname="";};
-   
-                  System.out.println(kit_fullname);
-                  System.out.println(kit_rn);
+  
   
                   try{
                       kit_rn =Long.parseLong(neo4j_qry.qry_str("match (l:Lookup{kit:'" + kit + "'}) return case when l.RN is null then 0 else l.RN end as kit_rn"));

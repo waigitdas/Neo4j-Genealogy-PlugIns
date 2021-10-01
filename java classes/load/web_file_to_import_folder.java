@@ -18,7 +18,7 @@ public class web_file_to_import_folder {
 
     public static void main(String args[]) {
         gen.neo4jlib.neo4j_info.neo4j_var();
-        url_file_to_import_dir("https://blobswai.blob.core.windows.net/gen-udf/Family_relationship_table.csv","Family_relationship_table.csv");
+        url_file_to_import_dir("https://www.familytreedna.com/public/y-dna-haplotree/get","");
     }
  
     
@@ -35,6 +35,7 @@ public class web_file_to_import_folder {
            buffRead  = new BufferedReader(isr);
            String str = "";
            while ((str = buffRead.readLine()) != null) {
+            System.out.println(str);
             fw.write(str + "\n");    
            }     
             fw.flush();    
