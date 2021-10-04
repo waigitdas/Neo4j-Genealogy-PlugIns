@@ -21,8 +21,8 @@ public class Create_at_haplotree {
     @Description("Add triangulation group list as property to DNA tester Person nodes and adds Label DNA_Match. Then infers ancestor TG list from each branch of their descendants")
         
     public List<Path> at_haplotree(
-        @Name("project") 
-            String project,
+//        @Name("project") 
+//            String project,
         @Name("ancestor_rn") 
             Long ancestor_rn
     )

@@ -28,15 +28,13 @@ public class load_all_files {
                 return s;
         }
         
-        
-        
     public  String load_files(String famTag) {
         gen.neo4jlib.neo4j_info.neo4j_var();  //initialize variables
         gen.conn.connTest.cstatus();
-        gen.neo4jlib.neo4j_qry.qry_write("return gen.gedcom.gedcom_to_neo4j('" + famTag + "')");
-        gen.neo4jlib.neo4j_qry.qry_write("return gen.dna.load_ftdna_csv_files()");
-        gen.neo4jlib.neo4j_qry.qry_write("return gen.tgs.load_tgs_from_template.load_tgs_from_csv(gen.neo4jlib.neo4j_info.tg_file)");
-        
+        gen.gedcom.upload_gedcom.load_gedcom(famTag);
+        gen.dna.load_ftdna_files.load_ftdna_files();
+        gen.tgs.load_tgs_from_template.load_tgs_from_csv();
+       
         return "Completed";
     }
     

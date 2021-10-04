@@ -21,7 +21,7 @@ package gen.neo4jlib;
     import java.util.*;  
     import java.util.regex.Matcher;
     import java.util.regex.Pattern;
-import org.neo4j.graphdb.Path;
+    import org.neo4j.graphdb.Path;
 
 
 public class neo4j_qry {
@@ -125,24 +125,28 @@ public class neo4j_qry {
         } );
    }
    
-//    public static List<Path> qry_obj_list(String cq) {
+//    public static Map qry_obj_list(String cq) {
 // 
 //        gen.conn.connTest.cstatus();
 //        Session java_session =  gen.conn.connTest.session;
 //
+////          graph = new TinkerGraph();
+////  while (result.hasNext()) {
+////    Map<String, Object> map = result.next();
+////  }
 //
 //        return java_session.readTransaction( tx -> {
 //            List<Path> names = new ArrayList<>();
 //            Result result = tx.run(cq );
 //            while ( result.hasNext() )
 //            {
-//                names.add(result.next().get( 0 ).asPath());
+//                names.add(result.next().get( 0 ).as);
 //            }
 //            return names;
 //        } );
 //   }
-  
-  
+//  
+//  
       public static String qry_str(String cq) {
         gen.conn.connTest.cstatus();
         Session java_session =  gen.conn.connTest.session;

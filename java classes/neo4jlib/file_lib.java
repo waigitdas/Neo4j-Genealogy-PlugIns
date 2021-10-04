@@ -119,7 +119,7 @@ public static void parse_chr_containing_csv_save_to_import_folder(String FileNam
                     s = s + xxx[j] + "|";
                 }
                 s = s +  "\n";
-                fw.write(s);
+               if (s !="") {fw.write(s);}  //ignore blank lines
             }
             fw.flush();
             fw.close();

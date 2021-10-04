@@ -19,9 +19,9 @@ import org.neo4j.procedure.UserFunction;
  */
 public class create_segment_sequence_edges {
     @UserFunction
-    @Description("Creates edge between segments in the order their are arranged on the chromosome. This is used in visualizations of triangulation groups.")
+    @Description("Creates edge between segments in the order their are arranged on the chromosome. The segments are those of a triangulation group including DNA testers descended from the common ancestor. This is used in visualizations of triangulation groups.")
 
-    public String create_seg_seq_edges(
+    public static String create_seg_seq_edges(
         @Name("ancestor_rn") 
             Long ancestor_rn
 //        @Name("rn2") 
@@ -40,7 +40,7 @@ public class create_segment_sequence_edges {
         // TODO code application logic here
     }
     
-     public String create_seg_seq(Long ancestor_rn) 
+     public static String create_seg_seq(Long ancestor_rn) 
     {
         //delete prior seg_seq edges
         String cq = "MATCH ()-[r:seg_seq]-() delete r";
