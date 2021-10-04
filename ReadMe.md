@@ -50,7 +50,7 @@ dbms.transaction.timeout=30m
          </ol>
          <li>Finally, you must set up a text file with configuration information about your specific project so that the Gen_UDF knows where to find key facts unique to your environment. 
            <ol>
-             <li>Download this <a href="https://blobswai.blob.core.windows.net/gen-udf/neo4j-template.wai" target="new">file</a> and store it in this specific required directory: "c://Genealogy/Neo4j/"  It is very important that you use the capitalization as specified because java is case sensitive.
+             <li>Download this <a href="https://github.com/waigitdas/Neo4j-Genealogy-PlugIns/blob/main/implementation%20templates/neo4j-template.wai" target="new">file</a> and store it in this specific required directory: "c://Genealogy/Neo4j/"  It is very important that you use the capitalization as specified because java is case sensitive.
              <li>Open the file in a text editor and edit the information to the right of the colons with your specific information:
                <ol>
                  <li>neo4j_username: leave this a neo4j unless you changed it, which is not advised.
@@ -76,7 +76,7 @@ where name STARTS WITH 'gen'
   <ol>
          <li>Create a GEDCOM v 5.5 file from your genealogy software and identify the folder where it is found. 
   <li>Run the function gedcom_to_neo4j. This function uses three facts you must enter: the name of the database, the full path to the GEDCOM file and the letter (usually F, but not always) indentifying the family number (@<b>F</b>####@) in the GEDCOM. The GEDCOM file path currently needs to us "/" separators and not "\"; you may need to edit a copied path. The entry in Neo4j browser should look like this:<blockquote>
-    return gen.gedcom.gedcom_to_neo4j("mydatabase","E:/folder1/Genealogy/Gedcom/test files/my ged file.ged","F")
+    return gen.gedcom.gedcom_to_neo4j("F")
     </blockquote>
   <li>Run the command to upload the GEDCOM to Neo4j. Generally this takes less than a minute, but this will vary depending on your computer setup
   <li>Verify the upload by counting the number of nodes and edges using the commands: <blockquote>match (n) return labels(n), count(*) order by labels(n)</blockquote><br>
