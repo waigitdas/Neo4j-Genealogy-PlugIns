@@ -43,29 +43,34 @@ return "Completed";
         gen.neo4jlib.file_lib.parse_chr_containing_csv_save_to_import_folder(csvFile, 3);
    
         neo4j_qry.qry_write("match ()-[r]-(t:tg) delete r");
+         neo4j_qry.qry_write("match (t:tg)-[r]-() delete r");
         neo4j_qry.qry_write("match (t:tg) delete t");
         
         //delete any existing tg edges to avoid duplications
         neo4j_qry.CreateIndex("tg", "tgid");
         neo4j_qry.CreateIndex("tg", "chr");
-        neo4j_qry.CreateIndex("tg", "start_pos");
+        neo4j_qry.CreateIndex("tg", "Indx");
+         neo4j_qry.CreateIndex("tg", "strt_pos");
         neo4j_qry.CreateIndex("tg", "end_pos");
         neo4j_qry.CreateIndex("tg", "cm");
-
-        String cq = "LOAD CSV WITH HEADERS FROM 'file:///" + gen.neo4jlib.neo4j_info.tg_file + "' AS line FIELDTERMINATOR '|' merge (t:tg{tgid:toInteger(line.tg_id),chr:toString(line.chr),strt_pos:toInteger(line.strt_pos),end_pos:toInteger(line.end_pos),cm:toFloat(case when line.cm is null then 0.0 else line.cm end),project:toString(line.project),mrca_rn:toInteger(line.mrca_rn)})";
+        neo4j_qry.CreateRelationshipIndex("match_tg", "tgid");
+        neo4j_qry.CreateRelationshipIndex("tg_seg", "tgid");
+        neo4j_qry.CreateRelationshipIndex("person_tg", "tgid");
+ 
+        String cq = "LOAD CSV WITH HEADERS FROM 'file:///" + gen.neo4jlib.neo4j_info.tg_file + "' AS line FIELDTERMINATOR '|' merge (t:tg{tgid:toInteger(line.tg_id),Indx:toString(case when line.chr is null then '' else line.chr end) + ':' + toString(case when line.strt_pos is null then 0 else line.strt_pos end) + ':' + toString(case when line.end_pos is null then 0 else line.end_pos end) ,chr:toString(line.chr),strt_pos:toInteger(line.strt_pos),end_pos:toInteger(line.end_pos),cm:toFloat(case when line.cm is null then 0.0 else line.cm end),project:toString(line.project),mrca_rn:toInteger(line.mrca_rn)})";
         neo4j_qry.qry_write(cq);
         
         
         //add tg_seg edge
-        cq = "match (t:tg) with t match (s:Segment) where " + gen.neo4jlib.neo4j_info.tg_logic + " merge (t)-[r:tg_seg]-(s)";
+        cq = "match (t:tg) with t match (s:Segment) where " + gen.neo4jlib.neo4j_info.tg_logic + " merge (t)-[r:tg_seg{tgid:t.tgid}]-(s)";
         neo4j_qry.qry_write(cq);
 
         //add match_tg edge
-        cq = "match (t:tg)-[:tg_seg]-(s:Segment)-[:match_segment]-(m:DNA_Match) merge (m)-[r:match_tg{tgid:t.tgid}]-(t)";
+        cq = "match (t:tg)-[:tg_seg]-(s:Segment)-[r:match_segment]-(m:DNA_Match) where r.p=m.fullname merge (m)-[r1:match_tg{tgid:t.tgid}]-(t)";
         neo4j_qry.qry_write(cq);
 
         //add person_tg edge
-        cq = "MATCH p=(m1:DNA_Match)-[r:match_tg]-(t:tg) where m1.RN is not null with m1.RN as rn,t match (p:Person{RN:rn}) match (t2:tg{tgid:t.tgid}) merge (p)-[rt:person_tg]->(t2)";
+        cq = "MATCH p=(m1:DNA_Match)-[r:match_tg]-(t:tg) where m1.RN is not null with m1.RN as rn,t match (p:Person{RN:rn}) match (t2:tg{tgid:t.tgid}) merge (p)-[rt:person_tg{tgid:t.tgid}]-(t2)";
         neo4j_qry.qry_write(cq);
 
         

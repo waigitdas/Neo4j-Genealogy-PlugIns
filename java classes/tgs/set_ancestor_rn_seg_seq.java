@@ -19,7 +19,7 @@ public class set_ancestor_rn_seg_seq {
     @UserFunction
     @Description("Creates ancestor_rn property in person, DNA_match and kit nodes and then the sequence of segments mapping to descendants.. This facilitates queries in triangulation group reporting. The seq-seq edge enables rapid queries without directly computing overlaps.")
 
-    public static String setup_tg_environment(
+    public  String setup_tg_environment(
         @Name("ancestor_rn") 
             Long ancestor_rn
   )
@@ -33,11 +33,17 @@ public class set_ancestor_rn_seg_seq {
         // TODO code application logic here
     }
     
-     public static String setup(Long ancestor_rn) 
+     public String setup(Long ancestor_rn) 
     {
         gen.neo4jlib.neo4j_info.neo4j_var();  //initialize variables
-        gen.rel.mrca_set_link_property.mrca_link_property(ancestor_rn );
-        gen.tgs.create_segment_sequence_edges.create_seg_seq_edges(ancestor_rn);
+        
+        //add ancestor_rn property to Person, Kit and DNA_Match nodes after erasing prior properties
+        mrca_set_link_property s = new mrca_set_link_property();
+        s.mrca_link_property(ancestor_rn );
+
+        //create seqment sequences for all segments linked to descendants of the specified ancestor after removing previously created edges
+        create_segment_sequence_edges e = new create_segment_sequence_edges();
+        e.create_seg_seq_edges(ancestor_rn);
         
         return "completed";
     }

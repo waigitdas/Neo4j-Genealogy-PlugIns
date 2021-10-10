@@ -14,9 +14,9 @@ import gen.neo4jlib.neo4j_qry;
 
 public class mrca_set_link_property {
    @UserFunction
-   @Description("sets property in matches, kits and person with who are in the direct line to a common ancestor. Erases prior data, so only the most recent run of this UDF is applied")
+   @Description("Will not run on its own. Access this by running gen.tgs.setup_tg_environmen which uses it. This function sets the ancestor_rn property in matches, kits and person with who are in the direct line to the designated common ancestor. Erases prior data, so only the most recent run of this UDF is applied")
 
-  public static String mrca_link_property(
+  public String mrca_link_property(
         @Name("ancestor_rn") 
             Long ancestor_rn
   )
@@ -28,7 +28,7 @@ public class mrca_set_link_property {
             }
     }
     
-    public static String set_property(Long ancestor_rn) {
+    public String set_property(Long ancestor_rn) {
         //create indices
         gen.neo4jlib.neo4j_qry.CreateIndex("DNA_Match", "ancestor_rn");
         gen.neo4jlib.neo4j_qry.CreateIndex("Person", "ancestor_rn");

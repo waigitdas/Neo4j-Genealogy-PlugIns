@@ -218,8 +218,6 @@ public class neo4j_qry {
             );
      
    }
-   
- 
 
 public static void APOCPeriodicIterateCSV(String LoadCSV, String ReplaceCypher, int batchsize) {
     //use parallel = false to avoid deadlocks!
