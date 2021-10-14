@@ -22,7 +22,7 @@ public class load_ftdna_files {
         @UserFunction
         @Description("Loads FTDNA DNA result CSV files from a named directory and specifically structured subdirectories. File names must NOT be altered after downloaded.")
 
-public static String load_ftdna_csv_files(
+public  String load_ftdna_csv_files(
 //        @Name("root_directory") 
 //            String root_directory,
 //       @Name("curated_file") 
@@ -43,7 +43,7 @@ public static String load_ftdna_csv_files(
         load_ftdna_files();
     }
     
-    public static void load_ftdna_files() {
+    public  void load_ftdna_files() {
         neo4j_info.neo4j_var(); //initialize user information
         gen.conn.connTest.cstatus();
 
@@ -350,6 +350,6 @@ if (hasSegs==true){
         cq = " match (m1:DNA_Match{fullname:toString(line.Match1)}) match (m2:DNA_Match{fullname:toString(line.Match2)})  merge (m1)-[rz:match_by_segment{cm:toFloat(line.cm),mbp:toFloat(line.mbp),seg_ct:toInteger(line.segment_ct),shortest_cm:toFloat(line.shortest_cm),longest_cm:toFloat(line.longest_cm),shortest_mbp:toFloat(line.shortest_mbp),longest_mbp:toFloat(line.longest_mbp)}]-(m2) ";
            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
        
-        
+         
         }
 }

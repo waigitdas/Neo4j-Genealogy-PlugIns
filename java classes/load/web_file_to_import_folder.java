@@ -35,7 +35,7 @@ public class web_file_to_import_folder {
            buffRead  = new BufferedReader(isr);
            String str = "";
            while ((str = buffRead.readLine()) != null) {
-            System.out.println(str);
+            //System.out.println(str);
             fw.write(str + "\n");    
            }     
             fw.flush();    

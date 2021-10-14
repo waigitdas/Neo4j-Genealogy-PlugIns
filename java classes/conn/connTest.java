@@ -6,7 +6,7 @@
  */
 package gen.conn;
 
-import static gen.gedcom.upload_gedcom.load_gedcom;
+
     import org.neo4j.driver.Driver;
     import org.neo4j.driver.GraphDatabase;
     import org.neo4j.driver.Session;

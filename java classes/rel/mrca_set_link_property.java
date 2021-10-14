@@ -34,16 +34,33 @@ public class mrca_set_link_property {
         gen.neo4jlib.neo4j_qry.CreateIndex("Person", "ancestor_rn");
         gen.neo4jlib.neo4j_qry.CreateIndex("Kit", "ancestor_rn");
 
-        //re-set existing property
+        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("match_segment", "p_anc_rn");
+        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("match_segment", "m_anc_rn");
+        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("match_segment", "p_rn");
+        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("match_segment", "m_rn");
+        
+//re-set existing property
         gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match) remove m.ancestor_rn ");
-        gen.neo4jlib.neo4j_qry.qry_write("match (m:Person) remove m.ancestor_rn ");
+       gen.neo4jlib.neo4j_qry.qry_write("match (m:Person) remove m.ancestor_rn ");
         gen.neo4jlib.neo4j_qry.qry_write("match (m:Kit) remove m.ancestor_rn ");
         
-        //set property with new common ancestor phasing
+        gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:match_segment]-() remove r.p_anc_rn");
+        gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:match_segment]-() remove r.m_anc_rn");
+        gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:match_segment]-() remove r.p_rn");
+        gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:match_segment]-() remove r.m_rn");
+
+        //set node property with new common ancestor phasing
          gen.neo4jlib.neo4j_qry.qry_write("match (p1:Person)-[r:father|mother*0..15]->(p2:Person{RN:" + ancestor_rn + "}) set  p1.ancestor_rn=case when p2 is not null then " + ancestor_rn + " else 0 end");
         gen.neo4jlib.neo4j_qry.qry_write("match (p:Person{ancestor_rn:" + ancestor_rn + "})-[r:Gedcom_DNA]-(m:DNA_Match) set m.ancestor_rn=" + ancestor_rn );
         gen.neo4jlib.neo4j_qry.qry_write("match (p:Person{ancestor_rn:" + ancestor_rn + "})-[r:Gedcom_Kit]-(k:Kit) set k.ancestor_rn=" + ancestor_rn );
-         
+        
+        //set relationship property
+        gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() with r match (m2:DNA_Match) where m2.fullname = r.p and m2.ancestor_rn is not null set r.p_anc_rn = m2.ancestor_rn");
+        gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() with r match (m2:DNA_Match) where m2.fullname = r.m and m2.ancestor_rn is not null set r.m_anc_rn = m2.ancestor_rn");
+        gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() with r match (m2:DNA_Match) where m2.fullname = r.m and m2.RN is not null set r.m_rn = m2.RN");
+        gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() with r match (m2:DNA_Match) where m2.fullname = r.p and m2.RN is not null set r.p_rn = m2.RN");
+        
+        
         return "Completed";
     } 
 }

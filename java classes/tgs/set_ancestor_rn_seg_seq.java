@@ -6,6 +6,7 @@
  */
 package gen.tgs;
 
+import gen.genlib.current_date_time;
 import gen.neo4jlib.neo4j_qry;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
@@ -14,6 +15,8 @@ import gen.neo4jlib.neo4j_info;
 import gen.neo4jlib.neo4j_qry;
 import gen.tgs.create_segment_sequence_edges;
 import gen.rel.mrca_set_link_property;
+import java.awt.Desktop;
+import java.io.File;
 
 public class set_ancestor_rn_seg_seq {
     @UserFunction
@@ -45,6 +48,16 @@ public class set_ancestor_rn_seg_seq {
         create_segment_sequence_edges e = new create_segment_sequence_edges();
         e.create_seg_seq_edges(ancestor_rn);
         
+        //create at-haplotree Excel
+        String  SaveFileNm = "at_haplotree_"  + current_date_time.getDateTime() + "_ca_" + ancestor_rn + ".csv" ;
+        String cq = "match p=(m:DNA_Match{ancestor_rn:" + ancestor_rn + "})-[rm:match_segment{p_anc_rn:" + ancestor_rn + ",m_anc_rn:" + ancestor_rn + "}]-(s:Segment)-[rs:seg_seq]-(s2:Segment) where rm.cm>=7 and rm.snp_ct>=500 with rs.tgid as tg,m order by rs.tgid with m.fullname + ' [' + m.RN + ']' as match,collect(distinct tg) as tgs return match,size(tgs) as tg_ct,tgs order by match";
+        String c = gen.neo4jlib.neo4j_qry.qry_to_csv(cq, SaveFileNm);
+//gen.excelLib.queries_to_excel.qry_to_excel(cq,SaveFileNm,"match tgs" , 1, "", "", "", true) ; 
+         try {
+             Desktop.getDesktop().open(new File(gen.neo4jlib.neo4j_info.Import_Dir + SaveFileNm ));
+         }
+         catch (Exception ee) {}
+         
         return "completed";
     }
 }

@@ -30,12 +30,12 @@ return "Completed";
     }
 
   
-    public static void main(String args[]) {
+    public  void main(String args[]) {
         gen.conn.connTest.cstatus();
         load_tgs_from_csv();
     }
     
-    public static String load_tgs_from_csv() {
+    public String load_tgs_from_csv() {
         gen.neo4jlib.neo4j_info.neo4j_var();
         gen.conn.connTest.cstatus();
         String csvFile =gen.neo4jlib.neo4j_info.root_directory + gen.neo4jlib.neo4j_info.tg_file;
@@ -62,11 +62,11 @@ return "Completed";
         
         
         //add tg_seg edge
-        cq = "match (t:tg) with t match (s:Segment) where " + gen.neo4jlib.neo4j_info.tg_logic + " merge (t)-[r:tg_seg{tgid:t.tgid}]-(s)";
+        cq = "match (t:tg) with t match (s:Segment) where " + gen.neo4jlib.neo4j_info.tg_logic_overlap + " merge (t)-[r:tg_seg{tgid:t.tgid}]-(s)";
         neo4j_qry.qry_write(cq);
 
         //add match_tg edge
-        cq = "match (t:tg)-[:tg_seg]-(s:Segment)-[r:match_segment]-(m:DNA_Match) where r.p=m.fullname merge (m)-[r1:match_tg{tgid:t.tgid}]-(t)";
+        cq = "match (t:tg)-[:tg_seg]-(s:Segment)-[r:match_segment]-(m:DNA_Match) where r.p=m.fullname and r.cm>=7 and r.snp_ct>=500 merge (m)-[r1:match_tg{tgid:t.tgid,cm:r.cm}]-(t)";
         neo4j_qry.qry_write(cq);
 
         //add person_tg edge

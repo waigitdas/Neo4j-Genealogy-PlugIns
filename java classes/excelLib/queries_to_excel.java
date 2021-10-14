@@ -67,7 +67,7 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
      String c="";
      try{
      c = gen.neo4jlib.file_lib.readFileByLine(csvFile);
-     //System.out.println(c);
+  
      }
      catch (Exception e) {
      }
@@ -89,7 +89,7 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
         w = Workbook.createWorkbook(new File(excelFile), existingWorkbook);
      }
    
-     WritableSheet excelSheet = w.createSheet(SheetName, SheetNumber);
+    WritableSheet excelSheet = w.createSheet(SheetName, SheetNumber);
     createLabel(excelSheet);
     excelSheet.getSettings().setVerticalFreeze(1);
 
@@ -127,6 +127,7 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
        }
     }
 
+       if (ColWidths.strip() != "") {
         //initialize column width formats
        for (int i=0;i<colwidth.length ;i++){
            Boolean willSetWidth = false;
@@ -151,7 +152,10 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
             }
                 excelSheet.setColumnView(i, colwidth[i]);
        }
-     
+       }
+       else{
+           
+       }
     //************************************************************************
 
     

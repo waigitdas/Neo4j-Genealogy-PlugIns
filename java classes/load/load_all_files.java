@@ -31,9 +31,15 @@ public class load_all_files {
     public  String load_files(String famTag) {
         gen.neo4jlib.neo4j_info.neo4j_var();  //initialize variables
         gen.conn.connTest.cstatus();
-        gen.gedcom.upload_gedcom.load_gedcom(famTag);
-        gen.dna.load_ftdna_files.load_ftdna_files();
-        gen.tgs.load_tgs_from_template.load_tgs_from_csv();
+        
+        upload_gedcom g = new upload_gedcom();
+        g.load_gedcom(famTag);
+        
+        load_ftdna_files f = new load_ftdna_files();
+        f.load_ftdna_files();
+        
+        load_tgs_from_template t = new load_tgs_from_template();
+        t.load_tgs_from_csv();
        
         return "Completed";
     }

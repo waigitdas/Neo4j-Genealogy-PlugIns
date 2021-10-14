@@ -19,6 +19,7 @@ public class neo4j_info {
     public static String neo4j_username;
     public static String neo4j_password;
     public static String tg_logic ;
+    public static String tg_logic_overlap ;
     public static String user_database ;
     public static String root_directory;
     public static String gedcom_file ;
@@ -39,23 +40,24 @@ public static Boolean neo4j_var() {
         switch (ss[0]){
             case "neo4j_import_directory": Import_Dir =  ss[1].strip() ; //s[ct+1].replace("neo4j_import_directory: ", "");
            break; 
-            case "neo4j_user name": neo4j_username = ss[1].strip();
+            case "neo4j_username": neo4j_username = ss[1].strip();
             break;
             case "neo4j_password": neo4j_password = ss[1].strip();
             break;
             case "user_database": user_database = ss[1].strip();    
             break;
-            case "root_directory": root_directory = ss[1].strip();    
+            case "ftdna_data_root_dir": root_directory = ss[1].strip();    
             break;
             case "gedcom_file": gedcom_file = ss[1].strip();    
             break;
-            case "Curated_rn_gedcom_file": Curated_rn_gedcom_file = ss[1].strip();    
+            case "curated_rn_gedcom_file": Curated_rn_gedcom_file = ss[1].strip();    
             break;
             case "tg_file": tg_file = ss[1].strip();    
        }
         ct = ct + 1;
     }
     tg_logic = "s.chr=t.chr and t.strt_pos<=s.strt_pos and t.end_pos>=s.end_pos";
+    tg_logic_overlap = "s.chr=t.chr and t.end_pos>=s.strt_pos and t.strt_pos<=s.end_pos";
     alt_left_bracket = "\u298B";
     alt_right_bracket = "\u298C";
 

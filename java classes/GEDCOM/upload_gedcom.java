@@ -9,6 +9,7 @@ package gen.gedcom;
     import gen.neo4jlib.neo4j_qry;
     import gen.neo4jlib.file_lib;
     import gen.neo4jlib.neo4j_info;
+
     import java.io.File;
     import java.io.FileWriter;
     import java.io.IOException;    
@@ -22,8 +23,6 @@ public  class upload_gedcom {
                     
     
     public String gedcom_to_neo4j(
-//        @Name("file_path") 
-//             String file_path,
         @Name("FAM_Str_Id") 
             String FAM_Str_Id
        )
@@ -33,14 +32,17 @@ public  class upload_gedcom {
         //double tmelapsed= System.currentTimeMillis() - tm;
         return "Completed";
       }
-  
+  public  void main(String args[]){
+    load_gedcom("F");
+}
+
     
-    public static void load_gedcom (String FAM_Str_Id ) 
+    public  void load_gedcom (String FAM_Str_Id ) 
    
     {
         gen.neo4jlib.neo4j_info.neo4j_var();  //initialize variables
         gen.conn.connTest.cstatus();
-        String filePath =  gen.neo4jlib.neo4j_info.gedcom_file;
+      String filePath =  gen.neo4jlib.neo4j_info.gedcom_file;
         //create indices to speed upload using merge
         neo4j_qry.CreateIndex("Person", "RN");
         neo4j_qry.CreateIndex("Person", "fullname");

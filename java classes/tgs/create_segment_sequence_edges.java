@@ -52,7 +52,7 @@ public class create_segment_sequence_edges {
             
             //create csv file of sequences    
             String fn =  "tg_discovery.csv";
-            cq="match p1=(t:tg)-[:tg_seg]-(s:Segment{chr:'" + chr + "'})-[r:match_segment]-(m1:DNA_Match) where r.p_rn is not null and r.m_anc_rn=" + ancestor_rn + " with  s,t, count(*) as ct    return t.tgid as tgid,s.Indx as Indx,ct order by t.tgid,s.chr,s.strt_pos,s.end_pos";
+            cq="match p1=(t:tg)-[:tg_seg]-(s:Segment{chr:'" + chr + "'})-[r:match_segment]-(m1:DNA_Match) where r.cm>=7 and r.snp_ct>=500 and r.p_rn is not null and r.m_anc_rn=" + ancestor_rn + " with  s,t, count(*) as ct return t.tgid as tgid,s.Indx as Indx,ct order by t.tgid,s.chr,s.strt_pos,s.end_pos";
             neo4j_qry.qry_to_pipe_delimited(cq,fn);
 
             //read csv, parse and create new csv suitable for Neo4j importing
@@ -68,12 +68,10 @@ public class create_segment_sequence_edges {
 
                 fwp = new FileWriter(neo4j_info.Import_Dir + "seg_seq.csv");
                 fwp.write("tgid|from|to\n");
-System.out.println("chr: " + chr + ":::" + cc.length + "\n");
                     for (int i=1; i<cc.length-1;i++){    //next row
                         String ccc[] = cc[i].split(Pattern.quote("|"));  //0 is tgid; 1 segment
                         String ccc1[] = cc[i+1].split(Pattern.quote("|"));  //0 is tgid; 1 segment
-System.out.println(i + " : " + curr_tg + " ; " + ccc[0] + "\n");
-                        //separate seg_seq for each tg
+                       //separate seg_seq for each tg
                         if (curr_tg.equals(ccc[0])){ }
                         else{  
                             fwp.flush();
