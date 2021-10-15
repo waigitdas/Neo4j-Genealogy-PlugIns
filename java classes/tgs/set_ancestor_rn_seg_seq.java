@@ -49,7 +49,7 @@ public class set_ancestor_rn_seg_seq {
         e.create_seg_seq_edges(ancestor_rn);
         
         //create at-haplotree Excel
-        String  SaveFileNm = "at_haplotree_"  + current_date_time.getDateTime() + "_ca_" + ancestor_rn + ".csv" ;
+        String  SaveFileNm = "at_haplotree_anc_"  + "_anc_" + ancestor_rn  + "_" + current_date_time.getDateTime() + ".csv" ;
         String cq = "match p=(m:DNA_Match{ancestor_rn:" + ancestor_rn + "})-[rm:match_segment{p_anc_rn:" + ancestor_rn + ",m_anc_rn:" + ancestor_rn + "}]-(s:Segment)-[rs:seg_seq]-(s2:Segment) where rm.cm>=7 and rm.snp_ct>=500 with rs.tgid as tg,m order by rs.tgid with m.fullname + ' [' + m.RN + ']' as match,collect(distinct tg) as tgs return match,size(tgs) as tg_ct,tgs order by match";
         String c = gen.neo4jlib.neo4j_qry.qry_to_csv(cq, SaveFileNm);
 //gen.excelLib.queries_to_excel.qry_to_excel(cq,SaveFileNm,"match tgs" , 1, "", "", "", true) ; 

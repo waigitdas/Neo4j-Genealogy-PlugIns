@@ -350,6 +350,7 @@ if (hasSegs==true){
         cq = " match (m1:DNA_Match{fullname:toString(line.Match1)}) match (m2:DNA_Match{fullname:toString(line.Match2)})  merge (m1)-[rz:match_by_segment{cm:toFloat(line.cm),mbp:toFloat(line.mbp),seg_ct:toInteger(line.segment_ct),shortest_cm:toFloat(line.shortest_cm),longest_cm:toFloat(line.longest_cm),shortest_mbp:toFloat(line.shortest_mbp),longest_mbp:toFloat(line.longest_mbp)}]-(m2) ";
            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
        
-         
+        //segment megabase pair property
+        neo4j_qry.qry_write("match (s:Segment) set s.mbp=(s.end_pos-s.strt_pos)/1000000");
         }
 }

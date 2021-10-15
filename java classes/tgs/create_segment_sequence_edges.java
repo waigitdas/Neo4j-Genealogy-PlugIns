@@ -59,6 +59,7 @@ public class create_segment_sequence_edges {
             String c = gen.neo4jlib.file_lib.readFileByLine(neo4j_info.Import_Dir +  fn);
             String[] cc = c.split("\n");
             FileWriter fwp;
+            String fns =  "seg_seq_" + chr + ".csv";
           try{
                String tmp[]=cc[1].split(Pattern.quote("|"));
                 String curr_tg = tmp[0];
@@ -66,7 +67,7 @@ public class create_segment_sequence_edges {
                 Boolean b=false;
                 int rw =1; //first row is header'
 
-                fwp = new FileWriter(neo4j_info.Import_Dir + "seg_seq.csv");
+                fwp = new FileWriter(neo4j_info.Import_Dir + fns);
                 fwp.write("tgid|from|to\n");
                     for (int i=1; i<cc.length-1;i++){    //next row
                         String ccc[] = cc[i].split(Pattern.quote("|"));  //0 is tgid; 1 segment
@@ -78,11 +79,11 @@ public class create_segment_sequence_edges {
                             fwp.close();
 
                             //load seg_seq edges into Neo4j
-                            cq = "LOAD CSV WITH HEADERS FROM 'file:///seg_seq.csv' AS line FIELDTERMINATOR '|' match (s1:Segment{Indx:toString(line.from)}) match (s2:Segment{Indx:toString(line.to)}) merge (s1)-[r:seg_seq{tgid:toInteger(line.tgid),ancestor_rn:" + ancestor_rn + "}]-(s2) ";
+                            cq = "LOAD CSV WITH HEADERS FROM 'file:///" + fns + "' AS line FIELDTERMINATOR '|' match (s1:Segment{Indx:toString(line.from)}) match (s2:Segment{Indx:toString(line.to)}) merge (s1)-[r:seg_seq{tgid:toInteger(line.tgid),ancestor_rn:" + ancestor_rn + "}]-(s2) ";
                             neo4j_qry.qry_write(cq);
 
 
-                            fwp = new FileWriter(neo4j_info.Import_Dir + "seg_seq.csv");
+                            fwp = new FileWriter(neo4j_info.Import_Dir + fns);
                             fwp.write("tgid|from|to\n");
 
                             //reset curr_tg
@@ -98,7 +99,7 @@ public class create_segment_sequence_edges {
                             fwp.close();
 
                             //load seg_seq edges into Neo4j
-                            cq = "LOAD CSV WITH HEADERS FROM 'file:///seg_seq.csv' AS line FIELDTERMINATOR '|' match (s1:Segment{Indx:toString(line.from)}) match (s2:Segment{Indx:toString(line.to)}) merge (s1)-[r:seg_seq{tgid:toInteger(line.tgid),ancestor_rn:" + ancestor_rn + "}]-(s2) ";
+                            cq = "LOAD CSV WITH HEADERS FROM 'file:///" + fns + "' AS line FIELDTERMINATOR '|' match (s1:Segment{Indx:toString(line.from)}) match (s2:Segment{Indx:toString(line.to)}) merge (s1)-[r:seg_seq{tgid:toInteger(line.tgid),ancestor_rn:" + ancestor_rn + "}]-(s2) ";
                             neo4j_qry.qry_write(cq);
 
             }
@@ -115,7 +116,7 @@ public class create_segment_sequence_edges {
                finally{}
       
     
-        return "completed";
+        //return "completed";
     }
         }
     

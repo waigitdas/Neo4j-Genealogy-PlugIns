@@ -96,7 +96,7 @@ public static void parse_chr_containing_csv_save_to_import_folder(String FileNam
         try {
             String c = file_lib.readFileByLine(FileName);
             c = c.replace("|"," ").replace(",","|").replace("\"", "");
-            System.out.println("\n" + neo4j_info.Import_Dir);
+            //System.out.println("\n" + neo4j_info.Import_Dir);
             String[] cc = c.split("\n");
             String header = cc[0].replace(" ","_");
             c = c.replace(cc[0], header);
