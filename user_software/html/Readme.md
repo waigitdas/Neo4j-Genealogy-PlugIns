@@ -8,11 +8,11 @@ It is suggested that you read these in this order and not sequentially from the 
 
 <ol>
   <li><a href="https://blobswai.blob.core.windows.net/gfg-software/Help_Startup.html">Home: initial introduction</a></li>
-  <li><a href="https://blobswai.blob.core.windows.net/gfg-software/Help_Startup.html">Installing Neo4j</a></li>
+  <li><a href="https://blobswai.blob.core.windows.net/gfg-software/installingNeo4j.html">Installing Neo4j</a></li>
  <li><a href="https://blobswai.blob.core.windows.net/gfg-software/Help_Preparing_User_Data.html">Preparing genealogy data</a></li>
  <li><a href="https://blobswai.blob.core.windows.net/gfg-software/help_curatedfiles.html">Expert curation to link family tree to DNA results</a></li>
- <li><a href="https://blobswai.blob.core.windows.net/gfg-software/https://blobswai.blob.core.windows.net/gfg-software/Help_Upload_Data.html">Extract, transform and load (ETL) genealogy data to Neo4j</a></li>
- <li><a href="https://blobswai.blob.core.windows.net/gfg-software/https://blobswai.blob.core.windows.net/gfg-software/help_enhancements.html">Enhancement to the Graph Schema / Data to facilitate genealogy analytics</a></li>
+ <li><a href="https://blobswai.blob.core.windows.net/gfg-software/Help_Upload_Data.html">Extract, transform and load (ETL) genealogy data to Neo4j</a></li>
+ <li><a href="https://blobswai.blob.core.windows.net/gfg-software/help_enhancements.html">Enhancement to the Graph Schema / Data to facilitate genealogy analytics</a></li>
  <!--<li><a href="https://blobswai.blob.core.windows.net/gfg-software/"></a></li>
  <li><a href="https://blobswai.blob.core.windows.net/gfg-software/"></a></li>
  <li><a href="https://blobswai.blob.core.windows.net/gfg-software/"></a></li>-->
