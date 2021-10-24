@@ -4,3 +4,14 @@ Implementing the tools by directly using Neo4j is a heavy lift for those inexper
 
 <h2>Instructional Documents</h2>
 
+It is suggested that you read these in this order and not sequentially from the list above. The order here puts the lessions in a proper sequential order. Also, be aware that the links here pull the documents down from an Azure blob storage and may be slightly out of synch with those at GitHub.
+
+<ol>
+  <li><a href="https://blobswai.blob.core.windows.net/gfg-software/Help_Startup.html">Home: initial introduction</a></li>
+  <li><a href=""></a></li>
+  <li><a href=""></a></li>
+  <li><a href=""></a></li>
+  <li><a href=""></a></li>
+  <li><a href=""></a></li>
+  <li><a href=""></a></li>
+</ol>  
