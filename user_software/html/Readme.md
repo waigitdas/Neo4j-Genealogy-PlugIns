@@ -17,3 +17,12 @@ It is suggested that you read these in this order and not sequentially from the 
  <li><a href="https://blobswai.blob.core.windows.net/gfg-software/"></a></li>
  <li><a href="https://blobswai.blob.core.windows.net/gfg-software/"></a></li>-->
 </ol>  
+
+<h2>Step by Step Action Items</h2>
+
+<ol>
+  <li><a href="https://blobswai.blob.core.windows.net/gfg-software/installingNeo4j.html">Installing Neo4j</a></li>
+ <!--<li><a href="https://blobswai.blob.core.windows.net/gfg-software/"></a></li>
+ <li><a href="https://blobswai.blob.core.windows.net/gfg-software/"></a></li>
+ <li><a href="https://blobswai.blob.core.windows.net/gfg-software/"></a></li>-->
+</ol>  
