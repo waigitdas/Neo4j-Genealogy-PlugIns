@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Welcome</title>
+ <link rel="import" href="/header.html">
+
+</head>
+  <link rel="stylesheet" href="gfg.css">
+<body class="help">
+
+
+	<b class="title">Curated Files</b><br><br>
+	
+	<b>Linking Your GEDCOM to DNA Kits and Matches</b><br><br>
+	
+	The software needs your expertise in curation! You know the people in your GEDCOM and if they have a DNA kit at FTDNA. In graph terminology, you are linking two distinct graphs: the family genealogy and the DNA segments which define a haplotree. You can download the <a href="https://blobswai.blob.core.windows.net/gen-udf/Family ftdna curation file.xlsx">Excel template</a> and enter the known data. The key fields for linking are the Match_Name, Curated_RN, and Kit. The Match_Name can be a bit tricky. Recently FTDNA removed it from the chromosome browser file. Thus is does not appear in the downloaded files of the kit and must be sought in kits of the matches. You cannot assume that the name in the kit home page is the same. The Curate_RN (RN = record number) is the individual's identifier in the GEDCOM file. To locate this, open the GEDCOM file, search for the person and you will then see their initial line looking like this: 0 @I2041@ INDI. The number you are after is the 2041 in this instance. The kit number is obtained from the downloaded file prefix. For example, from this Family Finder file (B51965_Family_Finder_Matches_2021-07-20.csv) it is B51956; be sure to preserve capitalization. The other columns in this Excel template are optional and are used in some reports, if available. For instance, a note "no family tree" will appear in reports and help you avoid duplicate work.<br><br>
+	
+	In some, hopefully many, cases you have the three linking pieces of data. But often you do not. You can include the curated_RN of known relatives whose kit number you do not have; leave it blank. You will find kits of interest who you cannot place in your family tree; enter their Match_Name and leave the Curated_RN and kit blank but enter some notes to help you later. <br><br>
+	
+<b>Triangulation Groups</b><br><br>
+	
+	If you have identified chromosome segments associated with a common ancestor(s), you can enter data into the <a href="">Excel template</a>. We also recommend that you place it in the project root directory in which you put all the FTDNA folders and csv files. If you do not yet have any triangulation groups you can skip this step and complete it at a later time.
+	<br><br>
+	
+	We recommend that you place these curated files in the project root directory in which you put all the FTDNA folders and csv files. This keeps the project data in one folder. Do not place any data in rows below your last entries and do not have blank rows between rows with entries.<br><br>
+
+	These files will be updated as your research progresses. You can reload your data to update them at intervals.<br><br>
+<div>
+ <hr>
+	<table>
+  <tr>
+    <td><img src="https://blobswai.blob.core.windows.net/wai/logo.png" height="40px" /></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+	  <td class="footer">Graphs for Genealogists&trade;<br>Who Am I<br>1101 Alpine Lane<br>Woodstock, IL 60098 USA<br><a href="mailto:info@wai.md?subject=Graphs for Genealogists Inquiry">info@wai.md</a>&nbsp;&nbsp;&nbsp;&copy;2021</td>
+  </tr>
+</table>
+
+</div>
+<br><br>
+
+</body>
+</html>

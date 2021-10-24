@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Welcome</title>
+ <link rel="import" href="/header.html">
+
+</head>
+  <link rel="stylesheet" href="gfg.css">
+<body>
+<div>
+	<h2 class="title">Installing Neo4j</h2>
+	
+	
+	Before using this software you will need to install the Neo4j database. This panel will guide you through that process. 
+	
+	    <ol>
+      <li>Install Neo4j Enterprise Edition, version 4.x.  The process starts <a href="https://neo4j.com/download-neo4j-now/" target="new"><span style="color:red">here</span></a>. </li>
+      <li>When you first open the software you see the "home page." You do not yet have your database.</li> 
+<li>From the home page you create a project with a name of your chosing. A project can hold numerous databases which might support projects on several family lines.</li>
+       <li>Create your first database by opening the Neo4j browser, selecting the system database and typing this command: create database {name} 
+         {your database name}. The name must be only lower letters. You can create other databases by repeating this command. To delete a database type drop database {name}.</li>
+       <li>Verify that you can start and stop the project database from the home page. This is important because the next steps may damage the functionality and you'd like to learn where this happened. Thus, be careful with this step.</li>
+       <li>Modify the neo4j configuration file to accomodate the project requirements. </li>
+         <ol>
+           <li>Open the configuration folder. The Neo4j application opens to a "home page" from which you can open the Configuration folder. The link is in the "...." icon to the right of your project "Open" button. The navigation is "...." ➔ Open Folder ➔ Configuration.</li>
+           <li>Open the file neo4j.conf in a text editor (Notepad or Notepad++; not Word or other tools that add extraneous text). Save this original file in case something goes awry and you need to revert to it.</li>
+           <li>At the bottom of the config file paste these lines:<blockquote>
+             apoc.export.file.enabled=true<br>
+             apoc.import.file.enabled=true<br>
+             dbms.security.procedures.unrestricted=jwt.security.*,apoc.*,gds.*,<b>gen.*</b><br>
+             dbms.security.procedures.allowlist=jwt.security.*,gds.*,apoc.*, <b>gen.*</b><br>
+dbms.checkpoint.interval.time=30s<br>
+dbms.checkpoint.interval.tx=1<br>
+dbms.tx_log.rotation.retention_policy=false<br>
+dbms.tx_log.rotation.size=1M<br>
+dbms.transaction.timeout=30m
+             </blockquote>  </li>
+         <li>Search for "dbms.security.procedures.unrestricted" to locate entries above those just entered and comment out the lines by adding a # at the start of the line. </li>
+         <li>Search for "dbms.memory.heap." and adjust the memory upward to speed the processing. The number you select will depend on the RAM you have installed. I am a power user with lots of RAM and set as follows  <blockquote>
+           dbms.memory.heap.initial_size=1G<br>
+           dbms.memory.heap.max_size=4G
+           </blockquote>
+			 </li>
+    		 </ol>
+			 </ol>
+	
+	<b>Install the Neo4j Genealogy PlugIn</b><br><br>
+		
+	Intalling the Neo4j Genealogy PlugIn enabled functions useful to genealogists. You can download the most recent plugin from <a href="https://github.com/waigitdas/Neo4j-Genealogy-PlugIns/tree/main/jar">GitHub</a>. The plugin is a *.jar file. Save it in the Neo4j PlugIn directory. 
+	The Neo4j application opens to a "home page" from which you can open the PlugIn folder. The link is in the "...." icon to the right of your project "Open" button. The navigation is "...." ➔ Open Folder ➔ Plugins. Copy the jar file into that folder and then restart the database. Verify the installation by opening the Neo4j browser and entering this command which will show you a list of functions available:
+
+	<blockquote>
+    Show Functions yield name, signature, description,returnDescription,aggregating where name STARTS WITH 'gen' return name, signature, description,returnDescription,aggregating
+	</blockquote>
+
+	<b>Create your first Neo4j Database</b><br><br>
+	
+	In the Neo4j Browser, select the system database and the enter this command:
+	
+	<blockquote>create database {your name} </blockquote>
+	 
+	Neo4j is now ready to receive your data!
+	
+	If, in your initial experiments, you need to start over, you can delete this database and re-created in. To delete a database use this command:
+	
+	<blockquote>drop database {your database}</blockquote>
+	<br>
+	</div>
+<div>
+ <hr>
+	<table>
+  <tr>
+    <td><img src="https://blobswai.blob.core.windows.net/wai/WAI.jpg" height="40px" alt=""/></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+	  <td class="footer">Graphs for Genealogists&trade;<br>Who Am I<br>1101 Alpine Lane<br>Woodstock, IL 60098 USA<br><a <a href="mailto:info@wai.md?subject=Graphs for Genealogists Inquiry">info@wai.md</a>&nbsp;&nbsp;&nbsp;&copy;2021</td>
+  </tr>
+</table>
+
+</div>
+<br><br>
+</body>
+</html>

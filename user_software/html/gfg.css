@@ -1,0 +1,26 @@
+@charset "utf-8";
+/* CSS Document */
+td.header {
+	color: #2D4F87;
+	font-size: 30px;
+}
+body.help{
+	background-color:lightgreen;
+}
+td.subheader {
+	color: #2D4F87;
+	font-size: 16px;
+	font-style: italic;
+	padding-left: 40px;
+	vertical-align: top;
+}
+td.footer {
+	color: #2D4F87;
+	align-items: left;
+	font-size: 10px;
+}
+b.title {
+	font-weight: bold;
+	font-size: 20px;
+	
+}

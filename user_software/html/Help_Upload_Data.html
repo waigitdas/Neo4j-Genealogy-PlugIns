@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Welcome</title>
+ <link rel="import" href="/header.html">
+
+</head>
+  <link rel="stylesheet" href="gfg.css">
+<body class="help">
+
+
+	<b class="title">Uploading Your Genealogy Data</b><br><br>
+
+	Your data will stay on your computer, under your control. None of the steps in this software or in Neo4j involves moving your data into external systems. <br><br>
+	
+	This software and the Neo4j PlugIn will perform the ETL ... a technical acronym for extract, transform and load. Your data must be transformed into a format suitable for loading into Neo4j. The loading creates nodes and edges in the database using a schema optimized for genealogy analytics. Thus, the software allows you to get to results without having to perform these complex tasks yourself. Yet, the detailed code for how this is done is available at <a href="https://github.com/waigitdas/Neo4j-Genealogy-PlugIns">Git Hub</a>. <br><br>
+
+	While you can create individual nodes and edges in Neo4j, it is far more efficient to use csv or json files. These are generated and placed in the Neo4j import folder and then imported. There are many types of nodes and relationships between them. Thus, there are may ETL steps which are contained within the Neo4j PlugIn. This design allows you to use the PlugIn functions independent of this software and for other developers to leverage them in their software creations. <br><br>
+	
+The data must be processed in specific orders. If you choose to separately enter the GEDCOM and FTDNA data, do so in that order and include the curated file linking the family tree to the DNA when uploading the FTDNA.<br><br>	
+
+Once you initiate the ETL process you can navigate to the Neo4j Import folder and see what is happening. If you have the Neo4j browser open you can also see new nodes, replationships and properties appear. Here's a little more detail about what's going on in the Neo4j database. The software and the Neo4j Genealogy PlugIn sequentially do the following:
+	
+<ol>
+	<li>Upload the GEDCOM</li>
+	<ol type="a">
+		<li>Create Person nodes and properties</li>
+		<li>Create Union (marriage) nodes and properties</li>
+		<li>Create Place nodes and properties</li>
+		<li>Create relationships between these nodes</li>
+		<ol type="i">
+			<li>father</li>
+			<li>mother</li>
+			<li>spouse</li>
+			<li>person-place with property for event type (birth, marriage, death)</li>
+			<li>child</li>
+		</ol>
+	</ol>
+	<li>Upload a reference file with family relationships based on the Shared Centimorgam data. This is used in reporting.</li>
+	<li>Upload the curated data linking the family tree to DNA kits</li>
+	<li>Upload FTDNA data, one kit at a time avoiding duplicate nodes and relationships</li>
+	<ol type="a">
+		<li>Create Kit nodes</li>
+		<li>Create DNA_Match nodes</li>
+		<li>Create Segment nodes</li>
+		<li>Create relationships between these nodes</li>
+		<ol type="i">
+			<li>kit-match</li>
+			<li>kit-segment</li>
+			<li>match-segment</li>
+			<li>shared-match</li>
+		</ol>
+	</ol>
+	<li>Enhancements using previously loaded data</li>
+	<ol type="a">
+		<li>GEDCOM-kit: linking the family tree person to their kit</li>
+		<li>GEDCOM-match: linking the family tree person to matches. This is why the name of the Match_Name in the curated file is critical.</li>
+		<li>match-by-segment: matches with a curated_RN to all their matches. This recreates the shared_match data with details about the segments</li>
+	</ol>
+	<li>Load triangulation group curated date</li>
+	<ol type="a">
+		<li>Create tg nodes</li>
+		<li>Create relationship to the tg nodes</li>
+		<ol>
+			<li>tg-segment</li>
+			<li>Person_tg</li>
+			<li>match-tg</li>
+		</ol>
+	</ol>
+	
+	</ol>
+	
+	
+The list above will help you watch what is happening, but is not comprehensive. You can, in the Neo4j browser, click on nodes and relationships to see further details, particulary the properties of nodes and relationships. <br><br>
+
+During the upload process indices are created to speed up the loading and queries done later in reporting and analytics. You can see these by using this query in the Neo4j browser:<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;<b>:schema</b><br><br>
+	
+There will be additional enhancements to the graph for specific analytics. These will be discussed in context when we get to them.<br><br> 
+	
+	<div>
+ <hr>
+	<table>
+  <tr>
+    <td><img src="https://blobswai.blob.core.windows.net/wai/logo.png" height="40px" /></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+	  <td class="footer">Graphs for Genealogists&trade;<br>Who Am I<br>1101 Alpine Lane<br>Woodstock, IL 60098 USA<br><a <a href="mailto:info@wai.md?subject=Graphs for Genealogists Inquiry">info@wai.md</a>&nbsp;&nbsp;&nbsp;&copy;2021</td>
+  </tr>
+</table>
+
+</div>
+</body>
+</html>
