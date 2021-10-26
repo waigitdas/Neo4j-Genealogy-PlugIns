@@ -21,7 +21,7 @@
 	
 	Genetic genealogy queries require granular information about match_segment edges. A match may map to a segment with many matches, each of whch must be distinguishable. As an individual kit is loaded, the match_segment edge is given several properties: the centimorgans, snp count and the propositus (e.g., kit owner) name and the match_name. For brevity, the latter are p and m properties of the match_segment edge. After all kits are loaded and the RN property added to match nodes, the match_segment edge has the p_rn and m_rn property added. These edge properties are indexed to speed queries using them.<br><br>
 	
-	We are now able to traverse the graph through the desired match_segment edges with spacified cm, snp and match pairs. We can include any or all of p_rn, m_rn, or ancestral_rn, thereby linking the path to a family tree parameter(s). With this schema we can easily recapitual the shared cm and snps for any match pair, which we use to ccreate the match_by_segment edge. But there are several other uses that help in an intuitive manner assure the quality the results and conclusions based on them.<br><br> 
+	We are now able to traverse the graph through the desired match_segment edges with spacified cm, snp and match pairs. We can include any or all of p_rn, m_rn, or ancestral_rn, thereby linking the path to a family tree parameter(s). With this schema we can easily recapitual the shared cm and snps for any match pair, which we use to create the match_by_segment edge. But there are several other uses that help in an intuitive manner assure the quality the results and conclusions based on them.<br><br> 
 	
 	<u>Example 2</u>: Enhancements using curated triangulation groups<br><br>
 	
@@ -40,10 +40,31 @@
 	<li>Display the matches and segments is a table or visualization. </li>
 	</ol>
 	
-	Each of these steps is quick and easy in a graph database. There is no need to compute overlaps. The visualization clearly illustrate the shared matches necessary to prove a true triangulation.<br><br>   
+	Each of these steps is quick and easy in a graph database. There is no need to compute overlaps. The visualization clearly illustrate the shared matches necessary to prove a true triangulation. Copy this link into your browser to view an example: https://blobswai.blob.core.windows.net/images/TG_seg_seq_anonymized.svg<br><br>   
+
+	<div class="figure">
+	<table class="figure" width="300"><tr><td class="figure_caption">Stinnett ancestor triagulation group visualization</td></tr>
+	<tr><td bgcolor="white"><img src="https://blobswai.blob.core.windows.net/images/TG_anonymized.jpg" width="50%" /></td>
+	<tr><td class="figure_footer"></td></tr>
+	</table>
+The segments are shown in sequential order connected by a seg_seq edge. The DNA match kits are in green and connected by match_segment edges. The latter edges shown the p, m, cm and snp_ct properties. The downloaded svg enlarges without blurring: <a href="https://blobswai.blob.core.windows.net/images/TG_seg_seq_anonymized.svg" target="new">https://blobswai.blob.core.windows.net/images/TG_seg_seq_anonymized.svg</a>.
+		<br><br>
+	<u>Example 4</u>: Adding Triangulation Group Pattern to Person nodes (at-haplotree)<br><br>
+	
+Each match has a set of triangulation groups. These are collected into a sorted list and a tgs property added to the linked Person node. The ancestors of the match are assigned the TGs of their descendants, using the assumption that the TGs segregate. The descendant tree of the common ancestor is then reported or visualized.
+
+<br><br>
+	<u>Example 5</u>: Y-Haplotree Reference Data<br><br>
+	
+The FTDNA Y-DNA haplotree json file is downloaded, parsed and uploaded to Neo4j. This is used in analytics to identify men who are at the same or nearby clades. 
+		
+		
 
 
-	<div>
+</div>
+<br><br>
+
+<div>
  <hr>
 	<table>
   <tr>

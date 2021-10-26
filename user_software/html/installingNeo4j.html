@@ -23,7 +23,15 @@
        <li>Verify that you can start and stop the project database from the home page. This is important because the next steps may damage the functionality and you'd like to learn where this happened. Thus, be careful with this step.</li>
        <li>Modify the neo4j configuration file to accomodate the project requirements. </li>
          <ol>
-           <li>Open the configuration folder. The Neo4j application opens to a "home page" from which you can open the Configuration folder. The link is in the "...." icon to the right of your project "Open" button. The navigation is "...." ➔ Open Folder ➔ Configuration.</li>
+           <li>Open the configuration folder. The Neo4j application opens to a "home page" from which you can open the Configuration folder. The link is in the "...." icon to the right of your project "Open" button. The navigation is "...." ➔ Open Folder ➔ Configuration.<br><br>
+			 
+			<div class="figure">
+	<table class="figure"><tr><td class="figure_caption">Neo4j Desktop navigation is in the upper right corner. From here you can navigate to the Import, PlugIn and Configuration folders.</td></tr>
+	<tr><td bgcolor="white"><img src="https://blobswai.blob.core.windows.net/images/Neo4j_directory_navigation.jpg" width="300px"  /></td>
+	<tr><td class="figure_footer"></td></tr>
+	</table> <br>
+				</li>
+			 
            <li>Open the file neo4j.conf in a text editor (Notepad or Notepad++; not Word or other tools that add extraneous text). Save this original file in case something goes awry and you need to revert to it.</li>
            <li>At the bottom of the config file paste these lines:<blockquote>
              apoc.export.file.enabled=true<br>
