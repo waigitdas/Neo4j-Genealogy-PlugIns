@@ -34,6 +34,7 @@ import java.util.List;
              
         String cq = "match (p1:Person{RN:" + rn1 + "})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(p2:Person{RN:" + rn2 + "})  with mrca order by mrca.sex desc return mrca.RN as rn" ;    
         String r =mrca_qry_rn(cq).replace("]; [", ", ");
+        r = r.replace("[","").replace("]","");
         return r;
             }
      }

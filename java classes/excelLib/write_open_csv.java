@@ -25,7 +25,7 @@ public class write_open_csv {
 
     public static void write_csv(String content) {
         try{
-        String f =neo4j_info.Import_Dir +  "_project_stats.csv";
+        String f =neo4j_info.Import_Dir + gen.neo4jlib.neo4j_info.user_database +  "_project_stats.csv";
         File fn = new File(f);
         FileWriter fw = new FileWriter(fn);
         fw.write(content);

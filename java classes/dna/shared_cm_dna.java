@@ -1,27 +1,26 @@
-/**
- * Copyright 2021 
- * David A Stumpf, MD, PhD
- * Who Am I -- Graphs for Genealogists
- * Woodstock, IL 60098 USA
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-package gen.rel;
+package gen.dna;
+
 import gen.neo4jlib.neo4j_qry;
 import static java.lang.Integer.max;
 import static java.lang.Integer.min;
-//    import org.neo4j.driver.AuthTokens;
-//    import org.neo4j.driver.net.ServerAddress;
-   
-    import org.neo4j.procedure.Name;
-    import org.neo4j.procedure.UserFunction;
-    import org.neo4j.procedure.Description;
-  
-            
-      
-    public class relationship {          
+import org.neo4j.procedure.Description;
+import org.neo4j.procedure.Name;
+import org.neo4j.procedure.UserFunction;
+
+/**
+ *
+ * @author david
+ */
+public class shared_cm_dna {
         @UserFunction
         @Description("Input length of path of two descendants to the common ancestor and the number of common ancestors. Returns the relationship if MRCA count <3. Used in other queries to simplify query and speed processing")
         
-    public String relationship_from_path(
+    public String expected_cm(
         @Name("mrca_ct") 
             Long mrca_ct,
         @Name("path1") 
@@ -36,7 +35,7 @@ import static java.lang.Integer.min;
         String cq="";
 
         String Indx = String.valueOf(min(path1.intValue(),path2.intValue())).strip() + ":" + String.valueOf(max(path1.intValue(), path2.intValue())).strip() + ":"+ String.valueOf(mrca_ct).strip();
-         cq = "match (f:fam_rel) where f.Indx='" + Indx + "' return f.relationship" ;    
+         cq = "match (f:fam_rel) where f.Indx='" + Indx + "' return f.MeanSharedCM as cm" ;    
         
          try{
         String r = mrca_qry(cq);

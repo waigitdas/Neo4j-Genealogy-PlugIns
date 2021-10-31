@@ -20,7 +20,14 @@ public class current_date_time {
         return dtf.format(now);
     }
     
+    public static String getGEDCOMdate(){
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd MMM yyyy");  
+        LocalDateTime now = LocalDateTime.now();  
+        return dtf.format(now);
+    }
+    
     public static void main(String args[]) {
         System.out.println(getDateTime());
+        System.out.println(getGEDCOMdate());
     }
 }

@@ -27,24 +27,23 @@ public class project_reports {
   )
     {
          { 
-        gen.neo4jlib.neo4j_info.neo4j_var();
         String r = stats(); 
         return r;
             }
      }
     
     public static String stats() {
-        gen.neo4jlib.neo4j_info.neo4j_var();
+        gen.neo4jlib.neo4j_info.neo4j_var_reload();
         String s = "";
         s = s + "kits,"  + gen.neo4jlib.neo4j_qry.qry_str("match (k:Kit) return count(*) as ct") + "\n";
         s = s + "kits in genealogy,"  + gen.neo4jlib.neo4j_qry.qry_str("MATCH p=()-[r:Gedcom_FF_Kit]->() RETURN count(*)") + "\n";
         s = s + "at-DNA matches,"  + gen.neo4jlib.neo4j_qry.qry_str("match (k:DNA_Match) return count(*)") + "\n";
         s = s + "chromosome segments,"  + gen.neo4jlib.neo4j_qry.qry_str("match (k:Segment) return count(*)") + "\n";
         s = s + "Person in genealogy,"  + gen.neo4jlib.neo4j_qry.qry_str("match (k:Person) return count(*)") + "\n";
-       System.out.println(s);
+       //System.out.println(s);
        
         gen.excelLib.write_open_csv.write_csv(s);
-        return s;
+        return "COMPLETED";
     }
   
       

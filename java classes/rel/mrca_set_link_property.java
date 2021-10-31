@@ -22,7 +22,7 @@ public class mrca_set_link_property {
   )
     {
         { 
-        gen.neo4jlib.neo4j_info.neo4j_var();
+        gen.neo4jlib.neo4j_info.neo4j_var_reload();
         String s = set_property(ancestor_rn);
         return s;
             }

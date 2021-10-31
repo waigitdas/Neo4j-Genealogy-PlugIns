@@ -43,7 +43,7 @@ public class upload_Y_DNA_Haplotree {
 //    }
     
     public String upload_FTDNA_Y_haplotree() {
-        gen.neo4jlib.neo4j_info.neo4j_var();
+        gen.neo4jlib.neo4j_info.neo4j_var_reload();
         
         //delete prior haplotree data
         gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:block_child]-() delete r");

@@ -59,7 +59,7 @@ public class create_segment_sequence_edges {
             String c = gen.neo4jlib.file_lib.readFileByLine(neo4j_info.Import_Dir +  fn);
             String[] cc = c.split("\n");
             FileWriter fwp;
-            String fns =  "seg_seq_" + chr + ".csv";
+            String fns =  "seg_seqcsv";  //_" + chr + ".
           try{
                String tmp[]=cc[1].split(Pattern.quote("|"));
                 String curr_tg = tmp[0];

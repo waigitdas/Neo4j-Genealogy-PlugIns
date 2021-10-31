@@ -29,7 +29,7 @@ public class load_all_files {
         }
         
     public  String load_files(String famTag) {
-        gen.neo4jlib.neo4j_info.neo4j_var();  //initialize variables
+        gen.neo4jlib.neo4j_info.neo4j_var_reload();  //initialize variables
         gen.conn.connTest.cstatus();
         
         upload_gedcom g = new upload_gedcom();

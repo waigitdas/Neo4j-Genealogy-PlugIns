@@ -44,7 +44,7 @@ public  String load_ftdna_csv_files(
     }
     
     public  void load_ftdna_files() {
-        neo4j_info.neo4j_var(); //initialize user information
+        neo4j_info.neo4j_var_reload(); //initialize user information
         gen.conn.connTest.cstatus();
 
         String root_dir= gen.neo4jlib.neo4j_info.root_directory;
@@ -78,7 +78,9 @@ public  String load_ftdna_csv_files(
         file_lib.get_file_transform_put_in_import_dir(root_dir + curated_file, "RN_for_Matches.csv");
         neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS line FIELDTERMINATOR '|' merge (l:Lookup{fullname:toString(line.Match_Name),RN:toInteger(case when line.Curated_RN is null then 0 else line.Curated_RN end),kit:toString(case when line.Kit is null then '' else line.Kit end)})");
         
-        gen.ref.family_relationships.load_family_relationships();
+        //create instances class to load reference data
+        gen.ref.fam_rel fr = new gen.ref.fam_rel();
+        fr.load_family_relationships();
         
         File file = new File(root_dir);
         String[] directories = file.list(new FilenameFilter() {
@@ -319,7 +321,8 @@ if (hasSegs==true){
           neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
          
       //Links using curated data
-         neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS line FIELDTERMINATOR '|' match (f:DNA_Match{fullname:toString(line.Match_Name)}) set f.RN=toInteger(line.Curated_RN)");
+         neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS line FIELDTERMINATOR '|' match (f:DNA_Match{fullname:toString(line.Match_Name)}) set f.curated=1");
+        neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS line FIELDTERMINATOR '|' match (f:DNA_Match{fullname:toString(line.Match_Name)}) set f.RN=toInteger(line.Curated_RN)");
          neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS line FIELDTERMINATOR '|' match (f:DNA_Match{fullname:toString(line.Match_Name)}) set f.kit=toString(line.Kit)");
          //neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS line FIELDTERMINATOR '|' match (f:DNA_Match{fullname:toString(line.Match_Name)}) set f.email=toString(line.email)\"");
          neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS line FIELDTERMINATOR '|' match (k:Kit{kit:toString(line.Kit)}) set k.RN=toInteger(line.Curated_RN)");

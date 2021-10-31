@@ -21,8 +21,12 @@ package gen.neo4jlib;
     import java.util.*;  
     import java.util.regex.Matcher;
     import java.util.regex.Pattern;
+    import org.neo4j.driver.Record;
+    //import org.javatuples.Pair;
+    import org.neo4j.driver.Value;
+    import org.neo4j.driver.Values;
     import org.neo4j.graphdb.Path;
-
+    import org.neo4j.driver.util.Pair;
 
 public class neo4j_qry {
     
@@ -76,6 +80,32 @@ public class neo4j_qry {
    
    //****************************************************
    
+    public static String qry_to_csv(String cq) {
+        gen.conn.connTest.cstatus();
+        Session java_session =  gen.conn.connTest.session;
+
+        return java_session.readTransaction( tx -> {
+            String c = "";
+             int rw = 0;
+            Result result = tx.run(cq );
+            while ( result.hasNext() )
+            {
+                Record r = result.next();
+           
+                List<Value> v =  r.values();
+                  for (int i = 0; i < v.size(); i++) {
+                  c = c + String.valueOf(r.values().get(i));
+                  if (i <v.size()-1) { c = c + ",";
+                  }
+                  else { c = c + "\n"; }
+                 }
+                    rw = rw + 1;
+                }
+           return c;
+        }) ;
+    }
+     
+    
    public static List<String> qry_str_list(String cq) {
         gen.conn.connTest.cstatus();
         Session java_session =  gen.conn.connTest.session;
@@ -182,16 +212,16 @@ public class neo4j_qry {
         gen.conn.connTest.cstatus();
         Session java_session =  gen.conn.connTest.session;
 
-            return java_session.readTransaction( tx -> {
-            String names = "";
+            return java_session.writeTransaction( tx -> {
             
-            String q = "call apoc.export.csv.query(\"" + cq+ "\",'" + csv_File + "' , {delim:'|', quotes: false, format: 'plain'})"; 
+            
+            String q = "call apoc.export.csv.query(\"" + cq+ "\",'" + csv_File + "' , {delim:'|', stream:true, quotes: false, format: 'plain'})"; 
                         
             tx.run(q);
   
                         
             java_session.close();
-             return names;
+             return q;
         } 
             );
            

@@ -50,31 +50,26 @@ public class queries_to_excel {
     
 //public static newWorkbook()    
     
-public static String qry_to_excel(String cq,String FileNm,String SheetName, int SheetNumber, String ColWidths, String colNumberFormat, String ExcelFile, Boolean OpenFile ) {
+public static String qry_to_excel(String cq,String FileNm,String SheetName, int SheetNumber, String ColWidths, String colNumberFormat, String ExistingExcelFile, Boolean OpenFile ) {
 
-    gen.neo4jlib.neo4j_info.neo4j_var();  // initialize user variable
+    gen.neo4jlib.neo4j_info.neo4j_var_reload();  // initialize user variable
     gen.conn.connTest.cstatus();
     
     String csvFile = gen.neo4jlib.neo4j_info.Import_Dir + FileNm + ".csv";  // intermediate file to be saved
+    
+     //create csv from results
+     String q = gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited(cq, FileNm + ".csv");  //uses apoc and save defaults to import dir
+     
     String excelFile = "";
     String excelFileNm = "" ;
     File file;
     WritableWorkbook w;
     
-    //create csv from results
-     gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited(cq,FileNm + ".csv");  //uses apoc and save defaults to import dir
-     //get and parse lines of csv
-     String c="";
-     try{
-     c = gen.neo4jlib.file_lib.readFileByLine(csvFile);
-  
-     }
-     catch (Exception e) {
-     }
+   
     //set up excel. Create new or open prior if there are to be multiple worksheets
      try{
-    if (ExcelFile=="") {
-    excelFile = gen.neo4jlib.neo4j_info.Import_Dir + FileNm + ".xls";;
+    if (ExistingExcelFile=="") {
+    excelFile = gen.neo4jlib.neo4j_info.Import_Dir + FileNm + "_" + gen.genlib.current_date_time.getDateTime() + ".xls";;
     excelFileNm=excelFile;
     file = new File(excelFileNm);
     WorkbookSettings wbSettings = new WorkbookSettings();
@@ -82,7 +77,7 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
     w = Workbook.createWorkbook(file, wbSettings);
     }
     else {
-        excelFile=ExcelFile;
+        excelFile=ExistingExcelFile;
         excelFileNm=excelFile;
         file = new File(excelFile);
        Workbook existingWorkbook = Workbook.getWorkbook(new File(file.getAbsolutePath()));
@@ -95,7 +90,17 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
 
      //**************************************** 
 
+    //get and parse lines of csv
+     String c="";
+     try{
+     c = gen.neo4jlib.file_lib.readFileByLine(csvFile);
+  
+     }
+     catch (Exception e) {
+     }
+    
  
+     
 //iterate through csv lines to create excel worksheets within the active workbook
     String[] rws = c.split("\n");
     int rows = rws.length;
