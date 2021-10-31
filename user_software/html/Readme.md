@@ -12,7 +12,7 @@ It is suggested that you read these in this order and not sequentially from the 
  <li><a href="https://blobswai.blob.core.windows.net/gfg-software/help_curatedfiles.html">Expert curation to link family tree to DNA results</a></li>
  <li><a href="https://blobswai.blob.core.windows.net/gfg-software/Help_Upload_Data.html">Extract, transform and load (ETL) genealogy data to Neo4j</a></li>
  <li><a href="https://blobswai.blob.core.windows.net/gfg-software/help_enhancements.html">Enhancement to the Graph Schema / Data to facilitate genealogy analytics</a></li>
- <li><a href="https://blobswai.blob.core.windows.net/gfg-software/help_reports.html">Reports (new)</a></li>
+ <li><a href="https://blobswai.blob.core.windows.net/gfg-software/help_reports.html">Reports (new)</a>, still in development</li>
  <!--<li><a href="https://blobswai.blob.core.windows.net/gfg-software/"></a></li>
  <li><a href="https://blobswai.blob.core.windows.net/gfg-software/"></a></li>-->
 </ol>  
