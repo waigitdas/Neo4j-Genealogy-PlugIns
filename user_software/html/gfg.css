@@ -7,6 +7,9 @@ td.header {
 body.help{
 	background-color:lightgreen;
 }
+body.report{
+	background-color:palegoldenrod;
+}
 td.subheader {
 	color: #2D4F87;
 	font-size: 16px;
@@ -16,11 +19,25 @@ td.subheader {
 }
 td.footer {
 	color: #2D4F87;
-	align-items: left;
+	align-items: center;
 	font-size: 10px;
 }
 b.title {
 	font-weight: bold;
 	font-size: 20px;
-	
+}
+b.cypher{
+	background-color:burlywood;
+}
+b.udf {
+	background-color:lightgreen;
+
+}
+b.red {
+	color:red;
+}
+h3.report{
+	font-size: 22px;
+	font-variant: small-caps;
+	color: blue; 
 }

@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Welcome</title>
+ <link rel="import" href="/header.html">
+
+</head>
+  <link rel="stylesheet" href="gfg.css">
+<body class="report">
+
+
+
+	<b class="title">Most Recent Common Ancestors (MRCA)</b><br><br>
+	
+	<b>Background</b><br><br>
+	
+	Finding common ancestors is a basic goal of genealogy research. It's pretty easy for cousins, aunts, second cousins, but can get more complex in many scenarios. The number of hops in the traversal to a MRCA for each descendant defines the relationship between the descendants. Thus, we need to compute the hops. The number of common ancestors is also important. Half cousins (1 MRCA) will share less DNA that full cousins (2 MRCA). Having more than 2 MRCAs alters us to be cautious about DNA matches because it is more difficult to determine branch of the family trees that account for the match. 
+<br>
+	<hr>
+
+
+	<h3 class="report">MRCA of two Persons</h3>
+	
+	<b>Data Requirements</b><br><br>
+	
+		The report uses the relationships between Person nodes and the father and mother relationships. It uses a reference table with the relationships (see below)<br><br>
+
+
+	<b>Purpose of the Report</b><br><br>
+
+		Identify the relationship of by two individuals.<br><br>
+	
+		
+	<b>The Neo4j Query</b><br><br>
+	
+	<b class="cypher"> 
+		match path = (p:Person{RN:1})-[:father|mother*0..10]->(mrca:Person)<-[:father|mother*0..10]-(b:Person{RN:600}) 
+ return mrca.fullname + ' [' + mrca.RN + '] (' + mrca.BD + '-' + mrca.DD + ')' <br>
+	</b>
+	<br>
+	The query in cypher is intuitive. There are 2 Person nodes with specified RN properties traversing the graph up to 10 generations towards a common ancestor. In genealogy this returns one (half-relative), 2 (full relative) or more when there are common ancestors in more than one line.<br><br>  
+
+		<b class="udf"> 
+		return gen.rel.mrca_str(1,25773) as mrca<br>
+	</b>
+	<br>
+	Because this is such a common computation in genealogy, there is a user defined function. 
+	<hr>	
+	
+	<h3 class="report">Path lengths to MRCA(s)</h3>
+	
+	<b>Data Requirements</b><br><br>
+	
+		The report uses the relationships between Person nodes and the father and mother relationships. It uses a reference table with the relationships (see below)<br><br>
+
+
+	<b>Purpose of the Report</b><br><br>
+
+		Identify the relationship of by two individuals.<br>
+	
+		
+	<b>The Neo4j Query</b><br><br>
+	
+	<b class="cypher"> 
+match path = (p:Person{RN:5424})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(b:Person{RN:1})  return count(*) as Ct_MRCAs,size(r1) as Path1,size(r2) as Path2</b><br>
+	<br>
+	There are 2 Person nodes with specified RN properties traversing the graph up to 15 generations towards a common ancestor. The count is is number of MRCAs and Path1 and Path2 are the number of hops for each descendant. The results in this query with the author's family tree were 1, 3, 5, which is the unique pattern for H2C2R or half second cousin twice removed. <br><br>
+		
+	<b class="udf">
+		return gen.rel.relationship_from_path(3,5,1)
+		</b>
+	</b>
+	<br><br>
+	Because this is such a common computation in genealogy, there is a user defined function which takes these 3 variables and looks up the relationship. In this case, it's H2C2R 
+	<hr>	
+		<br><br>
+	
+	<h3 class="report">MRCA of more than two Persons</h3>
+	
+	<b>Data Requirements</b><br><br>
+	
+		The report uses the relationships between Person nodes and the father and mother relationships. <br><br>
+
+
+	<b>Purpose of the Report</b><br><br>
+
+		It's more complicated to find a common ancestor for a list of persons. There may be different common ancestors for each pair in the list and a more distant ancestor for all onn the list. A graph query can find that common ancestor for all, if there is such an ancestor.<br><br>
+	
+		
+	<b>The Neo4j Query</b><br><br>
+	
+	<b class="cypher"> 
+		match (c:Person) where c.RN in [<bold class="red">1,922,1926,594,5242</bold>]<br>
+		with c order by c.RN <br>
+	With collect(distinct c.RN) As cc <br>
+	match (c2:Person)-[:father|mother*0..<bold class="red">10</bold>]->(MRCA:Person)<-[:father|mother*0..<bold class="red">10</bold>]-(c3:Person) where c2.RN in cc And c3.RN in cc <br>
+	with MRCA,cc,c2 order by c2.RN <br>
+	with MRCA,cc,collect(distinct c2.RN) as cc2 <br>
+	with distinct cc,cc2,MRCA.fullname + ' [' + MRCA.RN + ']' as CommonAncestor where cc2=cc <br>
+	return CommonAncestor<br>
+	</b>
+	<br>
+	The query is complex and requires a list of RNs and two entries for the number of generations. <br><br>  
+
+		<b class="udf"> 
+		return gen.rel.mrca_from_list("1,922,1926,594,5242",10)<br>
+	</b>
+	<br>
+	Because this is such a common computation in genealogy, there is a user defined function. In this case, the 5 persons did share one common ancestor who mane was returned by the function.
+	<hr>	
+	
+<hr>	
+	<br><br>
+	
+	<div>
+ <hr>
+	<table>
+  <tr>
+    <td><img src="https://blobswai.blob.core.windows.net/wai/logo.png" height="40px" /></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+	  <td class="footer">Graphs for Genealogists&trade;<br>Who Am I<br>1101 Alpine Lane<br>Woodstock, IL 60098 USA<br><a href="mailto:info@wai.md?subject=Graphs for Genealogists Inquiry">info@wai.md</a>&nbsp;&nbsp;&nbsp;&copy;2021</td>
+  </tr>
+</table>
+
+</div>
+<br><br>
+
+</body>
+</html>

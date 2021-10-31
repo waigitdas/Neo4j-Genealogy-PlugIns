@@ -1,0 +1,277 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Family Tree reports</title>
+ <link rel="import" href="/header.html">
+
+</head>
+  <link rel="stylesheet" href="gfg.css">
+<body class="report">
+
+
+	<b class="title">Family Tree Reports</b><br><br>
+	
+	<b>Background</b><br><br>
+	
+	Family trees are bread and butter genealogy. They are easy to create with graph methods because they are graphs. There are many perspective that genealogists use, some of which are outlined here.  
+<br><br>
+
+	<h3 class="report">Pedigree</h3>
+	
+	<b>Data Requirements</b><br><br>
+ 
+	The report uses the relationships between Person nodes and the father and mother relationships. <br>
+	
+<b>Purpose of the Report</b><br><br>
+
+The report creates a pedigree with the specified number of generations
+	
+	<br><br>
+		
+	<b>The Neo4j Query</b><br><br>
+	
+	<b class="cypher">
+	match path = (p:Person{RN:1})-[r:father|mother*0..5]->(a:Person) return path 
+	</b>
+	<br><br>
+	Enter the RN of the Person desired and replace the 5 with the number of generations you'd like to return.
+<hr>	
+
+	<h3 class="report">Pedigree Completeness</h3>
+	
+	<b>Data Requirements</b><br><br>
+ 
+	The report uses the relationships between Person nodes and the father and mother relationships. <br><br>
+	
+	
+<b>Purpose of the Report</b><br><br>
+
+This report assesses the completeness of the pedigree at each generation for a specified person in your GEDCOM. If you or your DNA match have an incomplete pedigree then multiple common ancestors, if they exist, may not be exposed in analytics. You should be cautious in assigning a common ancestor when pedigree data is limited.
+	
+	<br><br>
+		
+	<b>The Neo4j Query</b><br><br>
+	
+	<b class="cypher">
+	match p=(n:Person{RN:1})-[:father|mother*..99]->(x) <br>
+	with reduce(n=0,q in nodes(p)|n+1) as gen  <br>
+	RETURN gen, count(*) as Observed,2^(gen-1) as Expected,count(*)/(2^(gen-1)) as Ratio <br>
+	order by gen
+	</b>
+	<br><br>
+	Change the RN to the desired person in your GEDCOM. The query counts the number of ancestors in each generation. Count(*) is an aggregation function and, in this case, it is by gen (the generation). The query uses the Neo4j Cypher reduce which iterates each generation and adds 1 for each iteration; this is a counter. It then uses this count to compute the expected number of ancestors, which is doubled each generation. Finally it computes the ratio or completeness of the pedigree at that generation. 
+<hr>	
+
+		
+	<h3 class="report">Pedigree Collapse: Coefficient of Relationship</h3>
+	
+	<b>Data Requirements</b><br><br>
+ 
+	The report uses the relationships between Person nodes and the father and mother relationships. <br><br>
+	
+	
+<b>Purpose of the Report</b><br><br>
+
+	The <a href="https://www.yourdnaguide.com/ydgblog/2019/7/26/calculating-the-pedigree-collapse-effect-in-your-dna-matches" target="new">coefficient of relationship</a> is a measure of intermarriage within a family. The calculation compares two individuals in the same family tree and the number and positions in the family tree of their shared ancestors. 
+	<br><br>
+		
+	<b>The Neo4j Query</b><br><br>
+	
+	<b class="udf">
+		return gen.rel.compute_cor(1,600) as COR
+	</b>
+	<br><br>
+	This function returns the coefficient of relationship.
+	
+	<br><br>
+	<b class="udf">
+		return gen.rel.shared_DNA(1,341)
+	</b>
+	<br><br>
+	This function returns a detailed report with the propositi (2 persons), and a  row each for the common ancestors, relationship through them, coefficient of relationship, actual and expected shared cm.<br><br> 
+<hr>	
+
+		
+	<h3 class="report">Sorted Pedigree with Ahnentafel</h3>
+	
+	<b>Data Requirements</b><br><br>
+ 
+		The report uses the relationships between Person nodes and the father and mother relationships. 
+	<br><br>
+	
+<b>Purpose of the Report</b><br><br>
+
+	The report generates a pedigree with ancestors sorted in Ahnentafel order. 
+	<br><br>
+		
+	<b>The Neo4j Query</b><br><br>
+	
+	<b class="cypher">
+MATCH (n:Person{RN:1})<br>
+		match p=(n)-[:father|mother*0..99]->(x) <br>
+	with x.fullname + ' [' + x.RN + '] (' + left(x.BD,4) + '-' + left(x.DD,4) + ')' as Name,<br>
+	length(p) as gen,<br>
+	reduce(srt2 ='', q IN nodes(p)| srt2 + replace(replace(q.sex,'M','A'),'F','B')) AS sortOrder,<br>
+	'1' + reduce(srt ='', q IN nodes(p)|srt + case when q.sex='M' then '0' else '1' end ) AS Anh <br>
+	with Name,gen,sortOrder,'1' + right(Anh,size(Anh)-2) as Ahnen <br>
+	return Name,gen,sortOrder,Ahnen,gen.rel.ahnentafel(Ahnen) as Ahnentafel <br>
+	order by gen,sortOrder	</b>
+	<br><br>
+This query illustrates several concepts. The fist two lines traverse the pedigree graph, similar to queries above. The Name is a concatenation of the Person node properties. It then uses the reduce function to create two sortable variables. Both are based on the Person sex property. The reduce function produces a concantenated string (A's and B's) or bitstring (1's and 0's). Because of the order they are added they allow a sort that puts the returned list in pedigree / ahnentafel order. The last feature is the use of the user defined function gen.rel.ahnentafel which converts the Ahnen bitstring (a base 2 number) to a more human friendly base 10 traditional Ahnentafel number. This Ahnentafel function is used elsewhere in reporting.<br><br>
+	
+	Before we leave Ahnentafels, let's see what else is in the toolkit. The Ahnentafel is a concatenated bitstring that is, in numeric terms, a base-2 number. When we prepare some reports we that involve paths to a common ancestor, it takes a lot of text to get the fullnames into a report. So, it is more compact and easier to read if we use Ahnentafel numbers. It's qquite simple. Let's take one of you maternal 5 great grandfathers. As you traverse the path to him you collect an Ahnentafel of 11001110 which is 206 in Base-10. The Ahnentafel path is computed by sequentially truncating the bigstring as follows:<br>
+	
+	11001110 = 206<br>
+	1100111  = 103<br>
+	110011  = 51<br>
+	11001  = 25<br>
+	1100  = 12<br>
+	110  = 6<br>
+	11  = 3<br>
+	1  = You<br>
+	
+	We have this user defined function
+	<b class="udf"> 
+		return gen.rel.ahn_path('11001110')
+	</b> 
+	which returns the list [1, 3, 6, 12, 25, 51, 103, 206], sufficiently and unambiguously defining the path.
+	
+	<br><br>
+	<hr>	
+
+	<h3 class="report">Descendant tree from specified ancestor limited to DNA Testers</h3>
+	
+	<b>Data Requirements</b><br><br>
+ 
+		The report uses the relationships between Person nodes and the father and mother relationships. 
+	<br><br>
+	
+<b>Purpose of the Report</b><br><br>
+
+	The report generates a tree from a specified ancestor to descendants who were DNA testers. 
+	<br><br>
+		
+	<b>The Neo4j Query</b><br><br>
+	
+	<b class="cypher">
+match (n:Person)-[z:Gedcom_DNA]->(m) <br>
+	with collect(m.RN) + collect(n.RN) as DM <br>
+		optional match path=(p:Person{RN:<b class="red">53</b>})<-[:father|mother*0..99]-(q:Person) where q.RN in DM <br>
+	with p,path,collect(last(nodes(path))) as cEnds <br>
+	optional match (q:Person)-[r:Gedcom_DNA]->(s:Person) where q in cEnds <br>
+	with r,p,[m in cEnds|m.fullname + gen.neo4jlib.RNwithBrackets(m.RN)] as E,[n in nodes(path)|n.fullname +  gen.neo4jlib.RNwithBrackets(n.RN) + ' (' + left(n.BD,4) + '-' +  left(n.DD,4) + ')  ' ] as N <br>
+	return distinct p.fullname + gen.neo4jlib.RNwithBrackets(p.RN) as MRCA, E as Descendant_DNA_Tester,size(N) as generations, N as Path_to_Descendant_Tester
+	</b>
+	<br><br>
+	Replace the RN (now 53) with the record number of the desired ancestor. This query utilizes the "last" function to pull out the last node in a path. 
+	<br><br>
+	<hr>	
+
+	<h3 class="report">Patrilineal tree</h3>
+	<b>Data Requirements</b><br><br>
+ 	
+			These report uses the relationships between Person nodes and the father relationship. <br><br>
+
+	<br><br>
+	
+<b>Purpose of the Report</b><br><br>
+
+	There are three reports with differing perspective on the inheritance of the Y-chromosome. While there are small portions of the Y-chromosome with homologs on the X-chromosome subject to segregation, genealogists general concern themselves with the non-segregating portions that pass strictly father to son. The first report lists the patrilineal ancestral line of the specified person. The second lists the patrilineal descendants of a specified ancestor. The third lists all the patrilineal relatives of the specified man. 
+	<br><br>
+
+		<b>Patrilineal Direct Ancestors</b><br><br>
+	
+	<b class="cypher">
+MATCH (n:Person{RN:1})<br>
+match p=(n)-[:father*0..99]->(x) <br>
+with x.fullname + ' [' + x.RN + '] (' + left(x.BD,4) + '-' + left(x.DD,4) + ')' as Name,
+length(p) as gen,<br>
+reduce(srt2 ='', q IN nodes(p)| srt2 + replace(replace(q.sex,'M','A'),'F','B')) AS sortOrder,<br>
+'1' + reduce(srt ='', q IN nodes(p)|srt + case when q.sex='M' then '0' else '1' end ) AS Anh <br>
+with Name,gen,sortOrder,'1' + right(Anh,size(Anh)-2) as Ahnen <br>
+return Name,gen,sortOrder,Ahnen,gen.rel.ahnentafel(Ahnen) as Ahnentafel <br>
+order by gen,sortOrder<br>
+	</b>
+	<br><br>
+	This query is the same as the prevous one except it is traversing only the patrilineal line and ignores the matrilineal line.<br><br>
+	
+			<b>Patrilineal Direct Descendants</b><br><br>
+	
+	<b class="cypher">
+MATCH (n:Person{RN:26493})<br>
+match p=(n)<-[:father*0..99]-(x) <br>
+with x.fullname + ' [' + x.RN + '] (' + left(x.BD,4) + '-' + left(x.DD,4) + ')' as Name,
+length(p) as gen<br>
+with Name,gen<br>
+return Name,gen<br>
+order by gen,Name<br>
+	</b><br>
+	
+	This query starts with the specified ancestor and traverses the graph to all nodes (men) in patrilineal descendant line. 
+	<hr>
+	
+			<b>All Patrilineal Relatives</b><br><br>
+	
+	<b class="cypher">
+MATCH (n:Person{RN:5})<br>
+match p=(n)-[:father*0..99]->(patriarch:Person)<br>
+with patriarch<br>
+match p=(x:Person)<-[:father*0..99]-(patriarch:Person)<br>
+with x.fullname + ' [' + x.RN + '] (' + left(x.BD,4) + '-' + left(x.DD,4) + ')' as Name, length(p) as gen<br>
+with Name,gen<br>
+return Name,gen<br>
+order by gen,Name<br>
+	</b><br>
+	
+	When genealogist do patrilineal genetic research they want to test men on various branches of the family tree. This query finds them. It starts with any man and traverses the graph to the patriarch (most distant known patrilineal ancestor) and then traverses down to all his patrilineal descendants.
+	
+	These patrilineal queries discover all the men in their perspective, but they do not order then in a hierarchical manner. To organize them in hierarchical order we need a more sophistocated query. 
+	<hr>
+	
+		<h3 class="report">Matrilineal tree</h3>
+	The matrilineal tree queries are exactly the same as the patrilineal queries except we change 2 letter: <b class="red"></b>fa</b>ther becomes <b class="red"></b>mo</b>ther.
+	
+
+
+
+
+	<h3 class="report">X-Linked tree</h3>
+	<b>Data Requirements</b><br><br>
+			These reports use the relationships between Person nodes and the father and mother relationships. <br><br>
+ 	
+	<br><br>
+	
+<b>Purpose of the Report</b><br><br>
+
+X-linked tree are fun in graph queries! The X-chromosome is transmitted by fathers only to daughters. Thus, there is no father to son transmission. 
+	<br><br>
+
+		<b>The Neo4j Query 1</b><br><br>
+	
+	<b class="cypher">
+		match p=(n:Person{RN:32})<-[:father|mother*..99]-(m)<br>
+		with m, reduce(status ='', q IN nodes(p)| status + q.sex) AS c, <br>
+		reduce(srt2 ='|', q IN nodes(p)| srt2 + q.RN + '|') AS PathOrder <b class="red">where c=replace(c,'MM','')</b> <br>
+		return distinct m.fullname as Fullname<br>
+	</b>
+	<br><br>
+	The query collects sex (M or F) as it tranverses the family tree. It then filters out any bitstring containing MM which represents a father to son transmission. 
+			<b>The Neo4j Query 2</b><br><br>
+	
+	<hr>
+
+<div>
+
+	<table>
+  <tr>
+    <td><img src="https://blobswai.blob.core.windows.net/wai/logo.png" height="40px" /></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+	  <td class="footer">Graphs for Genealogists&trade;<br>Who Am I<br>1101 Alpine Lane<br>Woodstock, IL 60098 USA<br><a href="mailto:info@wai.md?subject=Graphs for Genealogists Inquiry">info@wai.md</a>&nbsp;&nbsp;&nbsp;&copy;2021</td>
+  </tr>
+</table>
+
+</div>
+<br><br>
+
+</body>
+</html>

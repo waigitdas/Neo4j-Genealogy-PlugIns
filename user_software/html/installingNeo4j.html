@@ -18,6 +18,12 @@
       <li>Install Neo4j Enterprise Edition, version 4.x.  The process starts <a href="https://neo4j.com/download-neo4j-now/" target="new"><span style="color:red">here</span></a>. </li>
       <li>When you first open the software you see the "home page." You do not yet have your database.</li> 
 <li>From the home page you create a project with a name of your chosing. A project can hold numerous databases which might support projects on several family lines.</li>
+			<li>Next, open the Neo4j browser. Their are two options</li>
+			<ol type="a">
+			<li>Click the Open button in Neo4j Desktop (see figure below)</li>
+				<li>In your browser, using this url: <a href="http://localhost:7474/browser/">http://localhost:7474/browser/</a></li> 
+			</ol>
+		<li>The browser will ask you to login. The user name is neo4j. The initial password is also neo4j. But you will be asked to enter your own password; do not forget it!</li>
        <li>Create your first database by opening the Neo4j browser, selecting the system database and typing this command: create database {name} 
          {your database name}. The name must be only lower letters. You can create other databases by repeating this command. To delete a database type drop database {name}.</li>
        <li>Verify that you can start and stop the project database from the home page. This is important because the next steps may damage the functionality and you'd like to learn where this happened. Thus, be careful with this step.</li>
@@ -26,7 +32,7 @@
            <li>Open the configuration folder. The Neo4j application opens to a "home page" from which you can open the Configuration folder. The link is in the "...." icon to the right of your project "Open" button. The navigation is "...." ➔ Open Folder ➔ Configuration.<br><br>
 			 
 			<div class="figure">
-	<table class="figure"><tr><td class="figure_caption">Neo4j Desktop navigation is in the upper right corner. From here you can navigate to the Import, PlugIn and Configuration folders.</td></tr>
+	<table class="figure"><tr><td class="figure_caption">Neo4j Desktop navigation is in the upper right corner. From here you can Open the Neo4j Browser or navigate to the Import, PlugIn and Configuration folders.</td></tr>
 	<tr><td bgcolor="white"><img src="https://blobswai.blob.core.windows.net/images/Neo4j_directory_navigation.jpg" width="300px"  /></td>
 	<tr><td class="figure_footer"></td></tr>
 	</table> <br>

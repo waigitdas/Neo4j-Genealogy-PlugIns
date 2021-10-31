@@ -1,0 +1,235 @@
+{
+  "_type": "Person",
+  "_id": 52,
+  "fullname": "William H. Averatts",
+  "RN": 53,
+  "father": [
+    {
+      "_type": "Person",
+      "_id": 17066,
+      "fullname": "William M. Avitts",
+      "RN": 17091,
+      "father": [
+        {
+          "_type": "Person",
+          "_id": 4610,
+          "fullname": "Charles L Avitts",
+          "RN": 4616,
+          "father": [
+            {
+              "_type": "Person",
+              "_id": 28776,
+              "fullname": "Cheslie Elmer Avitts",
+              "RN": 28855,
+              "father": [
+                {
+                  "_type": "Person",
+                  "_id": 28775,
+                  "fullname": "Gary Lynn Avitts",
+                  "RN": 28854,
+                  "father": [
+                    {
+                      "_type": "Person",
+                      "_id": 30145,
+                      "fullname": "? Avitts",
+                      "RN": 30236
+                    }
+                  ]
+                },
+                {
+                  "_type": "Person",
+                  "_id": 28778,
+                  "fullname": "Gilbert Cheslie Avitts",
+                  "RN": 28857,
+                  "father": [
+                    {
+                      "_type": "Person",
+                      "_id": 28780,
+                      "fullname": "Michael Charles Avitts",
+                      "RN": 28859
+                    }
+                  ]
+                },
+                {
+                  "_type": "Person",
+                  "_id": 28781,
+                  "fullname": "Stephen Craig Avitts",
+                  "RN": 28860
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "_type": "Person",
+          "_id": 4700,
+          "fullname": "Jessie Constance Avitts",
+          "RN": 4706,
+          "father": [
+            {
+              "_type": "Person",
+              "_id": 26380,
+              "fullname": "Stanley Leroy Avitts",
+              "RN": 26432,
+              "father": [
+                {
+                  "_type": "Person",
+                  "_id": 26386,
+                  "fullname": "Steven Avitts",
+                  "RN": 26438
+                },
+                {
+                  "_type": "Person",
+                  "_id": 26387,
+                  "fullname": "David Avitts",
+                  "RN": 26439
+                }
+              ]
+            },
+            {
+              "_type": "Person",
+              "_id": 26379,
+              "fullname": "Paul Donald Avitts",
+              "RN": 26431,
+              "father": [
+                {
+                  "_type": "Person",
+                  "_id": 26384,
+                  "fullname": "Mark Avitts",
+                  "RN": 26436
+                }
+              ]
+            },
+            {
+              "_type": "Person",
+              "_id": 5236,
+              "fullname": "William John Avitts",
+              "RN": 5242
+            }
+          ]
+        },
+        {
+          "_type": "Person",
+          "_id": 22745,
+          "fullname": "William Thomas Avitts",
+          "RN": 22772
+        },
+        {
+          "_type": "Person",
+          "_id": 4409,
+          "fullname": "Willis H. Avitts",
+          "RN": 4414
+        },
+        {
+          "_type": "Person",
+          "_id": 22744,
+          "fullname": "Anderson Avitts",
+          "RN": 22771
+        }
+      ]
+    },
+    {
+      "_type": "Person",
+      "_id": 26,
+      "fullname": "Anderson Avitts",
+      "RN": 27,
+      "father": [
+        {
+          "_type": "Person",
+          "_id": 269,
+          "fullname": "William Henry Avitts",
+          "RN": 270,
+          "father": [
+            {
+              "_type": "Person",
+              "_id": 693,
+              "fullname": "Robert Milton Avitts",
+              "RN": 694,
+              "father": [
+                {
+                  "_type": "Person",
+                  "_id": 914,
+                  "fullname": "Robert Stanley Avitts",
+                  "RN": 915,
+                  "father": [
+                    {
+                      "_type": "Person",
+                      "_id": 26454,
+                      "fullname": "Robert Stanley Avitts",
+                      "RN": 26506
+                    },
+                    {
+                      "_type": "Person",
+                      "_id": 26263,
+                      "fullname": "Mark Avitts",
+                      "RN": 26313
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "_type": "Person",
+              "_id": 692,
+              "fullname": "Elzie Smith Avitts",
+              "RN": 693,
+              "father": [
+                {
+                  "_type": "Person",
+                  "_id": 912,
+                  "fullname": "Charles Richard Avitts",
+                  "RN": 913
+                },
+                {
+                  "_type": "Person",
+                  "_id": 911,
+                  "fullname": "Thomas Elzie Avitts",
+                  "RN": 912
+                }
+              ]
+            },
+            {
+              "_type": "Person",
+              "_id": 691,
+              "fullname": "Luther Anderson Avitts",
+              "RN": 692,
+              "father": [
+                {
+                  "_type": "Person",
+                  "_id": 907,
+                  "fullname": "Luther Anderson Avitts",
+                  "RN": 908
+                }
+              ]
+            },
+            {
+              "_type": "Person",
+              "_id": 694,
+              "fullname": "Charles Lester Avitts",
+              "RN": 695
+            },
+            {
+              "_type": "Person",
+              "_id": 696,
+              "fullname": "William Henry Avitts",
+              "RN": 697
+            }
+          ]
+        },
+        {
+          "_type": "Person",
+          "_id": 271,
+          "fullname": "Luther Smith Avitts",
+          "RN": 272
+        },
+        {
+          "_type": "Person",
+          "_id": 431,
+          "fullname": "Arthur Anderson Avitts",
+          "RN": 432
+        }
+      ]
+    }
+  ]
+}
+

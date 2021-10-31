@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Curated file quality check</title>
+ <link rel="import" href="/header.html">
+
+</head>
+  <link rel="stylesheet" href="gfg.css">
+<body class="report">
+
+
+	<b class="title">Quality Checks on Uploads of Your Submitted Data</b><br><br>
+	
+	<b>Background</b><br><br>
+	
+	You prepared a curated files which were used to link several graphs: your family tree, kits, matches, trianguation groups and segments. 
+<br><br>
+
+	<h3 class="report">GEDCOM Review</h3>
+	
+	<b>Data Requirements</b><br><br>
+ 
+	The report uses the relationships between Person, Union and DNA_Match nodes. <br><br>
+	
+<b>Purpose of the Report</b><br><br>
+
+	The Excel file summarizes the information in your GEDCOM. This file can be used in curating the links to DNA results.
+	<br><br>
+		
+	<b>The Neo4j Query</b><br><br>
+	
+	<b class="cypher">
+	match (p:Person)<br>
+with p<br>
+optional match (p)-[r:Gedcom_DNA]->(m:DNA_Match)<br>
+with p,m<br>
+optional match (p)-[:father]->(f:Person)<br>
+with p,m,f<br>
+optional match (p)-[:mother]->(mo:Person)<br>
+with p,m,f,mo<br>
+optional match (p)-[:spouse]-(s:Person)<br>
+with p,m,f,mo,s <br>
+with p,m,f,mo, collect (s.fullname) as spouse<br>
+return p.surname as surname, p.first_name as first_name, p.RN as RN, p.uid as FAMC, f.fullname as father, mo.fullname as mother,spouse, m.fullname as Match_Name <br>order by RN<br>
+</b>
+	<br>
+	The query uses optimal matches to find a related kit or parent. Optimal match is analogous to an outer join in SQL queries. If you did not use it, rows with null values would be dropped. Notice the collect method to aggregate spouses.
+<hr>	
+	
+	<h3 class="report">GEDCOM Create</h3>
+	
+	<b>Data Requirements</b><br><br>
+ 
+	The report uses the relationships between Person, Union and DNA_Match nodes. <br><br>
+	
+<b>Purpose of the Report</b><br><br>
+
+This report creates a GEDCOM formatted output from the Neo4j database data. It is limited in scope and does not have sources or notes which are not currently used in this software.	<br><br>
+		
+	<b>The Neo4j Query</b><br><br>
+	
+	<b class="cypher">
+return gen.gedcom.create_gedcom(1,"c://temp/test3.ged")
+	</b>
+	<br><br>
+	The query uses a user defined function in the Neo4j Genealogy PlugIn. It takes two paramenters, the RN of the start person and the path and name of the GEDCOM file with the extension of "ged".
+<hr>	
+	
+
+	<h3 class=report>GEDCOM - DNA Results Curated Data</h3>
+	
+	<b>Data Requirements</b><br><br>
+ 
+	The report uses the relationships between Person, Kit and Match nodes.<br><br>
+	
+<b>Purpose of the Report</b><br><br>
+
+	The Excel file created recapitulates the information you submitted and allows you to validate accuracy of the upload process. Errors may be detected reflecting problems with the submitted file. Finding these will help you fit the submission file.
+	<br><br>
+		
+	<b>The Neo4j Query</b><br><br>
+	
+	<b class="cypher">match (m:DNA_Match) where m.curated=1 return m.fullname as Match_Name,m.RN as Curated_RN, m.kit as Kit order by Match_Name</b>
+	<br><br>
+	The DNA_Match property curated is an enhancement which makes it easy to extract all curated matches, even those with no RN or kit property. These would be matches who, for whatever reason, attracted your attention and were added to the curation file.
+<hr>	
+
+		
+	<h3 class=report>Curated Triangulation Groups</h3>
+	
+	<b>Data Requirements</b><br><br>
+ 
+	The report uses the tg nodes and properties. <br><br>
+	
+<b>Purpose of the Report</b><br><br>
+
+	The Excel file summarizes the information in your curated triangulation group report. 
+	<br><br>
+		
+	<b>The Neo4j Query</b><br><br>
+	
+	<b class="cypher">
+	MATCH (t:tg) <br>
+with t, t.project as project, t.tgid as tg_id, t.chr as chr,t.strt_pos as strt_pos,t.end_pos as end_pos, t.cm as cm, t.mrca_rn as mrca_rn<br>
+optional match (t)-[:tg_seg]->(s:Segment)<br>
+with t,project,tg_id,chr,strt_pos,end_pos,cm, count(s) as segment_ct<br>
+optional match (t)-[:match_tg]-(m:DNA_Match)<br>
+with t,project,tg_id,chr,strt_pos,end_pos,cm, segment_ct,count(m) as match_ct<br>
+optional match (t)-[:person_tg]-(p:Person)<br>
+return project,tg_id,chr,strt_pos,end_pos,cm,segment_ct, match_ct, count(p) as person_ct<br>
+order by chr,strt_pos, end_pos
+	</b>
+	<br><br>
+	The query retrieves data obtained from your curated triangulation file. It adds counts from relationships added during enhancements for the graph.
+<hr>	
+
+		<h3 class=report>Surname Variations (in Development)</h3>
+	<b>Data Requirements</b><br><br>
+ 	
+	File with variations in the spelling of surnames. The methods have been developed using code and are now be adapted for use in this application.<br><br>
+	
+<b>Purpose of the Report</b><br><br>
+
+	Dimensionality reduction methods discover matches with a specified surname who share segments with persons in your GEDCOM file. These segments are candidates for triangulation groups. <br><br>
+	
+	<hr>
+	
+	<div>
+
+	<table>
+  <tr>
+    <td><img src="https://blobswai.blob.core.windows.net/wai/logo.png" height="40px" /></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+	  <td class="footer">Graphs for Genealogists&trade;<br>Who Am I<br>1101 Alpine Lane<br>Woodstock, IL 60098 USA<br><a href="mailto:info@wai.md?subject=Graphs for Genealogists Inquiry">info@wai.md</a>&nbsp;&nbsp;&nbsp;&copy;2021</td>
+  </tr>
+</table>
+
+</div>
+<br><br>
+
+</body>
+</html>
