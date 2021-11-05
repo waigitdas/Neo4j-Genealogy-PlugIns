@@ -66,7 +66,7 @@ return "Completed";
         neo4j_qry.qry_write(cq);
 
         //add match_tg edge
-        cq = "match (t:tg)-[:tg_seg]-(s:Segment)-[r:match_segment]-(m:DNA_Match) where r.p=m.fullname and r.cm>=7 and r.snp_ct>=500 merge (m)-[r1:match_tg{tgid:t.tgid,cm:r.cm}]-(t)";
+        cq = "match (t:tg)-[:tg_seg]-(s:Segment)-[r:match_segment]-(m:DNA_Match) where r.p=m.fullname and r.cm>=7 and r.snp_ct>=500 with t,m, min(r.cm) as min_cm,max(r.cm) as max_cm,min(r.snp_ct) as min_snp,max(r.snp_ct) as max_snp,count(r) as seg_ct merge (m)-[r1:match_tg{tgid:t.tgid,min_cm:min_cm,max_cm:max_cm,min_snp:min_snp,max_snp:max_snp,seg_ct:seg_ct}]-(t)";
         neo4j_qry.qry_write(cq);
 
         //add person_tg edge

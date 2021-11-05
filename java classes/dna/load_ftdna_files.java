@@ -160,7 +160,7 @@ public  String load_ftdna_csv_files(
                     hasDNAMatch=true;
                     FileDNA_Match = pathitem;
                     file_lib.get_file_transform_put_in_import_dir(root_dir + directories[i] + "\\" + pathitem,  pathitem);
-                    System.out.println("Here!");
+                    //System.out.println("Here!");
                     //Load kit at-DNA matches
                     String cq = "LOAD CSV WITH HEADERS FROM 'file:///" + FileDNA_Match  + "' AS line FIELDTERMINATOR '|' merge (f:DNA_Match{fullname:toString(case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end)}) set f.first_name=toString(case when line.First_Name is null then '' else line.First_Name end), f.middle_name=toString(case when line.Middle_Name is null then '' else line.Middle_Name end), f.surname=toString(case when line.Last_Name is null then '' else line.Last_Name end)";
                     neo4j_qry.qry_write(cq);
@@ -355,5 +355,11 @@ if (hasSegs==true){
        
         //segment megabase pair property
         neo4j_qry.qry_write("match (s:Segment) set s.mbp=(s.end_pos-s.strt_pos)/1000000");
-        }
+   
+        neo4j_qry.qry_write("CREATE INDEX rel_math_segement_composit1 FOR ()-[r:match_segment]-() ON (r.p,r.p_anc_rn,r.cm,r.snp_ct)");
+    }
+    
+   
+    
+   
 }

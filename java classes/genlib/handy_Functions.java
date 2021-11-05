@@ -26,4 +26,10 @@ public class handy_Functions {
     return String.valueOf(v);
     }
     
+    public static String fix_str(String s){
+        String ss = s.replace("\"","").replace("[","").replace("]","").replace(":","");
+        return ss;
+    }
+    
 }
+

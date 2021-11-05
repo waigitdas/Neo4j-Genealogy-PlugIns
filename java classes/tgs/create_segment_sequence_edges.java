@@ -49,17 +49,17 @@ public class create_segment_sequence_edges {
         for (int crsm=1;crsm<22; crsm++){
             String chr = String.valueOf(crsm);
             if (chr.length()==1){chr = "0" + chr; }
-            
-            //create csv file of sequences    
             String fn =  "tg_discovery.csv";
-            cq="match p1=(t:tg)-[:tg_seg]-(s:Segment{chr:'" + chr + "'})-[r:match_segment]-(m1:DNA_Match) where r.cm>=7 and r.snp_ct>=500 and r.p_rn is not null and r.m_anc_rn=" + ancestor_rn + " with  s,t, count(*) as ct return t.tgid as tgid,s.Indx as Indx,ct order by t.tgid,s.chr,s.strt_pos,s.end_pos";
+         
+            //create csv file of sequences    
+             cq="match p1=(t:tg)-[:tg_seg]-(s:Segment{chr:'" + chr + "'})-[r:match_segment]-(m1:DNA_Match) where r.cm>=7 and r.snp_ct>=500 and r.p_rn is not null and r.m_anc_rn=" + ancestor_rn + " with  s,t, count(*) as ct return t.tgid as tgid,s.Indx as Indx,ct order by t.tgid,s.chr,s.strt_pos,s.end_pos";
             neo4j_qry.qry_to_pipe_delimited(cq,fn);
 
             //read csv, parse and create new csv suitable for Neo4j importing
             String c = gen.neo4jlib.file_lib.readFileByLine(neo4j_info.Import_Dir +  fn);
             String[] cc = c.split("\n");
             FileWriter fwp;
-            String fns =  "seg_seqcsv";  //_" + chr + ".
+            String fns =  "seg_seq.csv";  //_" + chr + ".
           try{
                String tmp[]=cc[1].split(Pattern.quote("|"));
                 String curr_tg = tmp[0];
@@ -104,20 +104,20 @@ public class create_segment_sequence_edges {
 
             }
 
-           catch (Exception e) {
-               try {
-                    FileWriter fwe = new FileWriter(neo4j_info.Import_Dir + "error_" + chr + ".csv");
- 
-                    fwe.write("Error\n" + e.getMessage());
-                    fwe.flush();
-                            fwe.close();
-                       }
-               catch (Exception f) {}
-               finally{}
+           catch (Exception e) { }
+//               try {
+//                    FileWriter fwe = new FileWriter(neo4j_info.Import_Dir + "error_" + chr + ".csv");
+// 
+//                    fwe.write("Error\n" + e.getMessage());
+//                    fwe.flush();
+//                            fwe.close();
+//                      }
+//               catch (Exception f) {}
+//               finally{}
       
     
         //return "completed";
-    }
+//    }
         }
     
         return "COMPLETED";

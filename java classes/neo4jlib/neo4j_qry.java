@@ -56,7 +56,7 @@ public class neo4j_qry {
 
     public static void CreateRelationshipIndex(String relationship_type,String relationship_property){
             try{
-                String cq ="CREATE INDEX rel_" + relationship_type + "_" + relationship_property + " FOR ()-[r:" + relationship_type + "]-() ON (k." + relationship_property + ")";
+                String cq ="CREATE INDEX rel_" + relationship_type + "_" + relationship_property + " FOR ()-[r:" + relationship_type + "]-() ON (r." + relationship_property + ")";
                 qry_write(cq);
             }
             catch (Exception e) {}

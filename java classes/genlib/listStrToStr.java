@@ -17,8 +17,8 @@ public class listStrToStr {
       public static String list_to_string(List<String> ListStr) {
         String s ="";
         for(String x: ListStr){
-             s += x;
+             s += x + "; ";
         }
-        return s;
+        return s.substring(0, s.length() - 2);
     }
 }

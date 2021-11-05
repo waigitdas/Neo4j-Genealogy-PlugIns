@@ -47,7 +47,7 @@ public class seg_tg {
     public List<Long> tg_qry(String qry) 
     {
         return neo4j_qry.qry_long_list(qry);
-//  
+
 }
               
 }

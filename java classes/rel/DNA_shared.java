@@ -6,8 +6,16 @@
  */
 package gen.rel;
 
+import gen.neo4jlib.neo4j_info;
 import gen.neo4jlib.neo4j_qry;
 import gen.rel.mrca_path_lengths;
+import java.awt.Desktop;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import static java.lang.Integer.max;
 import static java.lang.Integer.min;
 import java.util.List;
@@ -37,7 +45,11 @@ public class DNA_shared{
         gen.neo4jlib.neo4j_info.neo4j_var_reload();
         //get all MRCAs
         double cor = 0.0;
-        String rw ="";
+        File fn = new File(neo4j_info.Import_Dir + "shared_dna_" + gen.genlib.current_date_time.getDateTime() + ".csv");
+        try{
+        Writer fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn), "UTF-8"));
+        //FileWriter fw = new FileWriter(fn);
+        fw.write("propositi, relationship, ancestors,path1, path2, genetic_distance, COR, observed_cm, expected_cm\n") ;
         mrca_path_lengths mm = new mrca_path_lengths();
         String[] mrca =  mm.get_mrca_path_len(rn1,rn2).split("\n");
         for (int i=0; i<mrca.length; i++){
@@ -51,24 +63,31 @@ public class DNA_shared{
             double shared_dna = 0.0;
             //String Indx = String.valueOf(mrca.length) + ":" + String.valueOf(max(path1.intValue(),path2.intValue())) + ":" + String.valueOf(min(path1.intValue(), path2.intValue())) ;
             
-            String propositi = gen.gedcom.get_family_tree_data.getPersonFromRN(rn1) + " ; " + gen.gedcom.get_family_tree_data.getPersonFromRN(rn2);
-            String anc = gen.gedcom.get_family_tree_data.getPersonFromRN(anc_rn);
+            String propositi = gen.gedcom.get_family_tree_data.getPersonFromRN(rn1, false) + " ; " + gen.gedcom.get_family_tree_data.getPersonFromRN(rn2, false);
+            String anc = gen.gedcom.get_family_tree_data.getPersonFromRN(anc_rn, false);
           
             gen.rel.relationship rr = new gen.rel.relationship();
-            String relationship = rr.relationship_from_path(Long.valueOf(mrca.length),path1,path2);
+            String relationship = rr.relationship_from_path(Long.valueOf(1),path1,path2);
             
             gen.dna.shared_dna dna = new gen.dna.shared_dna();
-           double cm = dna.sharedCM(rn1,rn2);
-           cm = Math.round(cm);
-       
-           gen.dna.shared_cm_dna scm = new gen.dna.shared_cm_dna();
-          String sharedCM =  scm.expected_cm(Long.valueOf(mrca.length),path1,path2);
-           
-            rw = rw + propositi + ", " + relationship + ", " + anc + "," + mmm[1] + ", " + mmm[2] + ", " +  madd +", " + String.valueOf(cor) + ", " + String.valueOf(cm) + ":" + sharedCM +  "\n";
-        }
+            String cm = dna.sharedCM(rn1,rn2);
+            //cm = Math.round(cm);
 
-         return rw;
+            gen.dna.shared_cm_dna scm = new gen.dna.shared_cm_dna();
+            String sharedCM =  scm.expected_cm(Long.valueOf(mrca.length),path1,path2);
+            
+            fw.write(propositi + ", " + gen.genlib.handy_Functions.fix_str(relationship) + ", " + anc + "," + mmm[1] + ", " + mmm[2] + ", " +  madd +", " + String.valueOf(cor_i) + ", " + gen.genlib.handy_Functions.fix_str(cm) + ", " + gen.genlib.handy_Functions.fix_str(sharedCM) +  "\n");
+        }
+            fw.write(",,,,,," + String.valueOf(cor) + ",,");
+            fw.flush();
+            fw.close();
+            Desktop.getDesktop().open(fn);
+        }
+        catch (Exception e) {}
         
+      
+ 
+        return "completed";
         }
 }
         
