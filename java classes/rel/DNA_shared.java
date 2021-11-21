@@ -69,16 +69,24 @@ public class DNA_shared{
             gen.rel.relationship rr = new gen.rel.relationship();
             String relationship = rr.relationship_from_path(Long.valueOf(1),path1,path2);
             
-            gen.dna.shared_dna dna = new gen.dna.shared_dna();
-            String cm = dna.sharedCM(rn1,rn2);
             //cm = Math.round(cm);
 
             gen.dna.shared_cm_dna scm = new gen.dna.shared_cm_dna();
-            String sharedCM =  scm.expected_cm(Long.valueOf(mrca.length),path1,path2);
+            String exp_sharedCM =  scm.expected_cm(Long.valueOf(1),path1,path2);
             
-            fw.write(propositi + ", " + gen.genlib.handy_Functions.fix_str(relationship) + ", " + anc + "," + mmm[1] + ", " + mmm[2] + ", " +  madd +", " + String.valueOf(cor_i) + ", " + gen.genlib.handy_Functions.fix_str(cm) + ", " + gen.genlib.handy_Functions.fix_str(sharedCM) +  "\n");
+            fw.write(propositi + ", " + gen.genlib.handy_Functions.fix_str(relationship) + ", " + anc + "," + mmm[1] + ", " + mmm[2] + ", " +  madd +", " + String.valueOf(cor_i) + ", , " + gen.genlib.handy_Functions.fix_str(exp_sharedCM) +  "\n");
         }
-            fw.write(",,,,,," + String.valueOf(cor) + ",,");
+        
+            //String exp_sharedCM2 =  scm.expected_cm(Long.valueOf(1),path1,path2);
+
+                    
+            gen.dna.shared_dna dna = new gen.dna.shared_dna();
+            String cm = dna.sharedCM(rn1,rn2);
+
+            gen.rel.rel_from_rns rr = new gen.rel.rel_from_rns();
+            String all_rel = rr.relationship_from_RNs(rn1,rn2);
+
+            fw.write("," + all_rel  + ",,,,," + String.valueOf(cor) + "," + gen.genlib.handy_Functions.fix_str(cm) + ",");
             fw.flush();
             fw.close();
             Desktop.getDesktop().open(fn);

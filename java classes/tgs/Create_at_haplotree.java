@@ -20,26 +20,31 @@ public class Create_at_haplotree {
    @UserFunction
     @Description("Add triangulation group list as property to DNA tester Person nodes and adds Label DNA_Match. Then infers ancestor TG list from each branch of their descendants")
         
-    public List<Path> at_haplotree(
+    public String at_haplotree(
 //        @Name("project") 
 //            String project,
-        @Name("ancestor_rn") 
-            Long ancestor_rn
+//        @Name("ancestor_rn") 
+//            Long ancestor_rn
     )
-    {return null; }
+    
 
-//        {
-//        String cq = "";
-//        List r =at_ht(project,ancestor_rn);
-//        //List<Path> p = gen.neo4jlib.neo4j_qry.qry_obj_list(cq);
-//        return p;
-//            }
+        {
+        String cq = "";
+        String r =at_ht();
+        return r;
+            }
     
    
-//    public List<Path> at_ht(String project, Long ancestor_rn) 
-//    {
-//     return neo4j_qry.qry_str_list(qry);
-//}
+    public String at_ht() 
+    {
+     gen.neo4jlib.neo4j_info.neo4j_var_reload();
+     gen.rel.anc_rn anc = new gen.rel.anc_rn();
+     Long anc_rn = anc.get_ancestor_rn();
+     
+     String cq = "match p=(m:DNA_Match{ancestor_rn:" + anc_rn + "})-[rm:match_segment{p_anc_rn:" + anc_rn + ",m_anc_rn:" + anc_rn + "}]-(s:Segment)-[rs:seg_seq]-(s2:Segment) where 100>=rm.cm>=7 and rm.snp_ct>=500 with rs.tgid as tg,m order by rs.tgid with m.fullname + ' ⦋' + m.RN + '⦌' as match,collect(distinct tg) as tgs return match,size(tgs) as tg_ct,tgs order by match";
+     gen.excelLib.queries_to_excel.qry_to_excel(cq,gen.neo4jlib.neo4j_info.project + "_at_haplotree","haplotree",1,"","","",true,"");
+     return "completed";
+}
  
     
     

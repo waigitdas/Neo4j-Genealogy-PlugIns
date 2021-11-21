@@ -38,7 +38,7 @@ public class shared_dna {
      public String sharedCM(Long rn1, Long rn2) 
     {
     
-        String cmstr = gen.neo4jlib.neo4j_qry.qry_to_csv("MATCH p=(m1:DNA_Match{RN:" + rn1 + "})-[r:match_by_segment]->(m2:DNA_Match{RN:" + rn2 + "}) with toString(r.cm) as cm return cm");
+        String cmstr = gen.neo4jlib.neo4j_qry.qry_to_csv("MATCH p=(m1:DNA_Match{RN:" + rn1 + "})-[r:match_by_segment]->(m2:DNA_Match{RN:" + rn2 + "}) with toString(apoc.math.round(r.cm,1)) as cm return cm");
         //double cmnbr = Double.parseDouble(cmstr[0].replace("\\",""));
         return cmstr.replace("\n","");
     }

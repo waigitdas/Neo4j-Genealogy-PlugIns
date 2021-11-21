@@ -14,7 +14,7 @@ import org.neo4j.procedure.UserFunction;
 
 public class segment_desc_matches {
     @UserFunction
-    @Description("Finds matches mapping to segment.")
+    @Description("Finds matches descended from ancestot and mapping to the specified segment.")
 
     public String segment_ancestor_descendants(
        @Name("chr")

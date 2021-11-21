@@ -21,11 +21,14 @@ package gen.neo4jlib;
     import java.util.*;  
     import java.util.regex.Matcher;
     import java.util.regex.Pattern;
+import org.neo4j.dbms.api.DatabaseManagementService;
+import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
     import org.neo4j.driver.Record;
     //import org.javatuples.Pair;
     import org.neo4j.driver.Value;
     import org.neo4j.driver.Values;
     import org.neo4j.graphdb.Path;
+    //import org.neo4j.graphdb.Map;
     import org.neo4j.driver.util.Pair;
 
 public class neo4j_qry {
@@ -77,6 +80,8 @@ public class neo4j_qry {
             } 
    
            }
+   
+
    
    //****************************************************
    
@@ -177,35 +182,110 @@ public class neo4j_qry {
 //   }
 //  
 //  
+//      public static String qry_str(String cq) {
+//        gen.conn.connTest.cstatus();
+//        Session java_session =  gen.conn.connTest.session;
+//            String javasession = java_session.writeTransaction(new TransactionWork<String>()
+//            {
+//                @Override
+//                public String execute( Transaction tx )
+//                {
+//                    Result rslt = tx.run( cq,
+//                            parameters( "message", cq ) );
+//                    
+//                    String output = "";
+//                        while (rslt.hasNext())
+//                        { 
+//                            output = output + rslt.next().values().toString() + "; ";
+//                        
+//                        }
+//                        
+//
+//                       output = output.substring(0, output.length()-2);
+//                       return output;
+//                            
+//                    
+//                }
+//            } );
+//      return javasession;
+//   }
+//   
       public static String qry_str(String cq) {
+ 
         gen.conn.connTest.cstatus();
         Session java_session =  gen.conn.connTest.session;
-            String javasession = java_session.writeTransaction(new TransactionWork<String>()
-            {
-                @Override
-                public String execute( Transaction tx )
-                {
-                    Result rslt = tx.run( cq,
-                            parameters( "message", cq ) );
-                    
-                    String output = "";
-                        while (rslt.hasNext())
-                        { 
-                            output = output + rslt.next().values().toString() + "; ";
-                        
-                        }
-                        
 
-                       output = output.substring(0, output.length()-2);
-                       return output;
-                            
-                    
-                }
-            } );
-      return javasession;
+
+        return java_session.readTransaction( tx -> {
+            String names = "";
+            Result result = tx.run(cq );
+            while ( result.hasNext() )
+            {
+                names = names + result.next().values().toString() + "; ";
+            }
+            names = names.substring(0, names.length()-2);
+            return names;
+        } );
    }
-   
-   
+  
+    //****************************************************
+ 
+//    public static Path qry_path(String cq) {
+//            Session java_session =  gen.conn.connTest.session;
+//            return java_session.readTransaction( tx -> {
+//            Result r = tx.run(cq) ;
+//            Path p=r.next().get(0).asPath();
+//                    
+//            while (r.hasNext()) {
+//                //p.
+//            } 
+//                    
+//            return p;
+//            });
+//    }
+      
+    public static Map<String,Object> qry_map(String cq) {
+        //DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(gen.neo4jlib.neo4j_info.Database_Dir ).build();
+        //GraphDatabaseService db = managementService.database( DEFAULT_DATABASE_NAME );
+            Session java_session =  gen.conn.connTest.session;
+            return java_session.readTransaction( tx -> {
+            Result r = tx.run(cq) ;
+            
+            Map<String,Object> m = new HashMap<>();
+            //m.putall(r.stream());
+            {
+                
+                while (r.hasNext()){
+                    m.put(r.next().keys().toString(),r.next().values().toString());
+                    //m.put(r.next().get(0).asMap());
+                    //m.entrySet(r.next().get(0).asObject());
+                    //m.getOrDefault(r.next().asMap());
+                    //m.merge(r.next().asMap());  //, m, remappingFunction).
+                   //m = r.next().asMap();
+                   
+                }
+            return m;
+            }
+            }
+           );
+            
+                   }
+
+//            return java_session.readTransaction( tx -> {
+//            Map<String,Object> m ; 
+//            Result r = tx.run(cq);
+//            while ( r.hasNext() )
+//    {
+//              //Map<String,Object> row = r.next();
+//            m = r.next();
+//    }     
+//            java_session.close();
+//            return m;
+//        } 
+//            );
+     
+//   }
+  
     //****************************************************
  
  public static String qry_to_pipe_delimited(String cq,String csv_File) {

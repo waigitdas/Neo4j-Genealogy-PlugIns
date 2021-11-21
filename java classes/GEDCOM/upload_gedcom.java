@@ -46,7 +46,7 @@ public  class upload_gedcom {
         //create indices to speed upload using merge
         neo4j_qry.CreateIndex("Person", "RN");
         neo4j_qry.CreateIndex("Person", "fullname");
-        neo4j_qry.CreateIndex("Union", "union_id");
+        neo4j_qry.CreateIndex("Union", "uid");
         neo4j_qry.CreateIndex("Union", "U1");
         neo4j_qry.CreateIndex("Union", "U2");
         neo4j_qry.CreateIndex("Place", "desc");

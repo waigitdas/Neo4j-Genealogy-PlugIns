@@ -16,7 +16,6 @@ public class AuthInfo {
 
     public static AuthToken getToken( )
     {
-        //gen.conn.connTest.cstatus();
         Boolean b = neo4j_info.neo4j_var();
         AuthToken myToken = AuthTokens.basic(neo4j_info.neo4j_username,neo4j_info.neo4j_password );
         return myToken;

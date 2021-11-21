@@ -57,6 +57,7 @@ return "Completed";
         neo4j_qry.CreateRelationshipIndex("tg_seg", "tgid");
         neo4j_qry.CreateRelationshipIndex("person_tg", "tgid");
  
+        //create tg nodes
         String cq = "LOAD CSV WITH HEADERS FROM 'file:///" + gen.neo4jlib.neo4j_info.tg_file + "' AS line FIELDTERMINATOR '|' merge (t:tg{tgid:toInteger(line.tg_id),Indx:toString(case when line.chr is null then '' else line.chr end) + ':' + toString(case when line.strt_pos is null then 0 else line.strt_pos end) + ':' + toString(case when line.end_pos is null then 0 else line.end_pos end) ,chr:toString(line.chr),strt_pos:toInteger(line.strt_pos),end_pos:toInteger(line.end_pos),cm:toFloat(case when line.cm is null then 0.0 else line.cm end),project:toString(line.project),mrca_rn:toInteger(line.mrca_rn)})";
         neo4j_qry.qry_write(cq);
         

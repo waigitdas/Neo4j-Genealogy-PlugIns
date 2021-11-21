@@ -7,6 +7,7 @@
 package gen.neo4jlib;
 
 import gen.conn.AuthInfo;
+import java.io.File;
 import java.util.regex.Pattern;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
@@ -15,7 +16,9 @@ import org.neo4j.driver.GraphDatabase;
 //this strategy mitigates the need for users to input this info into the function calls
 
 public class neo4j_info {
+    public static String project;
     public static String Import_Dir;
+    public static File Database_Dir;
     public static String neo4j_username;
     public static String neo4j_password;
     public static String tg_logic ;
@@ -38,6 +41,8 @@ public static Boolean neo4j_var() {
     for (int i=1; i < s.length; i++) {  //first row is comment
         String[] ss = s[i].split(Pattern.quote("|"));
         switch (ss[0]){
+            case "project": project = ss[1].strip() ; 
+            break;
             case "neo4j_import_directory": Import_Dir =  ss[1].strip() ; //s[ct+1].replace("neo4j_import_directory: ", "");
            break; 
             case "neo4j_username": neo4j_username = ss[1].strip();
@@ -60,7 +65,7 @@ public static Boolean neo4j_var() {
     tg_logic_overlap = "s.chr=t.chr and t.end_pos>=s.strt_pos and t.strt_pos<=s.end_pos";
     alt_left_bracket = "\u298B";
     alt_right_bracket = "\u298C";
-
+    Database_Dir = new File( Import_Dir.replace("import/", ""));
     }
     else {
         WasFilled = true;
@@ -85,7 +90,9 @@ public static Boolean neo4j_var_reload() {
     for (int i=1; i < s.length; i++) {  //first row is comment
         String[] ss = s[i].split(Pattern.quote("|"));
         switch (ss[0]){
-            case "neo4j_import_directory": Import_Dir =  ss[1].strip() ; //s[ct+1].replace("neo4j_import_directory: ", "");
+            case "project": project =  ss[1].strip() ; //s[ct+1].replace("neo4j_import_directory: ", "");
+           break; 
+           case "neo4j_import_directory": Import_Dir =  ss[1].strip() ; //s[ct+1].replace("neo4j_import_directory: ", "");
            break; 
             case "neo4j_username": neo4j_username = ss[1].strip();
             break;

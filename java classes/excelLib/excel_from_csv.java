@@ -5,9 +5,10 @@
  * Woodstock, IL 60098 USA
  */
 package gen.excelLib;
-
-    import static gen.neo4jlib.neo4j_qry.qry_to_csv;
-    import gen.neo4jlib.neo4j_info;
+import static gen.excelLib.queries_to_excel.createLabel;
+import static gen.excelLib.queries_to_excel.times;
+import static gen.excelLib.queries_to_excel.timesBoldUnderline;
+   import gen.neo4jlib.neo4j_info;
     import java.awt.Desktop;
     import java.io.File;
     import java.util.Locale;
@@ -36,31 +37,16 @@ package gen.excelLib;
     import jxl.write.WriteException;
     import jxl.write.biff.RowsExceededException;
 
-public class queries_to_excel {
-    public static WritableCellFormat timesBoldUnderline;
-    public static WritableCellFormat times;
-    public static String excelFile;
 
-    //main is for testing only. Must comment out database calls and use a properly formated file in the Import Neo4j folder
+public class excel_from_csv {
+
+   
     public static void main(String args[]) {
-        String cq = "MATCH p=(m:DNA_Match)-[r:match_tg]->(t:tg) where m.RN is not null with t,m,  trim(m.fullname)  as mm with t,m,mm order by mm with t,collect(mm + ';') as matches,collect(m.RN) as rns \n with t,matches   RETURN t.tgid as tg,t.chr as chr, t.strt_pos as strt_pos,t.end_pos as end_pos,t.cm as cm,size(matches) as ct,matches order by chr,strt_pos,end_pos";
-        String e =qry_to_excel(cq,"tg_report","match_ahnentafel_" , 1, "2:13;3:13", "1:##;2:#,###,###;3:#,###,###;6:###;7:###;8:###.0;9:###.0", "",true,"");
-        //qry_to_excel(cq,"tg_report","Item 25",2,"","0:##,###",e, true);
+        // TODO code application logic here
     }
     
-//public static newWorkbook()    
-    
-public static String qry_to_excel(String cq,String FileNm,String SheetName, int SheetNumber, String ColWidths, String colNumberFormat, String ExistingExcelFile, Boolean OpenFile,String message ) {
-
-    gen.neo4jlib.neo4j_info.neo4j_var_reload();  // initialize user variable
-    gen.conn.connTest.cstatus();
-    
-    String csvFile = gen.neo4jlib.neo4j_info.Import_Dir + FileNm + ".csv";  // intermediate file to be saved
-    
-     //create csv from results
-     String q = gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited(cq, FileNm + ".csv");  //uses apoc and save defaults to import dir
-     
-    String excelFile = "";
+    public static String load_csv(String csvFile,String FileNm,String SheetName, int SheetNumber, String ColWidths, String colNumberFormat, String ExistingExcelFile, Boolean OpenFile ){
+   String excelFile = "";
     String excelFileNm = "" ;
     File file;
     WritableWorkbook w;
@@ -101,7 +87,7 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
 //iterate through csv lines to create excel worksheets within the active workbook
     String[] rws = c.split("\n");
     int rows = rws.length;
-    int colct = rws[0].split(Pattern.quote("|")).length;
+    int colct = rws[0].split(Pattern.quote(",")).length;
   
     //************************************************************************
     //instantiate the formating from the function call variables
@@ -161,7 +147,7 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
     //************************************************************************
 //iterate rows and each column in the row and create either text or number entry. Number datatype derived from function call variable 
     for (int rw=0 ; rw < rws.length; rw++ ) {
-        String cols[] = rws[rw].split(Pattern.quote("|"));
+        String cols[] = rws[rw].split(Pattern.quote(","));
         for (int col=0; col < cols.length; col++) {
         if (cols[col].strip()=="") {break;}  //last lines may be empty
            try {
@@ -190,10 +176,8 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
     int rr = rows-1;
     autoSizeColumns(excelSheet,colct);
     excelSheet.setName(excelSheet.getName() + "-" + rr);
+ 
 
-    //int cell_width = excelSheet.getColumn(0).length;
-    addLabel(excelSheet, 0, rws.length + 5 , fixCellStr(message));
-    
     //wrap up and open file
     w.write();
     w.close();
@@ -248,5 +232,4 @@ public static void createLabel(WritableSheet sheet)
          sheet.setColumnView(c, cell);
         }
 }
-    
-}
+ }

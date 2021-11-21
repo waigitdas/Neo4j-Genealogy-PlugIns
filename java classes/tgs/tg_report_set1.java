@@ -77,7 +77,7 @@ public String tg_report(
      
      }
 
-     String e = gen.excelLib.queries_to_excel.qry_to_excel(cq,SaveFileNm,"match_ahnentafel_" , 1, "2:25;3:25", "1:##;2:#,###,###;3:#,###,###;6:###;7:###;8:###.0;9:###.0", "", true) ; 
+     String e = gen.excelLib.queries_to_excel.qry_to_excel(cq,SaveFileNm,"match_ahnentafel_" , 1, "2:25;3:25", "1:##;2:#,###,###;3:#,###,###;6:###;7:###;8:###.0;9:###.0", "", true,"") ; 
        
     }
 }

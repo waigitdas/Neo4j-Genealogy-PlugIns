@@ -11,6 +11,8 @@ import org.neo4j.procedure.UserFunction;
 import gen.neo4jlib.neo4j_qry;
 import gen.neo4jlib.neo4j_info;
 import gen.excelLib.write_open_csv;
+import java.awt.Desktop;
+import java.io.File;
 /**
  *
  * @author david
@@ -40,9 +42,12 @@ public class project_persons {
         //gen.neo4jlib.neo4j_info.neo4j_var();
        gen.conn.connTest.cstatus();
         
-        String cq = "match (p:Person) where p.surname>'A' return p.fullname as Name, p.RN as RN, p.BDGed as BD,p.DDGed as DD, p.kit as Kit order by p.surname, p.first_name, p.middle_name";
+        String cq = "match (p:Person) where p.surname>'A' return p.fullname as Name, p.RN as RN, p.BDGed as BD,p.DDGed as DD, case when p.kit is null then ' ' else p.Kit end as Kit order by p.surname, p.first_name, p.middle_name";
        
-        gen.excelLib.queries_to_excel.qry_to_excel(cq,"people","People at Neo4j", 1, "", "", "", true);
+        //gen.excelLib.queries_to_excel.qry_to_excel(cq,"people","People at Neo4j", 1, "", "", "", true);
+        gen.neo4jlib.neo4j_qry.qry_to_csv(cq, "people.csv");
+        try{Desktop.getDesktop().open(new File(gen.neo4jlib.neo4j_info.Import_Dir +  "people.csv"));}
+        catch (Exception e){}
         return "completed";
     }
   

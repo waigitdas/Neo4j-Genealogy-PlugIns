@@ -55,10 +55,11 @@ public class mrca_set_link_property {
         gen.neo4jlib.neo4j_qry.qry_write("match (p:Person{ancestor_rn:" + ancestor_rn + "})-[r:Gedcom_Kit]-(k:Kit) set k.ancestor_rn=" + ancestor_rn );
         
         //set relationship property
-        gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() with r match (m2:DNA_Match) where m2.fullname = r.p and m2.ancestor_rn is not null set r.p_anc_rn = m2.ancestor_rn");
-        gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() with r match (m2:DNA_Match) where m2.fullname = r.m and m2.ancestor_rn is not null set r.m_anc_rn = m2.ancestor_rn");
-        gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() with r match (m2:DNA_Match) where m2.fullname = r.m and m2.RN is not null set r.m_rn = m2.RN");
-        gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() with r match (m2:DNA_Match) where m2.fullname = r.p and m2.RN is not null set r.p_rn = m2.RN");
+        gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() with m1,r match (m2:DNA_Match) where r.p=m1.fullname and m1.ancestor_rn is not null and r.m=m2.fullname and m2.ancestor_rn is not null set r.m_anc_rn=m2.ancestor_rn, r.p_anc_rn=m1.ancestor_rn");
+        //gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() with r match (m2:DNA_Match) where m2.fullname = r.m and m2.ancestor_rn is not null set r.m_anc_rn = m2.ancestor_rn");
+        gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() with m1,r match (m2:DNA_Match) where r.p=m1.fullname and  m1.RN is not null and r.m=m2.fullname and m2.RN is not null \n" +
+"set r.m_rn=m2.RN, r.p_rn=m1.RN");
+        //gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() with r match (m2:DNA_Match) where m2.fullname = r.p and m2.RN is not null set r.p_rn = m2.RN");
         
         
         return "Completed";

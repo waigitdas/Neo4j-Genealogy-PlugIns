@@ -32,7 +32,7 @@ public class curated_tgs {
     
      public String createReport() 
     {
-       queries_to_excel.qry_to_excel("MATCH (t:tg) RETURN t.tgid as tg_id,t.project as project,t.chr as chr,t.strt_pos as strt_pos,t.end_pos as end_pos,t.cm as cm order by t.tgid","curated_tgs","tgs", 1, "1:15;1:15", "3:###,###,###;4:###,###,###", "", true );
+       queries_to_excel.qry_to_excel("MATCH (t:tg) RETURN t.tgid as tg_id,t.project as project,t.chr as chr,t.strt_pos as strt_pos,t.end_pos as end_pos,t.cm as cm order by t.tgid","curated_tgs","tgs", 1, "1:15;1:15", "3:###,###,###;4:###,###,###", "", true,"" );
         return "";
     }
 }
