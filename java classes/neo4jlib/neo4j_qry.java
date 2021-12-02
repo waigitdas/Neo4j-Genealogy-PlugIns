@@ -21,8 +21,8 @@ package gen.neo4jlib;
     import java.util.*;  
     import java.util.regex.Matcher;
     import java.util.regex.Pattern;
-import org.neo4j.dbms.api.DatabaseManagementService;
-import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
+    import org.neo4j.dbms.api.DatabaseManagementService;
+    import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
     import org.neo4j.driver.Record;
     //import org.javatuples.Pair;
     import org.neo4j.driver.Value;
@@ -230,19 +230,19 @@ public class neo4j_qry {
   
     //****************************************************
  
-//    public static Path qry_path(String cq) {
-//            Session java_session =  gen.conn.connTest.session;
-//            return java_session.readTransaction( tx -> {
-//            Result r = tx.run(cq) ;
-//            Path p=r.next().get(0).asPath();
-//                    
-//            while (r.hasNext()) {
-//                //p.
-//            } 
-//                    
-//            return p;
-//            });
-//    }
+    public static Path qry_path(String cq) {
+            Session java_session =  gen.conn.connTest.session;
+            return java_session.readTransaction( tx -> {
+            Result r = tx.run(cq) ;
+            //Path p=r.next().get(0); //.asPath();
+                    
+            while (r.hasNext()) {
+                //p.
+            } 
+            Path p = null;        
+            return p;
+            });
+    }
       
     public static Map<String,Object> qry_map(String cq) {
         //DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(gen.neo4jlib.neo4j_info.Database_Dir ).build();
@@ -316,12 +316,14 @@ public class neo4j_qry {
         Session java_session =  gen.conn.connTest.session;
 
             return java_session.readTransaction( tx -> {
-            String names = "";
-            
-            String q = "call apoc.export.csv.query(\"" + cq+ "\",'" + csv_File + "' , {delim:',', quotes: true, format: 'plain'})"; 
+         
+            String q = "call apoc.export.csv.query(\"" + cq + "\",'" + csv_File + "' , {delim:',', quotes: true, format: 'plain'})"; 
                         
             tx.run(q);
-                    
+            
+            
+            
+            
             java_session.close();
             return csv_File;
         } 
@@ -332,8 +334,9 @@ public class neo4j_qry {
 public static void APOCPeriodicIterateCSV(String LoadCSV, String ReplaceCypher, int batchsize) {
     //use parallel = false to avoid deadlocks!
     String Q = "\"";
-    String cq = "CALL apoc.periodic.iterate(" + Q + LoadCSV + Q + ", " + Q + ReplaceCypher + Q + ",{batchSize: " + batchsize + ", parallel:false, iterateList:true, retries:25})";
-    qry_write(cq);
+    String csv = "CALL apoc.periodic.iterate(" + Q + LoadCSV + Q + ", " + Q + ReplaceCypher + Q + ",{batchSize: " + batchsize + ", parallel:false, iterateList:true, retries:25})";
+    
+    qry_write(csv);
 }
 }
         

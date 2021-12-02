@@ -20,7 +20,7 @@ package gen.dna;
 
 public class load_ftdna_files {
         @UserFunction
-        @Description("Loads FTDNA DNA result CSV files from a named directory and specifically structured subdirectories. File names must NOT be altered after downloaded.")
+        @Description("Loads FTDNA DNA result CSV files from a named directory and specifically structured subdirectories. File names must NOT be altered after downloaded. CSV files used to load Neo4 are in the Neo4j Import Directory.")
 
 public  String load_ftdna_csv_files(
 //        @Name("root_directory") 
@@ -257,7 +257,7 @@ public  String load_ftdna_csv_files(
                 //******************************************************************************
                 //***************  Y-DNA   *****************************************************
                 //******************************************************************************
-               if (pathitem.contains("Y_DNA")){
+    if (pathitem.contains("Y_DNA")){
                     YMatch = pathitem;
                     
                     //add Y kit nodes
@@ -283,7 +283,7 @@ if (hasSegs==true){
         //line 391 in VB.NET
         //match_segment edges with phasing paramenters m (match) and p (propositus) (for matches)
         String lc = "LOAD CSV WITH HEADERS FROM 'file:///" + FileSegs + "' as line FIELDTERMINATOR '|' return line ";
-        cq = " match (s:Segment{Indx:toString(case when line.Chromosome is null then '' else line.Chromosome end) + ':' + toString(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toString(case when line.End_Location is null then 0 else line.End_Location end) }) match (m:DNA_Match{fullname:toString(line.Match_Name)}) merge (m)-[r:match_segment{hops:1,p:'" +  kit_fullname + "',m:toString(line.Match_Name),cm:toFloat(line.Centimorgans),snp_ct:toInteger(case when line.Matching_SNPs is null then 0 else line.Matching_SNPs end),cb_version:'" + cb_version + "'}]-(s)";
+        cq = " match (s:Segment{Indx:toString(case when line.Chromosome is null then '' else line.Chromosome end) + ':' + toString(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toString(case when line.End_Location is null then 0 else line.End_Location end) }) match (m:DNA_Match{fullname:toString(line.Match_Name)}) merge (m)-[r:match_segment{hops:1,m:'" +  kit_fullname + "',p:toString(line.Match_Name),cm:toFloat(line.Centimorgans),snp_ct:toInteger(case when line.Matching_SNPs is null then 0 else line.Matching_SNPs end),cb_version:'" + cb_version + "'}]-(s)";
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
 }
 

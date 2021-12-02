@@ -15,9 +15,9 @@ import org.neo4j.procedure.UserFunction;
 
 public class matches_at_seg {
     @UserFunction
-    @Description("Returns list of matches at a segment whose boundaries are submitted")
+    @Description("Returns list of matches with the previously specified common ancestor at the chromosome region whose boundaries are submitted")
 
-    public String matches_with_anc_rn_at_segment(
+    public String matches_at_chr_region(
         @Name("chr") 
             String chr,
         @Name("strt") 
@@ -44,7 +44,7 @@ public class matches_at_seg {
         String r = "";
         try{
             cq= "match (m:DNA_Match)-[r:match_segment]-(s:Segment) where m.ancestor_rn is not null and s.chr='" + chr + "' and s.strt_pos>=" + strt + " and s.end_pos<=" + end + " with m order by m.fullname with distinct m.fullname + ' ⦋' + m.RN + '⦌' as match return match";
-        
+        gen.excelLib.queries_to_excel.qry_to_excel(cq, "Matches at chr_region", "Region matches", 1, "", "", "", true, "matches at chr " + chr + " between positions " + strt + " and " + end);
         r = gen.genlib.listStrToStr.list_to_string(gen.neo4jlib.neo4j_qry.qry_str_list(cq));
     }
     catch (Exception e) {return "None";} 

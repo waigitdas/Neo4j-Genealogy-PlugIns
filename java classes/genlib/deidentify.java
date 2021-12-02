@@ -55,6 +55,10 @@ public class deidentify {
         gen.neo4jlib.neo4j_qry.qry_write("MATCH (m:DNA_YMatch)  set m.fullname=left(m.first_name,1) + ' ' + left(m.surname,1)");
         gen.neo4jlib.neo4j_qry.qry_write("match (p:DNA_YMatch) remove p.first_name, p.middle_name,p.surname");
             
+         gen.neo4jlib.neo4j_qry.qry_write("match (p:Person) with p match (l:Lookup) where l.RN=p.RN set l.fullname=left(p.first_name,1) + left(p.surname,1)");
+         gen.neo4jlib.neo4j_qry.qry_write("match (l:Lookup) where size(l.fullname)>3 set l.fullname= left(l.fullname,1) + right(trim(l.fullname),1)");
+ 
+        
         return "deidentification completed";
     }
 }

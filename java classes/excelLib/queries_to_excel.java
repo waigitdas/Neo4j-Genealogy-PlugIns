@@ -192,7 +192,10 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
     excelSheet.setName(excelSheet.getName() + "-" + rr);
 
     //int cell_width = excelSheet.getColumn(0).length;
-    addLabel(excelSheet, 0, rws.length + 5 , fixCellStr(message));
+    String[] msg = message.split("\n");
+    for (int m=0;m < msg.length; m++){
+    addLabel(excelSheet, 0, rws.length + 5 + m , fixCellStr(msg[m]));
+    }
     
     //wrap up and open file
     w.write();

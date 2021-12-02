@@ -23,7 +23,7 @@ public class connTest {
         public static Session session;
         public static Driver driver;
         @UserFunction
-        @Description("Checks connection and restrats if broken; otherwise re-uses existing connection")
+        @Description("Used by other functions. Checks connection and restrats if broken; otherwise re-uses existing connection")
    
         
     public  String connStatus()      

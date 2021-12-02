@@ -5,7 +5,7 @@
  */
 package gen.genlib;
 
-import static gen.tgs.tg_report_set1.tg_report1;
+import static gen.tgs.tg_report_lenient.tg_report1;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
 import org.neo4j.procedure.UserFunction;
