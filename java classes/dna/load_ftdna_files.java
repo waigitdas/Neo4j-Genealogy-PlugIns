@@ -70,9 +70,11 @@ public  String load_ftdna_csv_files(
         neo4j_qry.CreateRelationshipIndex("match_segment","m");
         neo4j_qry.CreateRelationshipIndex("match_segment","p");
         neo4j_qry.CreateRelationshipIndex("match_by_segment","cm");
-        neo4j_qry.CreateCompositeIndex("Segment", "chr,strt_pos,end_pos");
-        neo4j_qry.CreateCompositeIndex("Segment", "strt_pos,end_pos");
-        //neo4j_qry.CreateIndex();
+        try{ //will fail if index already exists
+            neo4j_qry.CreateCompositeIndex("Segment", "chr,strt_pos,end_pos");
+            neo4j_qry.CreateCompositeIndex("Segment", "strt_pos,end_pos");
+        }
+        catch (Exception e){};        //neo4j_qry.CreateIndex();
         
         //load curation file
         file_lib.get_file_transform_put_in_import_dir(root_dir + curated_file, "RN_for_Matches.csv");

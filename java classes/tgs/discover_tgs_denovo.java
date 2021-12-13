@@ -17,7 +17,7 @@ import org.neo4j.procedure.UserFunction;
 
 public class discover_tgs_denovo {
    @UserFunction
-    @Description("Discovers possible triangulation groups.")
+    @Description("Discovers possible triangulation groups. This will open up multiple Excel files.")
 
     public String discover_tgs (
 //       @Name("anc_rn")
