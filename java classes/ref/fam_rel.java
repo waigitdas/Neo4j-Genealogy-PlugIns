@@ -14,7 +14,7 @@ package gen.ref;
 
 public class fam_rel {
   @UserFunction
-  @Description("description here")
+  @Description("Loads reference data for relationships based on the number of hops in traversing a graph from two individuals to a common ancestor. Also loads data from the Shared Centimorgan Project with mean and range of expected shared cm for the relationships.")
 
     public String family_relationships(
 //        @Name("rn1") 

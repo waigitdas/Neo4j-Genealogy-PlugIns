@@ -30,7 +30,7 @@ public class neo4j_info {
     public static String tg_file;
     public static String alt_left_bracket ;
     public static String alt_right_bracket ;
-    public static String gfgDir = "C:/Genealogy/Neo4j/neo4j.wai";
+    public static String activeProjectData = "C:/Genealogy/Neo4j/active_neo4j.wai";
     public static String neo4j_home_dir;
 
 //public static String getHomeDir() {
@@ -45,7 +45,7 @@ public static Boolean neo4j_var() {
     if (Import_Dir == null) {  //variable not available
    
     //neo4j_home_dir = gen.neo4jlib.neo4j_qry.qry_str("call dbms.listConfig() YIELD name, value where name='dbms.directories.neo4j_home' RETURN replace(value,'\\\\','^') as path");
-    String c = file_lib.readFileByLine(gfgDir);
+    String c = file_lib.readFileByLine(activeProjectData);
     String[] s = c.split("\n");
     int ct = 0;
     for (int i=1; i < s.length; i++) {  //first row is comment
@@ -76,7 +76,7 @@ public static Boolean neo4j_var() {
     alt_left_bracket = "\u298B";
     alt_right_bracket = "\u298C";
     Database_Dir = new File( Import_Dir.replace("import/", ""));
-    //gfgDir = Import_Dir.replace("import","gfg");
+   
  }
     else {
         WasFilled = true;
@@ -96,7 +96,7 @@ public static Boolean neo4j_var_reload() {
     
      //neo4j_home_dir = gen.neo4jlib.neo4j_qry.qry_str("Call dbms.listConfig() YIELD name, value where name='dbms.directories.neo4j_home' RETURN replace(value,'\\\\','/') as path");
     Boolean WasFilled =true;  
-    String c = file_lib.readFileByLine(gfgDir);
+    String c = file_lib.readFileByLine(activeProjectData);
     String[] s = c.split("\n");
     int ct = 0;
     for (int i=1; i < s.length; i++) {  //first row is comment
@@ -126,7 +126,7 @@ public static Boolean neo4j_var_reload() {
     tg_logic_overlap = "s.chr=t.chr and t.end_pos>=s.strt_pos and t.strt_pos<=s.end_pos";
     alt_left_bracket = "\u298B";
     alt_right_bracket = "\u298C";
-    //gfgDir = Import_Dir.replace("import","gfg");
+   
        
     return WasFilled;
 

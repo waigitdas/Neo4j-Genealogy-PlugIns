@@ -34,7 +34,7 @@ package gen.ref;
 
 public class upload_Y_DNA_Haplotree {
        @UserFunction
-       @Description("Loads FTDNA Y-DNA json refernce file into Neo4j.")
+       @Description("Loads the entire Y-haplotree directly from the current FTDNA Y-DNA json refernce file into Neo4j. This json is updated frequently as new snps and haplotree branches are discovered. Source: https://www.familytreedna.com/public/y-dna-haplotree/get")
 
     
 //    public static void main(String args[]) {

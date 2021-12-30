@@ -13,7 +13,7 @@ import org.neo4j.procedure.UserFunction;
 
 public class load_tgs_from_template {
     @UserFunction
-    @Description("Loads curated triangulation group csv file to Neo4j and creates edges to segments, matches and persons. Deleted prior tg nodes and edges before doing so. File path in user's curated private file")
+    @Description("Loads curated triangulation group csv file to Neo4j and creates TG nodes and then edges from them to segments, matches and persons. Deletes prior tg nodes and edges before doing so. File path is specified in user's curated private file")
 
   public String load_curated_tg_file(
         //@Name("CSVFilePath") 

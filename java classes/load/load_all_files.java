@@ -10,13 +10,14 @@ package gen.load;
     import gen.gedcom.upload_gedcom;
     import gen.dna.load_ftdna_files;
     import gen.tgs.load_tgs_from_template;
+    
     import org.neo4j.procedure.Description;
     import org.neo4j.procedure.Name;
     import org.neo4j.procedure.UserFunction;
 
 public class load_all_files {
     @UserFunction
-    @Description("Not working. Loads GEDCOM, FTDNA files, triangulation groups using lookup file for locations of files.")
+    @Description("Loads GEDCOM, FTDNA and curated files (GEDCOM-DNA links; triangulation groups) using a lookup file for locations of files. This function calls on several others in the PlugIn, enabling a simplier one-step loading process.")
 
     public String load_everything(
         @Name("Gedcom_Fam_Tag") 
@@ -41,6 +42,8 @@ public class load_all_files {
         load_tgs_from_template t = new load_tgs_from_template();
         t.load_tgs_from_csv();
        
+       
+        
         return "Completed";
     }
     

@@ -18,7 +18,7 @@ import gen.neo4jlib.neo4j_qry;
       
     public class mrca3_phased {          
         @UserFunction
-        @Description("Input 2 RNs and get list of MRCA names")
+        @Description("Input 2 RNs and get list of the MRCA in the path to the specified most distant common ancestor.")
         
     public String mrca_phased(
         @Name("rn1") 

@@ -37,7 +37,7 @@ public class match_relationships {
         String cq = "MATCH p=(m1:DNA_Match)-[r:match_by_segment]->(m2:DNA_Match) where m1.RN>0 and m2.RN>0 and m1.fullname<m2.fullname\n" +
 "with m1.fullname as match1, m2.fullname as match2,gen.rel.relationship_from_RNs(m1.RN,m2.RN) as rel,r.cm as cm,r.mbp as mbp,r.seg_ct as segs \n" +
 "return match1,match2,rel,cm as shared_cm,mbp,segs order by cm desc,rel,match1";
-        gen.excelLib.queries_to_excel.qry_to_excel(cq,"match_relationships","relationships",1,"4:10;5:10;6:10", "3:####.0;4:####;5:###","",true,"");
+        gen.excelLib.queries_to_excel.qry_to_excel(cq,"match_relationships","relationships",1,"4:10;5:10;6:10", "3:####.0;4:####;5:###","",true,"",true);
         return "completed";
     }
 }

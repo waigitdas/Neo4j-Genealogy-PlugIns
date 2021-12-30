@@ -48,7 +48,7 @@ public class matches_by_seg {
         String retn= "Excel";
         if (seg_ct < 60000) {
          
-        gen.excelLib.queries_to_excel.qry_to_excel(cq,gen.neo4jlib.neo4j_info.project + "_match segments", "matches", 1, "", "0:##;1:###,###,###;2:###,###,###;3:##.#;4:###;5:###;6:###;7:###;8:###", "", true,gen.neo4jlib.neo4j_info.project + " project total number of unique matches = " + match_ct + "\nThe edge count includes those originating with\nthe propositus (col F) and the match (col G)\nThe kits have an * prefix in the match list." );
+        gen.excelLib.queries_to_excel.qry_to_excel(cq,gen.neo4jlib.neo4j_info.project + "_match segments", "matches", 1, "", "0:##;1:###,###,###;2:###,###,###;3:##.#;4:###;5:###;6:###;7:###;8:###", "", true,"UDF: gen.dna.matches_by_segments()\n\n" + gen.neo4jlib.neo4j_info.project + " project total number of unique matches = " + match_ct + "\nThe edge count includes those originating with\nthe propositus (col F) and the match (col G)\nThe kits have an * prefix in the match list." ,true);
         }
         else {
             retn = "csv";

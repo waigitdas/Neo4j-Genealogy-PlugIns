@@ -15,7 +15,7 @@ import org.neo4j.procedure.UserFunction;
 
 public class tg_seg_seq {
     @UserFunction
-    @Description("not yet implemented.")
+    @Description("In development.")
 
     public Path tg_seg_seq_graph(
         @Name("tgid") 

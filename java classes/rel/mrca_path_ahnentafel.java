@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class mrca_path_ahnentafel {
     @UserFunction
-    @Description("Parses based 2 ahnentafel to ahnentafel (in base 10) at each hop in the path to the most distant ancestor")
+    @Description("Parses base-2 ahnentafel to ahnentafel (in base 10) at each hop in the path to the most distant ancestor.")
 
 public List<Long> ahn_path(
     @Name("ahnentafel") 

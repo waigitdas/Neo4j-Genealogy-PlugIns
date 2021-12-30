@@ -12,7 +12,7 @@ import org.neo4j.procedure.UserFunction;
 
 public class curated_tgs {
     @UserFunction
-    @Description("description here")
+    @Description("Summary of triagnulation groups and their boundaries.")
 
     public String curated_tg_report(
         
@@ -32,7 +32,7 @@ public class curated_tgs {
     
      public String createReport() 
     {
-       queries_to_excel.qry_to_excel("MATCH (t:tg) RETURN t.tgid as tg_id,t.project as project,t.chr as chr,t.strt_pos as strt_pos,t.end_pos as end_pos,t.cm as cm order by t.tgid","curated_tgs","tgs", 1, "1:15;1:15", "3:###,###,###;4:###,###,###", "", true,"" );
+       queries_to_excel.qry_to_excel("MATCH (t:tg) RETURN t.tgid as tg_id,t.project as project,t.chr as chr,t.strt_pos as strt_pos,t.end_pos as end_pos,t.cm as cm order by t.tgid","curated_tgs","tgs", 1, "1:15;1:15", "3:###,###,###;4:###,###,###", "", true,"",true );
         return "";
     }
 }

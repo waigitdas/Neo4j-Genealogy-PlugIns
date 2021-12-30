@@ -15,7 +15,7 @@ import org.neo4j.procedure.UserFunction;
 
 public class coefficient_of_relationship {
     @UserFunction
-    @Description("computes the COR from two RNs")
+    @Description("computes the coefficient of relationship (COR) from two RNs. COR is used to estimate the expected shared cm and as a measure of pedigree collapse." )
 
     public double compute_cor(
         @Name("rn1")

@@ -20,7 +20,7 @@ import org.neo4j.procedure.UserFunction;
  */
 public class create_seg_lattice {
    @UserFunction
-    @Description("Creates a de Bruign tree for segments with seg_seq edge. Used in identifying triangulation groups.")
+    @Description("In development: Will create a de Bruign tree for segments with seg_seq edge. Used in de novo discovery of triangulation groups.")
 
     public String seq_lattice (
 //        @Name("rn1") 

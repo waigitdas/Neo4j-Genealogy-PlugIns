@@ -78,7 +78,7 @@ public  String load_ftdna_csv_files(
         
         //load curation file
         file_lib.get_file_transform_put_in_import_dir(root_dir + curated_file, "RN_for_Matches.csv");
-        neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS line FIELDTERMINATOR '|' merge (l:Lookup{fullname:toString(line.Match_Name),RN:toInteger(case when line.Curated_RN is null then 0 else line.Curated_RN end),kit:toString(case when line.Kit is null then '' else line.Kit end)})");
+       neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS line FIELDTERMINATOR '|' merge (l:Lookup{fullname:toString(line.Match_Name),RN:toInteger(case when line.Curated_RN is null then 0 else line.Curated_RN end),Upload:toString(case when line.File_Upload is null then 'N' else line.File_Upload end),kit:toString(case when line.Kit is null then '' else line.Kit end)})");
         
         //create instances class to load reference data
         gen.ref.fam_rel fr = new gen.ref.fam_rel();
@@ -99,7 +99,8 @@ public  String load_ftdna_csv_files(
         
         String kit_fullname="";
         String cq ="";
-
+        String[] kit_list = gen.neo4jlib.neo4j_qry.qry_to_csv("MATCH p=(k:Lookup{Upload:'Y'}) return k.kit as kit").replace("\"","").split("\n");
+   
 //        
         // iterating over subdirectories holding DNA data files
         for (int i = 0; i < directories.length; i++) {
@@ -114,6 +115,7 @@ public  String load_ftdna_csv_files(
             int ct = 0;
             Boolean hasDNAMatch = false;
             Boolean hasSegs = false;
+            Boolean kit_found=false;
             String cb_version = "";  //chromosome browser file version
             
             //iterate over DNA data files, distinguishing their type before processing
@@ -121,9 +123,17 @@ public  String load_ftdna_csv_files(
                 if (ct == 0){
                     String p[] = pathitem.split("_");
                     kit = p[0].strip();
-                    
+                    for (int k=0;k<kit_list.length; k++){
+                     //gen.neo4jlib.file_lib.writeFile("|" + kit + "|" + kit_list[k] + "|", gen.neo4jlib.neo4j_info.Import_Dir + "kit_list_" + i + "_" + k + ".csv");
+                        if (kit.equals(kit_list[k])) {
+                            //gen.neo4jlib.file_lib.writeFile(kit_list[k], gen.neo4jlib.neo4j_info.Import_Dir + "z_kit_list_" + k + ".csv");
+                            kit_found = true;
+                            break;
+                        }
+                    }
                     ct = ct + 1;
-                    
+                    if (kit_found == true){
+                        
                     try{
                     kit_fullname = neo4j_qry.qry_str("match (l:Lookup{kit:'" + kit + "'}) return case when l.fullname is null then '' else l.fullname end as fullname");
                     kit_fullname=kit_fullname.replace("[", "").replace("]", "").replace("\"", "");
@@ -150,10 +160,10 @@ public  String load_ftdna_csv_files(
                 }
                 catch (Exception e) {};
      
-                
+                }
                  }
                 else{ct=ct+1;}
-        
+        if (kit_found == true){
                 try{
        
                 //******************************************************************************
@@ -280,7 +290,8 @@ public  String load_ftdna_csv_files(
 //******************************************************************************
 //***********  Graph Enhancements  *********************************************
 //******************************************************************************
-        
+            if (kit_found == true){
+     
 if (hasSegs==true){
         //line 391 in VB.NET
         //match_segment edges with phasing paramenters m (match) and p (propositus) (for matches)
@@ -309,7 +320,8 @@ if (hasSegs==true){
             neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
             
         }
-        
+        } //kit_found 
+            }
 } // next kit   
 
 //same as Kit_Match
@@ -361,6 +373,8 @@ if (hasSegs==true){
         neo4j_qry.qry_write("match (s:Segment) set s.mbp=(s.end_pos-s.strt_pos)/1000000");
    
         neo4j_qry.qry_write("CREATE INDEX rel_math_segement_composit1 FOR ()-[r:match_segment]-() ON (r.p,r.p_anc_rn,r.cm,r.snp_ct)");
+        
+        
     }
     
    

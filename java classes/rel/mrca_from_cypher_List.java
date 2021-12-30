@@ -17,7 +17,7 @@ package gen.rel;
 
 public class mrca_from_cypher_List {          
     @UserFunction
-    @Description("Common ancestor of multiple persons.")
+    @Description("Returns most recent common ancestor shared by multiple persons. Each pair of persons in the list may have a more recent common ancestor who is descended from the reported ancestor shared by all in the list. Returns nothing if there is none.")
         
     public String mrca_from_cypher_list(
         @Name("rn_list") 

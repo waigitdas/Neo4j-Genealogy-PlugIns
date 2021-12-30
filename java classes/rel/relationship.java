@@ -19,7 +19,7 @@ import static java.lang.Integer.min;
       
     public class relationship {          
         @UserFunction
-        @Description("Input length of path of two descendants to the common ancestor and the number of common ancestors. Returns the relationship if MRCA count <3. Used in other queries to simplify query and speed processing")
+        @Description("Input length of path of two descendants to the common ancestor and the number of common ancestors. Returns the relationship if MRCA count <3. Used in other queries to simplify query and speed processing.")
         
     public String relationship_from_path(
         @Name("mrca_ct") 

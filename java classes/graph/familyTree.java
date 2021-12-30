@@ -15,7 +15,7 @@ import org.neo4j.procedure.UserFunction;
 
 public class familyTree {
     @UserFunction
-    @Description("description here")
+    @Description("Visualization in development")
 
     public Map<String,Object> family_tree(
         @Name("rn") 

@@ -20,7 +20,7 @@ import java.io.File;
 
 public class tg_environment {
     @UserFunction
-    @Description("Creates ancestor_rn property in person, DNA_match and kit nodes and then the sequence of segments mapping to descendants.. This facilitates queries in triangulation group reporting. The seq-seq edge enables rapid queries without directly computing overlaps.")
+    @Description("Creates ancestor_rn property in Person, DNA_match and Kit nodes and then the sequence of segments mapping to descendants of the ancestor. This facilitates queries in triangulation group reporting. The seq_seq edge enables rapid traversals to the segments shared by multiple persons without directly computing overlaps.")
 
     public  String setup_tg_environment(
         @Name("ancestor_rn") 

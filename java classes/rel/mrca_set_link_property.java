@@ -14,7 +14,7 @@ import gen.neo4jlib.neo4j_qry;
 
 public class mrca_set_link_property {
    @UserFunction
-   @Description("Will not run on its own. Access this by running gen.tgs.setup_tg_environmen which uses it. This function sets the ancestor_rn property in matches, kits and person with who are in the direct line to the designated common ancestor. Erases prior data, so only the most recent run of this UDF is applied")
+   @Description("Will not run on its own. Access this by running gen.tgs.setup_tg_environmen which uses it. This function sets the ancestor_rn property in DNA_Match, Kit and Person nodes if they are in the direct line to the designated common ancestor. Erases prior data, so only the most recent run of this UDF is applied. This enhancement enables analytics filtered for and limited to these descendants of the common ancestor.")
 
   public String mrca_link_property(
         @Name("ancestor_rn") 
@@ -66,7 +66,12 @@ public class mrca_set_link_property {
 //        gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() with m1,r match (m2:DNA_Match) where r.p=m1.fullname and  m1.RN is not null and r.m=m2.fullname and m2.RN is not null set r.m_rn=m2.RN, r.p_rn=m1.RN");
 //        //gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() with r match (m2:DNA_Match) where m2.fullname = r.p and m2.RN is not null set r.p_rn = m2.RN");
         
+
+        //add genealogical relationship to edges to speed queries
+        add_rel_property rr = new gen.rel.add_rel_property();
+        rr.add_relationship_property(); 
         
+    
         return "Completed";
     } 
 }

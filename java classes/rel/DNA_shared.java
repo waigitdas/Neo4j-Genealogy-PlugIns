@@ -25,7 +25,7 @@ import org.neo4j.procedure.UserFunction;
 
 public class DNA_shared{
     @UserFunction
-    @Description("computes the shared DNA expected and actual with family tree paths ")
+    @Description("computes the shared DNA expected and actual observed with family tree paths ")
 
     public String shared_DNA(
         @Name("rn1")

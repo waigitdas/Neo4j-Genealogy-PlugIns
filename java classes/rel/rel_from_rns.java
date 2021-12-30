@@ -14,7 +14,7 @@ import org.neo4j.procedure.UserFunction;
 
 public class rel_from_rns {
     @UserFunction
-    @Description("gets relationship for two RNs using path hops to the common ancestor(s). If there are common ancestors on two branches there may be moe than one relationship returned. The algorithm looks back 10 generations for common ancestors.")
+    @Description("Returns relationship for two RNs using path hops to the common ancestor(s). If there are common ancestors on two branches there may be moe than one relationship returned. The algorithm looks back 10 generations for common ancestors.")
 
     public String relationship_from_RNs(
         @Name("rn1") 

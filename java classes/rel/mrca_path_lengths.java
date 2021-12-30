@@ -18,7 +18,7 @@ import org.neo4j.procedure.UserFunction;
  */
 public class mrca_path_lengths {
     @UserFunction
-    @Description("Returns string with number of mrcas and paths to lengths")
+    @Description("Returns string with number of mrcas and paths lengths to common ancestor. This can be used to look up the relationship and expected shared centimorgans.")
 
     public String mrca_path_len(
         @Name("rn1") 
