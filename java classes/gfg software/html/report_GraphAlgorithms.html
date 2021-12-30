@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Graph Algorithms</title>
+ <link rel="import" href="/header.html">
+
+</head>
+  <link rel="stylesheet" href="gfg.css">
+<body class="report">
+
+
+	<b class="title">Graph Algorithms</b><br><br>
+	
+	<b>Background</b><br><br>
+
+	Neo4j has a <a href="https://neo4j.com/docs/graph-data-science/current/" target="new">Graph Data Science (GDS) PlugIn</a> supporting algorithms useful in genealogy analytics. THere are several steps in implementing the GDS capabilities. A virtual graph is created with a GDS query; it is in memory associated with the database in use. It is then used to execute the other algorithms discussed here. Some of the algorithms are analogous to those already used by genealogists, but the speed and agility of graph methods is notable in comparison. <br><br>
+	
+	Graph algorithms are used to produce reports. They can also be used to add properties to nodes and relationships. These properties can then be incorporated into other downstream analytics. For instance, you may identify communities (aka clusters) and put their identifier into a node property. You can then filter on these nodes creating datasets for analysis..
+	
+	<b>Creating a virtual graph</b><br><br>
+	
+	Each of the algorithms below uses a weighted virtual graph. Its creation is part of the function, but here is the cypher query that is used within the function, The virtual graph name is icw. The shared centimorgans of the icw matches is a property in the match_by_segment edge and is used to weight the virtual graph. There are two components in setting up the graph: the node and relationship elements. Then there are configuration paraments in the braces {}. <br><br>
+	
+	<b class="cypher">
+	CALL gds.graph.create.cypher('icw',<br>
+	'MATCH (m:DNA_Match) where m.RN is not null <br>
+RETURN id(m) AS id', <br>
+'MATCH (m)-r:match_by_segment->(m2:DNA_Match) where 150>r.cm>25 <br>
+RETURN id(m) AS source, id(m2) AS target, r.cm as weight',<br>
+{readConcurrency: 4,validateRelationships:FALSE} ) <br>
+YIELD graphName AS graph, nodeQuery, nodeCount AS nodes, relationshipQuery, relationshipCount AS rels <br>
+return nodes, rels
+				 
+					 </b>
+	
+	<br><br>
+The virtual graph persists until you either restart the database or drop/delete it with:
+	<b class="cypher">CALL gds.graph.drop('icw')</b><br><br>
+	
+		<h3 class="report">Degree Centrality</h3>
+	
+	Degree is a graph numeric value for the number of connections (edges/relationships) of a node. Nodes with a higher degree are a mixed bag. Some are so large that they create "hairballs" or so much data that it defies comprehension. Very low degree nodes tend to be of little interest. The Goldilocks scenario is just the right degree number! This will vary with the analytic questions being asked. The methods used here allow you to eaily change the degree properties as required. This query returns an ordered list of the degree for each match.
+	<br><br>
+	
+	<b class="cypher">
+	CALL gds.degree.stream('icw') <br>
+YIELD  nodeId,  score<br>
+with  gds.util.asNode(nodeId).fullname AS name, score<br>
+return name, score<br>
+order by score desc
+	</b> 
+		<br><br>
+<b class="udf">pending</b>	<br><br>
+	
+
+	<hr class="major">	
+	
+	
+	
+		<h3  class="report">Triangles</h3>
+	
+	ICW matches form triangles between three sets of DNA results. In a chromosome browser you are in a specific kit. You then select a match and their in common with matches, thus getting tree kits in the retult. A number of GDS functions implement triangle analytics from the virtual graph (discussed below).
+<br><br>
+	This query returns the number of triangles for each match: <br>
+	<b class="cypher">
+	CALL gds.triangleCount.stream('icw')<br>
+YIELD nodeId, triangleCount AS count<br>
+RETURN gds.util.asNode(nodeId).fullname AS name, count order by count desc<br>
+	</b>
+	<b class="udf"></b>	
+	<br>
+	<hr class="dotted">
+	This query returns a list of all the triangles with the three matches involved on each row. You will need to set your centimorgan range wider to see more triangles.<br>
+	<b class="cypher">
+	CALL gds.alpha.triangles('icw')<br>
+YIELD nodeA, nodeB, nodeC<br>
+RETURN<br>
+  gds.util.asNode(nodeA).fullname AS nodeA,<br>
+  gds.util.asNode(nodeB).fullname AS nodeB,<br>
+  gds.util.asNode(nodeC).fullname AS nodeC
+	</b>
+<hr class="major">	
+	
+	
+	<h3 class="report">Community Detection Algorithms</h3>
+	
+
+	The graph algorithm function can use different algorithms, which are specified by a number: 1 - louvain; 2 = modularity optimization and 3 = page progagation. The virtual graph creation, which occurs every time the function is called, uses the specified range of the shared centimorgans (minimum and maximum) which limits the pair of matches retrieved. Finally, a boolean value sets whether you constain the query to know persons (true) or use the entire set of matches defined by the centimorgan filter (false). 
+
+	<br><br>
+	
+	<b>Louvain modularity algorithm</b><br><br>
+	
+	This hierarchical clustering algorithm iterates recursively merging previously identified clusters to maximize the modularity score. The implementation here does not use the intermediate communities; that is planned for future functions. These queries run relatively fast so experimentation is recommended. When you query the entire dataset, constrained only by the centimorgan filter, you can produce large datasets that may overwhelm Excel; the number of matches is also unmanageable.<br><br>
+	
+	<b class="cypher">
+		CALL gds.louvain.stream('icw', {relationshipWeightProperty:'weight' }) <br>
+		YIELD nodeId, communityId, intermediateCommunityIds <br>
+	with gds.util.asNode(nodeId).fullname AS name, communityId as cid, intermediateCommunityIds as ici <br>
+	with cid,name order by name <br>
+	with cid,collect(name) as names with cid as community,size(names) as ct, names as matches order by ct desc <br>
+	with community,ct,matches where ct>2 <br>
+	return community,ct, matches
+
+</b>
+	<br><br>
+		
+<b class="udf">return gen.algo.community_detection_icw(1,25,150,true)</b>	<br><br>
+
+
+	<hr class="dotted">
+	<b>Modularity Optimization</b><br><br>
+	Modularity is a measure of the structure of a graph, measuring the density of connections within a module or community. Graphs with a high modularity score will have many connections within a community but only few pointing outwards to other communities.
+		<br><br>
+	<b class="udf">return gen.algo.community_detection_icw(2,25,150,true)</b>
+	    <br><br>  
+	
+	<hr class="dotted">
+	<b>Label Propagation</b><br><br>
+Originally developed by Google engineers, is a rapid method for discovering communities using the network structure alone.
+	<br><br>
+	<b class="udf">return gen.algo.community_detection_icw(3,25,150,true)</b>
+	    <br><br>  
+	
+	<hr class="major">	
+
+		
+	<h3 class="report">Machine Learning</h3>
+	
+	In the GDS plugin there are several functions to enhance the graph. The algorithms detect patterns and create "embeddenings" based on these which are then written as properties into nodes. With these enhancements you can run other machine learning algorithms and create reuseable models. These models are now being explored for use in Graphs for Genealogists. Look for them in future versions. 
+	<br><br>
+	
+	<div>
+ <hr>
+	<table>
+  <tr>
+    <td><img src="https://blobswai.blob.core.windows.net/wai/logo.png" height="40px" /></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+	  <td class="footer">Graphs for Genealogists&trade;<br>Who Am I<br>1101 Alpine Lane<br>Woodstock, IL 60098 USA<br><a href="mailto:info@wai.md?subject=Graphs for Genealogists Inquiry">info@wai.md</a>&nbsp;&nbsp;&nbsp;&copy;2021</td>
+  </tr>
+</table>
+
+</div>
+<br><br>
+
+</body>
+</html>

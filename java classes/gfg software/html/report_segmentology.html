@@ -1,0 +1,182 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Segmentation</title>
+ <link rel="import" href="/header.html">
+
+</head>
+  <link rel="stylesheet" href="gfg.css">
+<body class="report">
+
+
+	<b class="title">Segmentology</b><br><br>
+	
+	<b>Background</b><br><br>
+	DNA segments are the basic currency of genetic genealogy. Segments shared by two persons indicate the <i>may be</i> related. The tools described here make use of these shared segments to augment the analytics provided by others. Graph methods enable analytics simultaneously use numerous kits. Each kits has numerous matches sharing one or more segment. The Neo4j database has nodes for each match and segment. Each entry from the raw data includes three elements, a triad: the kit person, the match person and the segment. Two diffrent kit - match pair may have distict segments, same segments or overlapping segments. As a result, any chromosome region may have multiple segments even with the same kit. Keeping track of the boundaries (start and end positions) of the segments is necessary for later analytics. For advanced analytics it is important to maintain the granular detail of these data. This may also involve some redundancy needed to enable more efficient traversals of the graph. For instance, the kit person is often a match in other kits, in which case a person will have both a Kit node and a DNA_Match node. If the person is also in the GEDCOM, they will also have a Person node. Each triad creates a path involving 3 nodes in the graph: Kit &#10132;  DNA_Match &#10132; Segment. Each &#10132; is a relationship (aka edge), specifically the KitMatch and match_segment edges respectfully. These edges have properties that speed traversals. When we create or enhance the match_segment edge properties are assigned:
+	<br><br>
+	
+	
+	<table class="grid">
+	<tr><td class="grid">property</td><td class="grid">explanation</td><td class="grid">rational</td><td class="grid">timing</td></tr>
+	<tr><td class="grid">cm</td><td class="grid">centimorgans</td><td class="grid">used in filtered</td><td class="grid">at edge creation</td></tr>
+	<tr><td class="grid">snp_ct</td><td class="grid">number of snps</td><td class="grid">used in filtering</td><td class="grid">at edge creation</td></tr>
+	<tr><td class="grid">p</td><td class="grid">propositus: the fullname of the kit owner</td><td class="grid">used in phasing</td><td class="grid">at edge creation</td></tr>
+	<tr><td class="grid">m</td><td class="grid">fullname of the match</td><td class="grid">used in filtering</td><td class="grid">at edge creation</td></tr>
+	<tr><td class="grid">p_rn</td><td class="grid">propositus GEDCOM record number</td><td class="grid">used in filtering</td><td class="grid">optional enhancement</td></tr>
+	<tr><td class="grid">m_rn</td><td class="grid">match GEDCOM record number</td><td class="grid">used in filtering</td><td class="grid">optional enhancement</td></tr>
+	<tr><td class="grid">p_anc_rn</td><td class="grid">ancestor GEDCOM record number</td><td class="grid">used in phasing</td><td class="grid">optional enhancement</td></tr>
+	<tr><td class="grid">m_anc_rn</td><td class="grid">ancestor GEDCOM record number</td><td class="grid">used in phasing</td><td class="grid">optional enhancement</td></tr>
+	</table>
+	
+		
+<br><br>
+	<h3 class="report">Shared Segments</h3>
+	
+	<b>Data Requirements</b><br><br>
+This report uses the GEDCOM, DNA match and segment data.<br><br>
+
+	<b>Purpose of the Report</b><br><br>
+This function returns the shared centimorgan of two matches. It can be used directly and is also used to produce the shared cm within other reports.
+		
+	<b>The Neo4j Queries</b><br><br>
+	
+	<b class="cypher"> MATCH p=(m1:DNA_Match{RN:1})-[r:match_by_segment]->(m2:DNA_Match{RN:216}) with apoc.math.round(r.cm,1) as cm return cm
+	</b>
+
+	<br><br>
+		<b class="udf">return gen.dna.shared_cm(1,600)
+	</b><br>
+			This query returns the shared cm, computed by adding up the cm of each shared segment.
+	<hr>	
+	<br><br>
+	<h3 class="report">Segments with their matches</h3>
+	
+	<b>Data Requirements</b><br><br>
+This report uses the GEDCOM, DNA match and segment data and the curated data linking these two datasets.<br><br>
+	
+	<b>Purpose of the Report</b><br><br>
+This report lists every match-segment pair with the other matches at that segment. This allows you to see the "big picture" including pile up regions, overlapping segments, potential triangulation groups, etc. In the matches column those matches who are in the family tree have an * prefix and sort at the beginning of the list. <br><br>
+		
+	<b>The Neo4j Queries</b><br><br>
+	This query pull segments greater that 7 cm with over 500 SNPs. 
+	
+	<br><br>
+	<b class="cypher">
+		match (s1:Segment)<br>
+		with s1 order by s1.chr,s1.strt_pos,s1.end_pos <br>
+	with collect(distinct s1) as segs1 <br>
+	match (m1:DNA_Match)-[r1:match_segment]-(s2:Segment) where s2 in segs1 and r1.cm>=7 and r1.snp_ct>=500 <br>
+	with case when m1.RN>0 then '*' + m1.fullname + ' [' + m1.RN + ']' else m1.fullname end as m2, <br>
+	case when m1.RN>0 then m1.RN else null end as rns1, <br>
+	case when r1.m_rn>0 then r1.m_rn else null end as rns2, <br>
+	case when r1.m_rn>0 then '*' + r1.m + ' [' + r1.m_rn + ']' else r1.m end as m3,<br>
+	max(r1.cm) as max_cm,min(r1.cm) as min_cm, s2,<br>
+	count(r1) as edgect, <br>
+	sum(case when r1.p=m1.fullname then 1 else 0 end) as unidir_ct_p, <br>
+	sum(case when r1.m=m1.fullname then 1 else 0 end) as unidir_ct_m <br>
+	with s2,min_cm,max_cm,<br>
+	apoc.coll.union(collect (distinct m2), collect(distinct m3)) as matches, <br>
+	apoc.coll.union(collect(distinct rns1),<br>
+	collect(distinct(rns2))) as rns, <br>
+	sum(edgect) as edgect,sum(unidir_ct_m) as unidir_ct_m,sum(unidir_ct_p) as unidir_ct_p <br>
+	order by s2.chr,s2.strt_pos,s2.end_pos <br>
+	with s2,min_cm,max_cm,<br>
+	apoc.coll.sort(apoc.coll.flatten(matches)) as matches, <br>
+	apoc.coll.sort(apoc.coll.flatten(rns)) as rns,edgect,unidir_ct_m,unidir_ct_p  <br>
+	return s2.chr as chr,s2.strt_pos as start_pos,s2.end_pos as end_pos,apoc.math.round(min_cm,1) as cm,edgect,unidir_ct_p,unidir_ct_m,size(rns) as kits,size(matches) as match_ct,rns,matches <br>
+	</b><br>
+	
+	The above is a complex query which is necessary to get every match-segment edge. The complexity results from the duplicate edges with the same information transposed. Kit may also be matches in other kits. The query gives you the total number of edges with cm>=7 and snp_ct>-500 by summing the edgect (bi-directional edges) and those edges where the propositus or match are involved by summing the unidir_ct_p,unidir_ct_m columns respectively. To avoid duplicates in the names reported the query uses the Neo4j APOC plugin functions to merge (union) the collections, flattens them (removes duplicates) and then sorts the names. The names in the family tree have a * prefix and therefore sort at the beginning of the list.   
+
+	<br><br>
+			<b class="udf">return gen.dna.matches_by_segments()</b><br><br>
+	This user defined function uses the query and produces a CSV file. You can add filters to this Excel to help with your analyzes. You can sum the edgect, unidir_ct_p, and unidir_ct_m columns as discussed above. You can also compare these results to those seen in chromosome browsers.
+	<hr>	
+
+	
+	
+	<h3 class="report">Segments with matches descending from a common ancestor</h3>
+	
+	<b>Data Requirements</b><br><br>
+This report uses the GEDCOM, DNA match and segment data and the curated data linking these two datasets. It also uses the ancestor_rn specified when enhancing the database.<br><br>
+	
+	<b>Purpose of the Report</b><br><br>
+This report is like the prior report but limits the results to matches with a known, specified ancestor.  <br><br>
+		
+	<b>The Neo4j Queries</b><br><br>
+	This query pull segments greater that 7 cm with over 500 SNPs. 
+	
+	<br><br>
+	<b class="cypher">
+match (s1:Segment) <br>
+	with s1 order by s1.chr,s1.strt_pos,s1.end_pos <br>
+	with collect(distinct s1) as segs1 <br>
+	match (m1:DNA_Match)-[r1:match_segment]-(s2:Segment) where s2 in segs1 and r1.cm>=7 and r1.snp_ct>=500 and <br>
+	r1.p_anc_rn is not null and r1.m_anc_rn is not null<br>
+	 with r1.p_anc_rn as anc_rn,<br>
+	case when m1.RN>0 then '*' + m1.fullname + ' ⦋' + m1.RN + '⦌' else m1.fullname end as m2, <br>
+	case when m1.RN>0 then m1.RN else null end as rns1, <br>
+	case when r1.m_rn>0 then r1.m_rn else null end as rns2, <br>
+	case when r1.m_rn>0 then '*' + r1.m + ' ⦋' + r1.m_rn + '⦌' else r1.m end as m3,<br>
+	max(r1.cm) as max_cm,min(r1.cm) as min_cm, <br>
+	s2,count(r1) as edgect, sum(case when r1.p=m1.fullname then 1 else 0 end) as unidir_ct_p, <br>
+	sum(case when r1.m=m1.fullname then 1 else 0 end) as unidir_ct_m <br>
+	with anc_rn,s2,min_cm,max_cm,<br>
+	apoc.coll.union(collect (distinct m2), collect(distinct m3)) as matches, <br>
+	apoc.coll.union(collect(distinct rns1),collect(distinct(rns2))) as rns, <br>
+	sum(edgect) as edgect,sum(unidir_ct_m) as unidir_ct_m,sum(unidir_ct_p) as unidir_ct_p order by s2.chr,s2.strt_pos,s2.end_pos <br>
+	with anc_rn,s2,min_cm,max_cm,<br>
+	apoc.coll.sort(apoc.coll.flatten(matches)) as matches, <br>
+	apoc.coll.sort(apoc.coll.flatten(rns)) as rns,<br>
+	edgect,unidir_ct_m,unidir_ct_p  <br>
+	return s2.chr as chr,s2.strt_pos as start_pos,s2.end_pos as end_pos,apoc.math.round(min_cm,1) as cm,edgect,unidir_ct_p,unidir_ct_m,size(rns) as kits,size(matches) as match_ct,anc_rn,rns,matches<br>
+	</b><br>
+	
+	<br><br>
+			<b class="udf">matches_by_segments_anc_desc()</b><br><br>
+	This user defined function uses the query and produces an Excel file. You can add filters to this Excel to help with your analyzes. You can sum the edgect, unidir_ct_p, and unidir_ct_m columns as discussed above. You can also compare these results to those seen in chromosome browsers.
+	<br>
+
+<<hr>
+	
+		<h3 class="report">Matches at a chromosome region</h3>
+	
+	<b>Data Requirements</b><br><br>
+This report uses the GEDCOM, DNA match and segment data and the curated data linking these two datasets. It also uses the ancestor_rn specified when enhancing the database.<br><br>
+	
+	<b>Purpose of the Report</b><br><br>
+This report returns matches who map to a specified chromosome region.  <br><br>
+		
+	<b>The Neo4j Queries</b>
+	
+	<br><br>
+	<b class="cypher">
+		match (m:DNA_Match)-[r:match_segment]-(s:Segment) <br>
+		where m.ancestor_rn is not null and <br>
+	s.chr='01' and s.strt_pos>=1 and s.end_pos<=10000000 <br>
+	with m order by m.fullname <br>
+	with distinct m.fullname + ' ⦋' + m.RN + '⦌' as match <br>
+	return match
+	</b><br>
+	
+	<br><br>
+			<b class="udf">return gen.dna.matches_at_chr_region('01', 1, 10000000)
+</b><br><br>
+
+
+	
+	<div>
+ <hr>
+	<table>
+  <tr>
+    <td><img src="https://blobswai.blob.core.windows.net/wai/logo.png" height="40px" /></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+	  <td class="footer">Graphs for Genealogists&trade;<br>Who Am I<br>1101 Alpine Lane<br>Woodstock, IL 60098 USA<br><a href="mailto:info@wai.md?subject=Graphs for Genealogists Inquiry">info@wai.md</a>&nbsp;&nbsp;&nbsp;&copy;2021</td>
+  </tr>
+</table>
+
+</div>
+<br><br>
+
+</body>
+</html>

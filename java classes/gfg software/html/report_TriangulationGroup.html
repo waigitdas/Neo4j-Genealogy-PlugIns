@@ -1,0 +1,276 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Triangulation Groups</title>
+ <link rel="import" href="/header.html">
+
+</head>
+  <link rel="stylesheet" href="gfg.css">
+<body class="report">
+
+
+	<b class="title">Triangulation Group Reports</b><br><br>
+	
+	<b>Background</b><br><br>
+
+	Triangulation groups are defined as chromosome segments shared by descendants of a common ancestor. While analytics in this software can help with discovery of triangulation groups, curation by the genealogist is an essential final step. This software then uses the curated file to load the triangulation group nodes and their relationship to Segment, Person, and DNA_Match nodes, specifically the tg_segment, person_tg and match_tg relationships. These resports incorporate phasing, which limits the common ancestor to a single specific ancestor. Some other applications report triangulation groups to an ancestor couple, which can create ambiguities if there are half siblings amoung their descendants.  
+	
+<br><br>
+	When working with multiple kits there are several perspectives of triangulation groups. The raw data contains two persons and their shared segment; let's call them granular segments. Within the region of a triangulation group there will be multiple granular segments with overlapping boundaries between some of them. There can also be overlap of the granular segments with the boundaries of the triagulation group; that is, only a portion of the granular segment is in the triangulation group.  
+	
+	<br><br>
+		<h3 class="report">Triangulation Group Enhancements</h3>
+	
+	<b>Data Requirements</b><br><br>
+	
+You must run the function enhancing the Neo4j database to optimize the triangulation group analytics. Triangulation groups are chromosome segments shared by several DNA testers who also share a common ancestor. The baseline data contains the testers, their matches and the segments. The missing element is the common ancestor. Thus. you specify the common ancestor defining the triangulation group and run the enhancements. The ancestor_rn is added as a property to all relevant Person, DNA_Match and Kit node. It is also added to the match_segment edge as p_anc_rn and m_anc_rn as described <a href="https://blobswai.blob.core.windows.net/gfg-software/report_segmentology.html" target="new2">elsewhere</a>. These enhancement enable phasing of the chromosome segments to specific ancestral lines. <br><br>
+	
+	<b>The Report</b><br><br>
+	
+	After running the enhancement, an Excel report lists the curated triangulation groups, their boundaries and the list of matches descended from the specified common ancestor. <br><br>
+		
+<b class="udf">return gen.tgs.setup_tg_environment()</b>	<br><br>
+	
+
+	<hr class="major">	
+	
+	
+	
+		<h3  class="report">Triangulation Group Matches</h3>
+		<b>Data Requirements</b><br><br>
+
+	This report leverages the enhancements which link the family tree (graph #1) to matches (graph #2) and then to segments (graph #3). It utilizes the seg_seq edge to find matches with overlapping segments by traversing the graphs rather than calculating the ovelaps, which is a more efficient strategy.<br><br>
+	
+		<b>The Report</b><br><br>
+	
+	This report pulls together a lot of graph connections and will take longer to run than most other reports. This report produces a Excel file with the following fields for each tg:
+	
+	<ol>
+	<li>tg: the triangulation group id</li>
+	<li>chr: chromosome</li>		
+	<li>tg_start: start position of the tg</li>		
+	<li>tg_end: end position of the tg</li>		
+	<li>cm: centimorgans of the tg computed from HapMap data</li>		
+	<li>overlap_start: minumum start position of all the included overlapping segments.</li>		
+	<li>overlap_end: maximun end position of all the included overlapping segments</li>		
+	<li>overlap_cm: centimorgans of the overlapping region computed from HapMap data</li>		
+	<li>overlap_mbp: megabase pairs in the overlapping region</li>		
+	<li>match_ct: number of matches sharing the common ancestor and mapping to the tg</li>		
+	<li>mrca_od_matches: the common ancestor shared by each of the matches in the match list</li>		
+	<li>matches: the list of matches</li>		
+	</ol>
+	 <br><br>
+		
+<b class="udf">return gen.tgs.tg_matches()</b>	
+	
+<hr class="major">	
+	
+	
+	<h3 class="report">Different Perspectives on Triangulation Groups</h3>
+	
+	<b>Data Requirements</b><br><br>
+	
+Discovery uses the GEDCOM, DNA segment and triagulation group curated boundary data. Granular segment reports are for a single, specified triagulation group.<br><br>
+	
+	<b>Granular Report</b><br><br>
+	
+	This report produces a Excel file with each row having a pairs of matches descended from the triangulation group common ancestor, their granular segment, relationship and their common ancestor (who may be the triangulation group common ancestor or a descscendant of him/her). The source is the propositus, match or both. A triangulation should include both persons in the pair, but this may be obscured when there pair persons are closely related because they have higher shared cm and be  filtered out.<br><br>
+	
+	<b class="cypher">
+match p=(m:DNA_Match)-[rm:match_segment]-(s:Segment)-[rs:seg_seq{tgid:110}]-() <br>
+		where m.ancestor_rn is not null and rm.p_anc_rn is not null and rm.m_anc_rn is not null and 200>=rm.cm>=7 and rm.snp_ct>=500  <br>
+		with s,m.fullname + ' ⦋' + m.RN + '⦌' as propositus, rm.m + ' ⦋' + rm.m_rn + '⦌' as match,  <br>
+		rm.cm as cm, rm.snp_ct as snp ,m,rm with m,rm,s,cm, snp,  <br>
+		case when m.RN&lt;rm.m_rn then propositus + ', ' + match else match + ', ' + propositus end as propositus_match,  <br>
+		case when m.RN&lt;rm.m_rn then 'm' else 'p' end as source  <br>
+		with s,propositus_match,source,cm,snp,  <br>
+		gen.rel.relationship_from_RNs(m.RN,rm.m_rn) as relationship, <br>
+		gen.rel.mrca_phased(m.RN,rm.m_rn) as mrca order by source desc  <br>
+		with propositus_match,relationship,mrca as phased_mrca,s.chr as chr,s.strt_pos as start,s.end_pos as end, cm, snp,collect(distinct source) as pm  <br>
+		return propositus_match, relationship,phased_mrca,chr,start,end,cm, snp, pm as source order by propositus_match,start,end
+</b>
+	<br><br>
+		
+<b class="udf">return gen.tgs.tg_report(110)</b>	<br><br>
+	This function implements the above cypher query for triangulation group 110 and renders the Excel document. Pair of matches are on each row. The pairs are from the matches_segment edge. The source column identifies whether the match was bidirectional or not. <br><br>
+<hr class="dotted">
+	<b>Visualizations</b><br><br>
+	
+	<b class="visualization">
+	match p=(m:DNA_Match)-[rm:match_segment]-(s:Segment)-[rs:seg_seq{tgid:110}]-() <br>
+		where m.ancestor_rn is not null and rm.p_anc_rn is not null and rm.m_anc_rn is not null and rm.cm>=7 and rm.snp_ct>=500 and s.mbp<200 <br>
+		return p
+	</b>
+		<br><br>This query above produces a graph of the ordered linked segments within the triangulation group and the match_segment edges to the matches. If you utilize <a href="" target="download">grass file</a> the display will show the relevant fields that illustrate the p (propositus) and m (match) properties of the match_segment relationships.   <br><br>
+		
+		<b class="visualization">
+	match p=(m:DNA_Match)-[rm:match_segment]-(s:Segment)-[rs:seg_seq{tgid:110}]-() <br>
+	where m.ancestor_rn is not null and rm.p_anc_rn is not null and rm.m_anc_rn is not null and rm.cm>=7 and rm.snp_ct>=500 and s.mbp<200 <br>
+	with p,m match q=(m)-[:Gedcom_DNA]-(i:Person)-[:father|mother*0..10]->(a:Person) where i.RN=m.RN and a.RN=m.ancestor_rn <br>
+	return p,q
+	</b>
+		<br><br>
+	    This query above returns the above plus links to the family tree. In the Neo4j browser it takes quite a bit of manual manipulation to make it look good. We are working on better methods with GraphXR developers.<br><br>  
+	
+	<hr class="dotted">
+		
+	<b>Jim Bartlett style reports</b><br><br>
+	<b class="udf">
+	return gen.tgs.tg_report_inclusive(110,1,false)
+	</b>
+		<br><br>The query above returns a report for TG 110 with a propositus (1) who maps to the triangulation group whose ahnentafel paths are reported. The matches map to the triangulation group with another known match, but not necessarily the propositus. The report includes segment data, the common ancestor and the anhentafel path of the propositus to that common ancestor. Then, the names of ancestors in the path are shown and their locations of birth and death.   <br><br>
+			<b class="udf">
+	return gen.tgs.tg_report_exclusive(110,1,false)
+	</b>
+		<br><br>Report as the previous except the matches are exclusively to the propositus.    
+	<hr class="major">	
+
+	
+	
+	
+	<h3 class="report">Triangulation Groups of Matches = autosomal-Haplotree</h3>
+	
+	<b>Data Requirements</b><br><br>
+	
+Discovery uses the GEDCOM and DNA segment data<br><br>
+	
+	<b>The Report</b><br><br>
+	
+	This report produces a Excel file list of matches descended from the common ancestor and their set of triangulation groups. The pattern of triangulation groups creates an autosomal haplotree. <br><br>
+	
+	<b class="cypher">
+					match p=(m:DNA_Match{ancestor_rn:41})-[rm:match_segment{p_anc_rn:41,m_anc_rn:41}]-(s:Segment)-[rs:seg_seq]-(s2:Segment)<br>
+		where 100>=rm.cm>=7 and rm.snp_ct>=500 <br>
+	with rs.tgid as tg,m order by rs.tgid <br>
+	with m.fullname + ' ⦋' + m.RN + '⦌' as match,collect(distinct tg) as tgs <br>
+	return match,size(tgs) as tg_ct,tgs order by match
+</b>
+	<br><br>
+		
+<b class="udf">return gen.tgs.matches_tgs()</b>	<br><br>
+	This function reads data on the activated project and then creates the report. <br><br>
+
+	<hr class="major">
+		
+		
+<h3 class="report">Discovery of Matches for Further Research</h3>
+	
+	The main objective of the Neo4j Plugin for genealogy is enhancing our ability to identify relevant and informative matches. In a large surname project there may be over 150,000 unique matches. The challenge of finding those for further research is easier with graph methods. This section provides some queries and functions to help you find those matches. Then, it is up to you to explore them further using traditional genealogy research. Be sure to update your GEDCOM and curated files and reload your data so any new insights are used in subsequent analytics.<br><br>
+	
+	<b>In-common-with matches</b><br><br>
+	A match pair both of whom have the specified common ancestor will share other matches. These are called in-common-with matches. They form triangles as three or more matches, but may not necessarily shared the same segments. They are not fully phased if the original match pair has more than one MRCA. ICW are reported by FTDNA, but the algorithms used here recapitulate FTDNA methods and results by aggrgating the DNA_Match - Segment edges, adding up the centimorgans. Thus, the ICW reports may include ICW reported may not be the same as those reported by FTDNA.<br><br>
+	
+	<b class="udf">
+		return gen.discovery.in_common_with_matches()
+	</b>
+	<br><br>
+	<hr class="dotted">
+	
+	<b>Detailed Shared Triangulation Group Report</b><br><br>
+	
+	Numerous matches will share at least one triangulation group with known persons. A list of these details may be useful in assessing specific questions that arise from other triangulation group research. But this listing is too long to direct research. Keep it for reference. You specify the minumum number of matches required (5 in example) before their cluster is reported. The report lists each match and then all their own matches each with their triangulation group(s) shared with the match in column A. The list of the cluster matches is sorted with those with the specified common ancestor having an * prefix so they sort at the begining of the list. You will use other reports to get data more useful for further research.<br><br>
+	
+	<b class="udf">
+		return gen.discovery.matches_with_shared_tgs_detailed(5)
+	</b><br><br>
+	
+	<hr class="dotted>"
+		<br>
+		
+	<b>Known matches who map to triangulation groups</b><br><br>
+	This report shows all the known matches who map to each triangulation group. Those who are descended from the project MRCA have an * prefix and they sort at the beginning of the list. <br><br>
+	
+	<b class="udf">
+	return gen.discovery.shared_tgs()
+	</b><br><br>
+	<hr class="dotted">
+	
+	<b>Cluster Matches</b><br><br>
+	The queries here are based on DNA test kits with in-commom-with (ICW) matches. But unlike the ICW of pairs of matches, this query discovers matches to an entire group (cluster) of known matches who share the specified common ancestor. Because there are multiple matches in the cluster, their MRCA is more likely more generations back and the newly identified matches more likely related in that line. In other words, these newly discovered matches are more worthy of further research. This query strategy is also diffferent from triangulation groups which are based on sharing of specific segments and the common ancestor. In running these queries we collect the record numbers (RN) of the kit testers, which can be used to computer the MRCAs of the kits in a cluster. Computing MRCAs takes time when there are multiple rows in a report. Thus, there are two report formats. The query without MRCAs is quicker and can be used to screen the parameter settings. The settings include the threshold for the size of clusters and the minimum and maximum centimorgans of the matches. The greater the cluster size, the more likely the cluster will contain kits on different branches of the family tree and therefore a more distant common ancestor. Of course the number of kits possible in a cluster will depend on the number of kits you have uploaded and identified as descended from the common ancestor. The minimum centimorgans should not be less that 7 to avoid matches not sharing the common ancestor. The maximum centimorgans should be kept low in order to avoid matches more likely to be on different family tree branches. However, because the clusters can contain testers from multiple branches of the family tree, higher maximum centimorgans may not be so problemmatic. Once these settings are defined, then the report with MRCAs can be run. It may take 10 minutes or longer to produce the report, but you can then see the excact MRCAs of the cluster kits. The MRCAs give you a clue as to how the newly discovered matches are related: grandparent MRCAs = first cousins, great grandparent MRCAs = second cousins, etc. Because these results are not phased for the discovered match, the closer the possible relationship the more likely the match is from the spouse of the MRCA in the direct line to the common ancestor. For instance, my Teves line MRCA is Capt Jan Cornlis Teves (1796-1833). His grandson, my great grandfather, is Rev Jan Teves (1856-1913) and he married Martha Schuttinga (1854-1904). If the cluster MRCA is this latter couple, then I do not know whether a newly discovered match is a Teves or Schuttinga line relative. Your research can be focussed on answering that question and hopefully adding to your GEDCOM.<br><br>
+	
+	<b class="udf">
+		return gen.discovery.match_clusters_without_mrca(4,7,50)
+	</b><br><br>
+	
+	<b class="udf">
+		return gen.discovery.match_clusters(4,7,50,10)
+	</b><br><br>
+	
+	The full query will appear in the reports, but here is the query producing the report with the MRCAs:<br><br>
+	<b class="cypher">
+		match (k:Kit) where k.ancestor_rn is not null <br>
+		with collect(k.RN) as krns <br>
+		MATCH (k1:Kit)-r1:KitMatch->(f:DNA_Match)<-r2:KitMatch-(k2:Kit) <br>
+		where k1.RN in krns and k2.RN in krns and 50>=r1.sharedCM>=7 and 50>=r2.sharedCM>=7 and k1<>k2 <br>
+		with f,apoc.coll.dropDuplicateNeighbors (apoc.coll.sort(collect(k1.fullname) + collect(k2.fullname))) as ck,<br>
+		apoc.coll.dropDuplicateNeighbors (apoc.coll.sort(collect(k1.RN) + collect(k2.RN))) as crn <br>
+		with f.fullname as fullname,size(crn) as ct,ck,crn <br>
+		with fullname,ct,ck,crn where ct=4 -1 <br>
+		with fullname,ct,ck,crn order by fullname <br>
+		with collect(fullname) as fn,ct,ck,crn  with ct,ck,crn,fn with ct as Kit_ct,size(fn) as Match_ct,ck as Kits,crn as Kit_RNs,fn as Matches <br>
+		with Kit_ct,Kit_ct+Match_ct as Total,Kits,Kit_RNs,Matches where Total<50 <br>
+		with Kit_ct, Total,Kits,Kit_RNs,Matches,gen.rel.mrca_from_cypher_list(Kit_RNs,10) as mrca <br>
+		return Kit_ct, Total,Kits,mrca,Kit_RNs,Matches  order by Total desc
+
+	</b>
+	
+	<hr class="dotted">
+	
+
+		<b>Triangulation group patterns</b><br><br>
+
+Matches which shared multiple triangulation groups are more likely to have relevance in future research. This query finds matches who map to multiple triangulation groups for the project. You specify the minimum size of the tringulation group cluster.<br><br>
+
+<b class="udf">
+	return gen.discovery.matches_by_tg_pattern(3)
+			 </b>
+	<br><br>
+<!--
+<hr class="dotted">
+	<b>The Report</b><br><br>
+	
+	This report produces a Excel file listing matches for futher research who map to at least 4 project triangulation groups and 3 known matches with the common ancestor. You can then locate the discovered match at FTDNA is one of the known match kits and determine whether they have a family tree of interest. You should add these matches to the curated file so you can avoid duplicative work. This report is NOT phased, so be careful that the triangulations point to the more distant ancestor being evaluated.<br><br>
+		
+<b class="udf">return gen.tgs.match_discovery()</b>	<br><br>
+	-->  
+
+		
+<!-- produces numerous Excel ... need to consolidate
+<h3 class="report">Triangulation Group Discovery</h3>
+	
+	<b>Data Requirements</b><br><br>
+	
+Discovery uses the GEDCOM and DNA segment data<br><br>
+	
+	<b>The Report</b><br><br>
+	
+	This report produces a Excel file listing possible triangulation groups, their boundaries and the list of matches descended from a specified common ancestor. <br><br>
+		
+<b class="udf">return gen.tgs.discover_tgs()</b>	<br><br>
+	This user defined function uses Neo4j queries and post-processing of the query results to identify segments that <i><b>may be </b></i> triangulation groups. The report excludes segments &lt;7 and &gt;100 cm.  
+<hr>
+-->
+	<br><br>
+	
+	
+	
+	
+
+	
+	<br><br>
+	
+	<div>
+ <hr>
+	<table>
+  <tr>
+    <td><img src="https://blobswai.blob.core.windows.net/wai/logo.png" height="40px" /></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+	  <td class="footer">Graphs for Genealogists&trade;<br>Who Am I<br>1101 Alpine Lane<br>Woodstock, IL 60098 USA<br><a href="mailto:info@wai.md?subject=Graphs for Genealogists Inquiry">info@wai.md</a>&nbsp;&nbsp;&nbsp;&copy;2021</td>
+  </tr>
+</table>
+
+</div>
+<br><br>
+
+</body>
+</html>

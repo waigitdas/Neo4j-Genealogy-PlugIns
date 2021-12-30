@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Welcome</title>
+ <link rel="import" href="/header.html">
+
+</head>
+  <link rel="stylesheet" href="gfg.css">
+<body class="help">
+
+
+	<b class="title">Enhancement to Your Neo4j Database</b><br><br>
+	
+	<b>Enhancements = Data Acceleration</b><br><br>
+	
+	Enhancements add properties or edges to the existing graph schema and populate them with relevant data. This may or may not require a parameter you enter. Enhancements that do not require your input are generally done automatically as data is loaded. But in some cases, the enhancement will be based on the questions you are asking. <br><br>
+	
+
+	<u>Example 1</u>: Added during the load steps without user  input<br><br>
+	
+	Genetic genealogy queries require granular information about match_segment edges. A match may map to a segment with many matches, each of whch must be distinguishable. As an individual kit is loaded, the match_segment edge is given several properties: the centimorgans, snp count and the propositus (e.g., kit owner) name and the match_name. For brevity, the latter are p and m properties of the match_segment edge. After all kits are loaded and the RN property added to match nodes, the match_segment edge has the p_rn and m_rn property added. These edge properties are indexed to speed queries using them.<br><br>
+	
+	We are now able to traverse the graph through the desired match_segment edges with spacified cm, snp and match pairs. We can include any or all of p_rn, m_rn, or ancestral_rn, thereby linking the path to a family tree parameter(s). With this schema we can easily recapitual the shared cm and snps for any match pair, which we use to create the match_by_segment edge. But there are several other uses that help in an intuitive manner assure the quality the results and conclusions based on them.<br><br> 
+	
+	<u>Example 2</u>: Enhancements using curated triangulation groups<br><br>
+	
+	The curated triangulation group are defined by the tg_id, chromosome, start and end position. We create tg nodes and then tg_segment edges to each segment whose start or end position falls within the tg boundaries. If one segment boundary falls outside the tg boundary, we exclude it if its cm exceeds that specified. Next we create tg_match and person_tg edges. <br><br>
+	
+	<u>Example 3</u>: Addition of user specified common ancestor of interest<br><br>
+	
+	A triangulation group is a segment shared by several descendants of a common ancestor. With multiple FTDNA kits there are numerous overlaps in even small chromosome regions. We use several enhancements, each easy to execute, which facilitate triagulation group documentation. The user's single step initiates steps performed by the PlugIn functions:
+	
+	<ol>
+	<li>Add an ancestor_rn (their GEDCOM record number) property to all matches descended from the common ancestor</li>
+	<li>Add the ancestral_rn to the match_segment edges with the respective match node have this property. These new match_segment properties are p_anc_rn and m_anc_rn</li>
+	<li>Find all trangulation group segments and matches with the ancestor_rn property which map to the segments </li>
+	<li>Order thse segments by their start and end positions and create a segment_sequence edge that links them is the sort order.</li>
+	<li>Traverse the graph from the matches with the ancestor_rn to the triangulation group sorted segments.</li>
+	<li>Display the matches and segments is a table or visualization. </li>
+	</ol>
+	
+	Each of these steps is quick and easy in a graph database. There is no need to compute overlaps. The visualization clearly illustrate the shared matches necessary to prove a true triangulation. Copy this link into your browser to view an example: https://blobswai.blob.core.windows.net/images/TG_seg_seq_anonymized.svg<br><br>   
+
+	<div class="figure">
+	<table class="figure" width="300"><tr><td class="figure_caption">Stinnett ancestor triagulation group visualization</td></tr>
+	<tr><td bgcolor="white"><img src="https://blobswai.blob.core.windows.net/images/TG_anonymized.jpg" width="50%" /></td>
+	<tr><td class="figure_footer"></td></tr>
+	</table>
+The segments are shown in sequential order connected by a seg_seq edge. The DNA match kits are in green and connected by match_segment edges. The latter edges shown the p, m, cm and snp_ct properties. The downloaded svg enlarges without blurring: <a href="https://blobswai.blob.core.windows.net/images/TG_seg_seq_anonymized.svg" target="new">https://blobswai.blob.core.windows.net/images/TG_seg_seq_anonymized.svg</a>.
+		<br><br>
+	<u>Example 4</u>: Adding a Triangulation Group Pattern to Person nodes (at-haplotree)<br><br>
+	
+Each match has a set of triangulation groups. These are collected into a sorted list and a tgs property added to the linked Person node. The ancestors of the match are assigned the TGs of their descendants, using the assumption that the TGs segregate. The descendant tree of the common ancestor is then reported or visualized.
+
+<br><br>
+	<u>Example 5</u>: Y-Haplotree Reference Data<br><br>
+	
+The FTDNA Y-DNA haplotree json file is downloaded, parsed and uploaded to Neo4j. This is used in analytics to identify men who are at the same or nearby clades. 
+		
+		
+
+
+</div>
+<br><br>
+
+<div>
+ <hr>
+	<table>
+  <tr>
+    <td><img src="https://blobswai.blob.core.windows.net/wai/logo.png" height="40px" /></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+	  <td class="footer">Graphs for Genealogists&trade;<br>Who Am I<br>1101 Alpine Lane<br>Woodstock, IL 60098 USA<br><a href="mailto:info@wai.md?subject=Graphs for Genealogists Inquiry">info@wai.md</a>&nbsp;&nbsp;&nbsp;&copy;2021</td>
+  </tr>
+</table>
+
+</div>
+<br><br>
+
+</body>
+</html>

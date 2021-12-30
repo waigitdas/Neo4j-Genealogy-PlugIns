@@ -1,0 +1,56 @@
+@charset "utf-8";
+/* CSS Document */
+td.header {
+	color: #2D4F87;
+	font-size: 30px;
+}
+body.help{
+	background-color:lightgreen;
+}
+body.report{
+	background-color:palegoldenrod;
+}
+td.grid{
+	margin-right: auto;
+	border: 12px;
+}
+td.subheader {
+	color: #2D4F87;
+	font-size: 16px;
+	font-style: italic;
+	padding-left: 40px;
+	vertical-align: top;
+}
+td.footer {
+	color: #2D4F87;
+	align-items: center;
+	font-size: 10px;
+}
+b.title {
+	font-weight: bold;
+	font-size: 20px;
+}
+b.cypher{
+	background-color:burlywood;
+}
+b.udf {
+	background-color:lightgreen;
+}
+b.visualization{
+		background-color:silver;
+
+}
+b.red {
+	color:red;
+}
+h3.report{
+	font-size: 22px;
+	font-variant: small-caps;
+	color: blue; 
+}
+hr.major{
+	border: 2px solid blue ;
+}
+hr.dotted{
+	border-top: 1px dotted black;
+}

@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Welcome</title>
+ <link rel="import" href="/header.html">
+
+</head>
+  <link rel="stylesheet" href="gfg.css">
+<body class="help">
+
+
+	<b class="title">Updating and Activating Your Project Parameters</b><br><br>
+	
+This page helps you curate the information needed to load your genealogy family tree and DNA data. The software needs to know some paramenters including where your data is located. Here are the steps you need to take:
+	
+	<ol>
+	<li>Select the project from the combobox</li>
+	<li>Fill in the required information. If the entry is for a folder or file, use the link adjacent to the textbox to navigate to the desired location.</li>
+		<ol type="a">
+			<li>user database: the name you selected when creating the Neo4j database for this project.</li>
+			<li>neo4j username: defaults to neo4j, but you might have change this when you first created your project when installing Neo4j</li>
+			<li>neo4j password: the password you selected when you first created your Neo4j project. It will be the same for each database created within the project.</li>
+			<li>neo4j import directory: you can navigate to this directory or paste it into the text box. You can find this folder by going to the Neo4j desktop, and navigating from the ellipsis: "...." ➔ Open Folder ➔ Import (click). </li>
+			<li>GEDCOM file: navigate to the file. The entry should be the full path with the file name.</li>
+			<li>FTDNA root directory: navigate to the folder. This directory will contain subdirectories and their files which the software will read in uploading your data to Neo4j</li>
+			<li>curated rn and gedcom file: navigate to the file you prepared. The recommended and default location is the FTDNA root directory, but you can keep this anywhere.</li>
+			<li>tg file: navigate to the file you prepared. This contains the triangulation groups and their boundaries. </li>
+		</ol>
+		<li>There  are three actions you can initiate</li>
+		<ol>
+		<li>Save the data: this is available the first time you create the project</li>
+		<li>Update the data: used when you edit the entries</li>
+		<li>Activate the project: this writes a file for Neo4j PlugIn to use in processing your data. This must be activated before you run the processing <b><i>and</i></b> if you change projects. This file is saved is a specific directory and should not be changed.</li>
+		</ol>
+	</ol>
+	
+	Once you've completed these task, you are ready to process your data. This is done using the links under the Load Data menu item.
+	<br><br>
+	
+	<hr>
+	<table>
+  <tr>
+    <td><img src="https://blobswai.blob.core.windows.net/wai/logo.png" height="40px" /></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+	  <td class="footer">Graphs for Genealogists&trade;<br>Who Am I<br>1101 Alpine Lane<br>Woodstock, IL 60098 USA<br><a <a href="mailto:info@wai.md?subject=Graphs for Genealogists Inquiry">info@wai.md</a>&nbsp;&nbsp;&nbsp;&copy;2021</td>
+  </tr>
+</table>
+
+</div>
+</body>
+</html>
