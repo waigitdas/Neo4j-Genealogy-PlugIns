@@ -91,7 +91,7 @@ public class neo4j_qry {
 
         return java_session.readTransaction( tx -> {
             String c = "";
-             int rw = 0;
+             //int rw = 0;
             Result result = tx.run(cq );
             while ( result.hasNext() )
             {
@@ -104,9 +104,11 @@ public class neo4j_qry {
                   }
                   else { c = c + "\n"; }
                  }
-                    rw = rw + 1;
+                    //rw = rw + 1;
                 }
-           return c;
+            gen.neo4jlib.file_lib.writeFile(gen.neo4jlib.neo4j_info.user_database, "c://temp/csv1.csv");
+            java_session.close();
+            return c;
         }) ;
     }
      

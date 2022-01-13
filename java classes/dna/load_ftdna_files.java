@@ -13,6 +13,8 @@ package gen.dna;
     import java.io.File;
     import java.io.FileWriter;
     import java.io.FilenameFilter;
+import java.util.Arrays;
+import java.util.Collections;
     import java.util.regex.Pattern;
     import org.neo4j.procedure.Name;
     import org.neo4j.procedure.UserFunction;
@@ -96,6 +98,7 @@ public  String load_ftdna_csv_files(
         String FileDNA_Match = "";
         String FileSegs = "";
         String YMatch = "";
+        String chrPainter ="";
         
         String kit_fullname="";
         String cq ="";
@@ -109,13 +112,18 @@ public  String load_ftdna_csv_files(
             
             String[] paths;
             File f = new File(root_dir + directories[i]);
+            
             paths = f.list();
+            Arrays.sort(paths); //so that chromosome browser data goes before population data; making cb_version predictable
+            
             String kit="";
             Long kit_rn =  Long.valueOf(0L);
             int ct = 0;
             Boolean hasDNAMatch = false;
             Boolean hasSegs = false;
             Boolean kit_found=false;
+            Boolean hasEthnicity = false;
+            
             String cb_version = "";  //chromosome browser file version
             
             //iterate over DNA data files, distinguishing their type before processing
@@ -280,11 +288,102 @@ public  String load_ftdna_csv_files(
                     //add Y links to kits
                     neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///" + YMatch + "' AS line FIELDTERMINATOR '|' match (f:DNA_YMatch{fullname:toString(trim(line.Full_Name))}) match (k:Kit{kit:'" + kit + "'})  merge (k)-[r:DNA_YKitMatch{gd:toInteger(line.Genetic_Distance),YHG:toString(case when line.Y_DNA_Haplogroup is null then '' else line.Y_DNA_Haplogroup end),terminal_SNP:toString(case when line.Terminal_SNP is null then '' else line.Terminal_SNP end),match_date:toString(case when line.Match_Date is null then '' else line.Match_Date end),str_diff:toString(case when line.Big_Y_STR_Differences is null then '' else line.Big_Y_STR_Differences end),str_compare:toString(case when line.Big_Y_STRs_Compared is null then '' else line.Big_Y_STRs_Compared end)}]->(f)");
 
-               }
+               } // end Y DNA
  
-               }
+    
+                  //******************************************************************************
+                //***************  chr painter  **************************************************
+                //********************************************************************************
+    if (pathitem.contains("detailed_segments_data")){
+                    chrPainter = pathitem;
+                    hasEthnicity=true;
+                    file_lib.get_file_transform_put_in_import_dir(root_dir + directories[i] + "\\" + pathitem, pathitem);
+                   String c = file_lib.readFileByLine(root_dir + directories[i] + "\\" + pathitem);
+                    c = c.replace("|"," ").replace(",","|").replace("\"", "`");
+                    String[] cc = c.split("\n");
+                    String header = cc[0].replace(" ","_");
+                    c = c.replace(cc[0], header);
+                    //cb_version = "";
+                    
+                    //determine if old or new file type
+                    String[] st = header.split(Pattern.quote("|"));
+                    int fileTypeChrCol=3;
+                 
+                    
+                    String[] ccc = c.split("\n");
+                    File fn = new File(neo4j_info.Import_Dir + pathitem);
+                    FileWriter fw = new FileWriter(fn);
+                    fw.write(header + "\n");
+                                        
+                    //iterate each row
+                     for (int ii=1; ii<ccc.length; ii++){
+                        String[] xxx = ccc[ii].split(Pattern.quote("|"));
+                        
+                        if (xxx.length > 5) { //ignore defective row
+                        String s = "";
+                        
+                        //iterate each column
+                        for(int j=0; j<xxx.length; j++) {
+                            xxx[j]=xxx[j].strip();
+                            if (j==fileTypeChrCol) {  //chr
+                                //add leading zero if <10 so sorting is okay
+                                if (xxx[j].length()==1) {
+                                    xxx[j] = "0" + xxx[j].strip();
+                                }
+                            }
+                             s = s + xxx[j] + "|";
+                        
+                         
+                      
+                        
+                        }  //next col
+
+                        s = s +  "\n";
+
+                        fw.write(s);
+                        
+                         
+                         }
+                     }  //next row
+
+                    fw.flush();    
+                    fw.close();
+
+                    
+                    
+                    //add continent, if new
+                    neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///" + chrPainter + "' AS line FIELDTERMINATOR '|' merge (c:Continent{name:toString(line.Continent)})");
+
+                   
+                    //add super population if new
+                    neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///" + chrPainter + "' AS line FIELDTERMINATOR '|' merge (sp:pop_group{name:toString(line.Super_Population)})");
+
+                    
+                    //add segment if new
+                    neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///" + chrPainter + "' AS line FIELDTERMINATOR '|' merge (l:Segment{Indx:ltrim(toString(case when line.Chromosome is null then '' else line.Chromosome end)) + ':' + toInteger(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toInteger(case when line.End_Location is null then 0 else line.End_Location end)  ,chr:toString(case when line.Chromosome is null then '' else line.Chromosome end), strt_pos:toInteger(case when line.Start_Location is null then 0 else line.Start_Location end), end_pos:toInteger(case when line.End_Location is null then 0 else line.End_Location end)})");
+
+                    //create seg property to tag segment as in ethnicity role
+                     neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///" + chrPainter + "' AS line FIELDTERMINATOR '|' match (s:Segment{Indx:ltrim(toString(case when line.Chromosome is null then '' else line.Chromosome end)) + ':' + toInteger(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toInteger(case when line.End_Location is null then 0 else line.End_Location end)}) set s.ethnicity=1");
+                  
+                    
+                    //add edge between continent and super population
+                    //create seg property to tag segment as in ethnicity role
+                     neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///" + chrPainter + "' AS line FIELDTERMINATOR '|'  match (c:Continent{name:toString(line.Continent)}) match (sp:pop_group{name:toString(line.Super_Population)}) merge (c)-[r:continent_pop]->(sp)");
+                    //add edge between super population and match
+                     neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///" + chrPainter + "' AS line FIELDTERMINATOR '|'  match (m:DNA_Match{fullname:toString(line.Name)}) match (sp:pop_group{name:toString(line.Super_Population)}) merge (m)-[r:match_pop]->(sp)");
+                    
+                    
+                    //add edge between super population and the segment (put the kit number and cm here as it may be different with different kits)
+                    neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///" + chrPainter + "' AS line FIELDTERMINATOR '|'  match (s:Segment{Indx:ltrim(toString(case when line.Chromosome is null then '' else line.Chromosome end)) + ':' + toInteger(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toInteger(case when line.End_Location is null then 0 else line.End_Location end)}) match (sp:pop_group{name:toString(line.Super_Population)}) merge (s)-[r:segment_pop{kit:'" + kit + "'})->(sp)");
+
+
+ 
+    } // end chr painter
+ 
+    
+               }  // end try
                 catch (Exception e){}
-                }
+                }   ///end if kit found
             
       
 //******************************************************************************
@@ -300,9 +399,18 @@ if (hasSegs==true){
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
 }
 
+if (hasEthnicity==true){
+       //add edge between DNA_match node and segment // name is csv is different than match name!
+       neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///" + chrPainter + "' AS line FIELDTERMINATOR '|' match (s:Segment{Indx:ltrim(toString(case when line.Chromosome is null then '' else line.Chromosome end)) + ':' + toInteger(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toInteger(case when line.End_Location is null then 0 else line.End_Location end)}) match (m:DNA_Match{fullname:'" + kit_fullname + "'}) merge (m)-[r:match_pop_segment{cm:toFloat(line.Centimorgans), haplotype:toInteger(line.Haplotype)}]-(s) ");
+                    
+      //add property to match_segment edge tagging it as ethnicity relevant
+        //neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///" + chrPainter + "' AS line FIELDTERMINATOR '|' match (s:Segment{{Indx:ltrim(toString(case when line.Chromosome is null then '' else line.Chromosome end)) + ':' + toInteger(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toInteger(case when line.End_Location is null then 0 else line.End_Location end)}) match (m:DNA_Match{fullname:toString(line.Name)}) merge (m)-[r:match_segment]-(s)");
+ 
+}
+
         //Line 397 in VB.NET
         //Kit-Match edges
-        if (hasDNAMatch==true) {
+if (hasDNAMatch==true) {
             try{
            cq = "LOAD CSV WITH HEADERS FROM 'file:///" + FileDNA_Match + "' AS line FIELDTERMINATOR '|' match (f:DNA_Match{fullname:toString(case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end)}) match (k:Kit{kit:'" + kit + "'})  merge (k)-[r:KitMatch{suggested_relationship:toString(case when line.Suggested_Relationship is null then '' else line.Suggested_Relationship end), sharedCM:toFloat(case when line.Shared_cM is null then 0.0 else line.Shared_cM end), longest_block:toFloat(case when line.Longest_Block is null then 0.0 else line.Longest_Block end), linked_relationship:toString(case when line.Linked_Relationship is null then '' else line.Linked_Relationship end)}]-(f)";
             neo4j_qry.qry_write(cq);
@@ -372,8 +480,10 @@ if (hasSegs==true){
         //segment megabase pair property
         neo4j_qry.qry_write("match (s:Segment) set s.mbp=(s.end_pos-s.strt_pos)/1000000");
    
-        neo4j_qry.qry_write("CREATE INDEX rel_math_segement_composit1 FOR ()-[r:match_segment]-() ON (r.p,r.p_anc_rn,r.cm,r.snp_ct)");
+        neo4j_qry.qry_write("CREATE INDEX rel_match_segement_composit2 FOR ()-[r:match_segment]-() ON (r.p,r.p_anc_rn,r.cm,r.snp_ct)");
         
+//        //add family relationship properties
+//        neo4j_qry.qry_write("return gen.rel.add_relationship_property()");
         
     }
     

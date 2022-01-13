@@ -85,7 +85,7 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
         excelFile=ExistingExcelFile;
         excelFileNm=excelFile;
         file = new File(excelFile);
-       Workbook existingWorkbook = Workbook.getWorkbook(new File(file.getAbsolutePath()));
+        Workbook existingWorkbook = Workbook.getWorkbook(new File(file.getAbsolutePath()));
         w = Workbook.createWorkbook(new File(excelFile), existingWorkbook);
      }
    
@@ -208,8 +208,8 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
     //int cell_width = excelSheet.getColumn(0).length;
     String[] msg = message.split("\n");
     for (int m=0;m < msg.length; m++){
-    addLabel(excelSheet, 0, extra_rw_ct , fixCellStr(msg[m]));
-    extra_rw_ct = extra_rw_ct + 1;
+        addLabel(excelSheet, 0, extra_rw_ct , fixCellStr(msg[m]));
+        extra_rw_ct = extra_rw_ct + 1;
     }
     
     //wrap up and open file
@@ -219,7 +219,7 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
     }
     catch (Exception e) {return "Error in queries_to_excel\n\n" +  e.getMessage(); }
      
-    return "Completed";  // excelFile;
+    return excelFile;  // excelFile;
  }
      
 public static void createLabel(WritableSheet sheet)

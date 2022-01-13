@@ -73,7 +73,7 @@ public class communities_icw {
         if (algorithm.equals(1L)) {  //louvain
             algo = "louvain";
             algo_nbr = 1L;
-            cq = "CALL gds.louvain.stream('icw', {relationshipWeightProperty:'weight' }) YIELD nodeId, communityId, intermediateCommunityIds with gds.util.asNode(nodeId).fullname AS name, communityId as cid, intermediateCommunityIds as ici with cid,name order by name with cid,collect(name) as names with cid as community,size(names) as ct, names as matches order by ct desc with community,ct,matches where ct>2 return community,ct, matches";
+            cq = "CALL gds.louvain.stream('icw', {relationshipWeightProperty:'weight' }) YIELD nodeId, communityId, intermediateCommunityIds with case when gds.util.asNode(nodeId).RN is not null then '*' +  gds.util.asNode(nodeId).fullname else gds.util.asNode(nodeId).fullname end AS name, communityId as cid, intermediateCommunityIds as ici with cid,name order by name with cid,collect(name) as names with cid as community,size(names) as ct, names as matches order by ct desc with community,ct,matches where ct>2 return community,ct, matches";
         }
 
         else if (algorithm.equals(2L)) { //modularity optimization

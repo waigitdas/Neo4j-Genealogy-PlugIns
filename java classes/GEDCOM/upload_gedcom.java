@@ -46,12 +46,17 @@ public  class upload_gedcom {
         //create indices to speed upload using merge
         neo4j_qry.CreateIndex("Person", "RN");
         neo4j_qry.CreateIndex("Person", "fullname");
+        neo4j_qry.CreateIndex("Person", "uid");
+        neo4j_qry.CreateIndex("Person", "BP");
+        neo4j_qry.CreateIndex("Person", "DP");
         neo4j_qry.CreateIndex("Union", "uid");
         neo4j_qry.CreateIndex("Union", "U1");
         neo4j_qry.CreateIndex("Union", "U2");
+        neo4j_qry.CreateIndex("Union", "UP");
         neo4j_qry.CreateIndex("Place", "desc");
         neo4j_qry.CreateRelationshipIndex("person_place","type");
-
+        neo4j_qry.qry_write("create text index for (p:Person) on (p.fullname)");
+        
         String c =  file_lib.readFileByLine( filePath );
         String[] s = c.replace("|","^").split("0 @");
         
