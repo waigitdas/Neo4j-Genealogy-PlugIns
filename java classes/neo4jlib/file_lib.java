@@ -7,10 +7,12 @@
 package gen.neo4jlib;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.FileReader;
 import java.io.Reader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -23,13 +25,38 @@ import org.apache.commons.csv.*;
 
 
 public class file_lib {
+ 
+    public static String ReadFileByLineWithEncoding(String filePath) {
+                   StringBuilder contentBuilder = new StringBuilder();
+ 
+        try {
+          Stream<String> stream = Files.lines( Paths.get(filePath), StandardCharsets.ISO_8859_1);
+                        
+        {
+            try{stream.forEach(s -> contentBuilder.append(s.replace("\"", "")).append("\n"));}
+            catch(Exception eee){System.out.println(eee.getMessage() + "^^^");}
+        }
+        }
+        catch (IOException ee) 
+        {
+            ee.printStackTrace();
+        }
+    
+        return contentBuilder.toString();
+ 
+    }
     
     public static String readFileByLine(String filePath) {
+        
         StringBuilder contentBuilder = new StringBuilder();
  
-        try (Stream<String> stream = Files.lines( Paths.get(filePath), StandardCharsets.UTF_8)) 
+        try {
+            //read unicode
+          Stream<String> stream = Files.lines( Paths.get(filePath), StandardCharsets.ISO_8859_1);
+                        
         {
             stream.forEach(s -> contentBuilder.append(s).append("\n"));
+        }
         }
         catch (IOException e) 
         {
@@ -67,7 +94,7 @@ try{
    for (CSVRecord record : records) {
        String s = "";
        for (int i=0; i < record.size(); i++) {
-        if (ct==0) {s = s + record.get(i).replace(" ","_") + "|";}
+        if (ct==0) {s = s + record.get(i).replace(" ","_").replace("-","_") + "|";}
         else {
             s = s + record.get(i).replace("\"","")  + "|";
         }
@@ -98,13 +125,13 @@ public static void parse_chr_containing_csv_save_to_import_folder(String FileNam
             c = c.replace("|"," ").replace(",","|").replace("\"", "");
             //System.out.println("\n" + neo4j_info.Import_Dir);
             String[] cc = c.split("\n");
-            String header = cc[0].replace(" ","_");
+            String header = cc[0].replace(" ","_").replace("-","_");
             c = c.replace(cc[0], header);
             String[] ccc = c.split("\n");
             String SaveFileName = getFileNameFromPath(FileName);
             File fn = new File(neo4j_info.Import_Dir + SaveFileName);
             fw = new FileWriter(fn);
-            fw.write(header + "\n");
+            fw.write(header.replace("ï»¿", "") + "\n");
             for (int ii=1; ii<ccc.length; ii++){
                 String[] xxx = ccc[ii].split(Pattern.quote("|"));
                 

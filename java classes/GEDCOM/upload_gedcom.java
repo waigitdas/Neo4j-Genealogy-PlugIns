@@ -9,10 +9,15 @@ package gen.gedcom;
     import gen.neo4jlib.neo4j_qry;
     import gen.neo4jlib.file_lib;
     import gen.neo4jlib.neo4j_info;
+import java.io.BufferedWriter;
 
     import java.io.File;
+import java.io.FileOutputStream;
     import java.io.FileWriter;
     import java.io.IOException;    
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
     import org.neo4j.procedure.Description;
     import org.neo4j.procedure.Name;
     import org.neo4j.procedure.UserFunction;
@@ -55,9 +60,10 @@ public  class upload_gedcom {
         neo4j_qry.CreateIndex("Union", "UP");
         neo4j_qry.CreateIndex("Place", "desc");
         neo4j_qry.CreateRelationshipIndex("person_place","type");
-        neo4j_qry.qry_write("create text index for (p:Person) on (p.fullname)");
+        //neo4j_qry.qry_write("create text index for (p:Person) on (p.fullname)");
         
-        String c =  file_lib.readFileByLine( filePath );
+        String c =  file_lib.ReadFileByLineWithEncoding(filePath );
+        
         String[] s = c.replace("|","^").split("0 @");
         
         neo4j_info.neo4j_var();
@@ -66,20 +72,37 @@ public  class upload_gedcom {
         String fnmu =neo4j_info.Import_Dir + "union.csv";
         File fnu = new File(fnmu);
         try{
-            FileWriter fwp = new FileWriter(fnp);
-            FileWriter fwu = new FileWriter(fnu);
-            fwp.write("rn|fullname|first_name|surname|sex|bd|bp|dd|dp|uid|nmar|\n");
+//            Writer fwp = null;
+//            Writer fwu = null;
+//           BufferedWriter fpout = null;
+//           BufferedWriter fuout = null;
+
+            Writer fwp = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fnp), StandardCharsets.ISO_8859_1));
+            Writer fwu = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fnu), StandardCharsets.ISO_8859_1));
+
+            // FileWriter fwp = new FileWriter(fnp);
+            //FileWriter fwu = new FileWriter(fnu);
+            //fwp.write("rn|fullname|first_name|surname|sex|bd|bp|dd|dp|uid|nmar|\n");
+            //fwu.write("uid|u1|u2|ud|up|\n");
+            fwp.write("rn|fullname|first_name|surname|sex|bd|bp|dd|dp|uid|nmar|\n"); 
             fwu.write("uid|u1|u2|ud|up|\n");
+            String p="";
+            String u="";
+            
             for (String i : s){
                 if (i.substring(0, 1).equals("I")) {
                   //create person node
                     try {
                         //System.out.println(person_node_from_gedmatch_I(i));
-                        fwp.write(person_node_from_gedmatch_I(i, FAM_Str_Id) + "\n");
+                        //fwp.write(person_node_from_gedmatch_I(i, FAM_Str_Id) + "\n");
+                        p = person_node_from_gedmatch_I(i, FAM_Str_Id) + "\n";
+                        fwp.write(p);
                     }
                     catch (IOException e) {
-                        fwp.write("Error");
-     
+                        //fwp.write("Error");
+                        fwp.write("Error" + e.getMessage());
+                        fwp.flush();
+                        fwp.close();
                                    }
                     }
         
@@ -88,15 +111,21 @@ public  class upload_gedcom {
                 
                    //create union node
                    try {
-                      fwu.write(union_node_from_gedmatch_I(i,FAM_Str_Id) + "\n");
+                      //fwu.write(union_node_from_gedmatch_I(i,FAM_Str_Id) + "\n");
+                      u = union_node_from_gedmatch_I(i,FAM_Str_Id) + "\n";
+                      fwu.write(u);
+
                     } 
                     catch (IOException e) {
                         fwu.write("Error");
+                        fwu.flush();
+                        fwu.close();
                      } 
                     }
                } 
 
            }  
+            //fwp.write("Finished");
             fwp.flush();
             fwp.close();
             fwu.flush();
@@ -225,7 +254,8 @@ public  class upload_gedcom {
         //parses date of event from @INDV@ or @FAM@ tags in GEDCOM    
         String s = " ";
             if(ged.contains("DATE")){
-                String[] d = ged.split(event_type);
+               try{
+                   String[] d = ged.split(event_type);
                 if (d.length ==2) {
                     String dd[] = d[1].split("DATE");
                     if (dd.length > 1) {
@@ -243,6 +273,11 @@ public  class upload_gedcom {
                 
                 
                 else {return s; }
+           
+            }
+            catch(Exception e){return s;}
+            
+            
             }
                 else {return s;}
    }

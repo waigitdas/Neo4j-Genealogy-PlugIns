@@ -121,7 +121,7 @@ public class upload_Y_DNA_Haplotree {
                 catch (Exception e) {pos = "0|";}
                 try { anc = ja4.get("ancestral") + "|";}
                 catch (Exception e) {anc = "|";}
-                try { rg = ja4.get("der") + "|";}
+                try { der = ja4.get("derived") + "|";}
                 catch (Exception e) {der = "|";}
                  try { rg = ja4.get("region") + "|";}
                 catch (Exception e) {rg = "0|";}
@@ -158,6 +158,9 @@ public class upload_Y_DNA_Haplotree {
       neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
 
        gen.neo4jlib.neo4j_qry.qry_write("MATCH (b1:block) with b1 match (b2:block) where b2.haplogroupId=b1.parentId merge (b2)-[r:block_child]-(b1)");
+       
+       //match-block edge
+       gen.neo4jlib.neo4j_qry.qry_write("match (y:DNA_YMatch) where trim(y.YHG)>' ' with y match (b:block) where b.name=y.YHG merge (y)-[r:match_block]-(b)");
        
        return "Completed";
     }

@@ -35,8 +35,8 @@ public class anc_spouse_surname_matches {
     
      public String get_matches(Long propositus_rn) 
     {
-        String cq = "match (p:Person{RN:" + propositus_rn + "})-[:father|mother*0..99]->(a:Person{sex:'F'}) where not a.surname in ['MRCA','?'] match path=(p:Person{RN:1})-[:father|mother*0..99]->(a:Person{sex:'F'}) where not a.surname in ['MRCA','?'] with a  order by a.surname with collect(distinct a.surname) as surnames unwind surnames as s  return  s ";
-        ;
+        String cq = "match (p:Person{RN:" + propositus_rn + "})-[:father|mother*0..99]->(a:Person{sex:'F'}) where not a.surname in ['MRCA','?'] match path=(p:Person{RN:" + propositus_rn + "})-[:father|mother*0..99]->(a:Person{sex:'F'}) where not a.surname in ['MRCA','?'] with a  order by a.surname with collect(distinct a.surname) as surnames unwind surnames as s  return  s ";
+        
         try{
         String[] ls = gen.neo4jlib.neo4j_qry.qry_to_csv(cq).split("\n");
         String s ="";
@@ -46,9 +46,13 @@ public class anc_spouse_surname_matches {
             else {s = s + "\n";}
         }
         s = s.replace("\"", "");
+        gen.discovery.surname_variants sn = new gen.discovery.surname_variants();
+        
         cq = "return gen.discovery.matches_by_surname('" + s + "')";
-        gen.excelLib.queries_to_excel.qry_to_excel(cq, "ancestor_spouse_surname_matches", "matches", 1, "", "", "", true, "the surnames of matches are the same as the maiden names of the spouses of the direct ancestors of " + gen.gedcom.get_family_tree_data.getPersonFromRN(propositus_rn, true) + "\nThese surnames are in the UDF call shown", true);
-        return "completed";
+        sn.matches_by_surname(s);
+//gen.neo4jlib.neo4j_qry.qry_write(cq);
+//gen.excelLib.queries_to_excel.qry_to_excel(cq, "ancestor_spouse_surname_matches", "matches", 1, "", "", "", true, "the surnames of matches are the same as the maiden names of the spouses of the direct ancestors of " + gen.gedcom.get_family_tree_data.getPersonFromRN(propositus_rn, true) + "\nThese surnames are in the UDF call shown", true);
+        return cq;
         }
         catch (Exception e) {
             return cq;

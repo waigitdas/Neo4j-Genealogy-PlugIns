@@ -58,11 +58,12 @@ public  String load_ftdna_csv_files(
         neo4j_qry.CreateIndex("DNA_Match","fullname");
         neo4j_qry.CreateIndex("DNA_Match","RN");
         neo4j_qry.CreateIndex("DNA_Match","kit");
-        neo4j_qry.CreateIndex("YMatch","fullname");
+        neo4j_qry.CreateIndex("DNA_YMatch","fullname");
+        neo4j_qry.CreateIndex("DNA_YMatch","YHG");
         neo4j_qry.CreateIndex("Segment","Indx");
         //neo4j_qry.CreateIndex("Segment","cm");
         //neo4j_qry.CreateIndex("Segment","snp");
-        neo4j_qry.CreateIndex("str","name");
+        //neo4j_qry.CreateIndex("str","name");
         neo4j_qry.CreateIndex("tg","tgid");
         neo4j_qry.CreateIndex("tg","strt_pos");
         neo4j_qry.CreateIndex("tg","end_pos");
@@ -80,7 +81,7 @@ public  String load_ftdna_csv_files(
         
         //load curation file
         file_lib.get_file_transform_put_in_import_dir(root_dir + curated_file, "RN_for_Matches.csv");
-       neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS line FIELDTERMINATOR '|' merge (l:Lookup{fullname:toString(line.Match_Name),RN:toInteger(case when line.Curated_RN is null then 0 else line.Curated_RN end),Upload:toString(case when line.File_Upload is null then 'N' else line.File_Upload end),kit:toString(case when line.Kit is null then '' else line.Kit end)})");
+       neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS line FIELDTERMINATOR '|' merge (l:Lookup{fullname:toString(line.Match_Name),RN:toInteger(case when line.Curated_RN is null then 0 else line.Curated_RN end),Upload:toString(case when line.File_Upload is null then 'N' else line.File_Upload end),kit:toString(case when line.Kit is null then '' else line.Kit end),HG:toString(case when line.HG is null then '' else line.HG end)})");
         
         //create instances class to load reference data
         gen.ref.fam_rel fr = new gen.ref.fam_rel();

@@ -232,19 +232,29 @@ public class neo4j_qry {
   
     //****************************************************
  
-    public static Path qry_path(String cq) {
-            Session java_session =  gen.conn.connTest.session;
-            return java_session.readTransaction( tx -> {
-            Result r = tx.run(cq) ;
-            //Path p=r.next().get(0); //.asPath();
-                    
-            while (r.hasNext()) {
-                //p.
-            } 
-            Path p = null;        
-            return p;
-            });
-    }
+//  public static List<Object> qry_to_graph(String cq){
+//      //String q = "CALL apoc.graph.fromCypher( 'MATCH (p:Person)-[r:father]->(a:Person) RETURN *', {}, 'father_son', {description: 'test graph'} ) YIELD graph AS g RETURN g";
+//      List<Object> path ;
+//
+//      return q;
+//  }
+
+      
+//    public static Path qry_path(String cq) {
+//            Session java_session =  gen.conn.connTest.session;
+//            return java_session.readTransaction( tx -> {
+//            Result r = tx.run(cq) ;
+//            Path p=r.next().get(0).asPath();
+//           // org.neo4j.driver.types.Path path = r.single().get("p").asPath();        
+//           Path path;
+//           path= r.next().get("path").asMap("path"); //r.next().get(0).asPath();  //.get("path", Path);   //.get(Path, "path");  //r.single().get("path");
+////           while (r.hasNext()) {
+////                //path = path + r.next().values().;
+////            } 
+//            //Path p = null;        
+//            return path;
+//            });
+//    }
       
     public static Map<String,Object> qry_map(String cq) {
         //DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(gen.neo4jlib.neo4j_info.Database_Dir ).build();
@@ -340,5 +350,9 @@ public static void APOCPeriodicIterateCSV(String LoadCSV, String ReplaceCypher, 
     
     qry_write(csv);
 }
+
+
+
+
 }
         
