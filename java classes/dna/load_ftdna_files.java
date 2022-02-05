@@ -9,12 +9,15 @@ package gen.dna;
     import gen.neo4jlib.neo4j_info;
     import gen.neo4jlib.neo4j_qry;
      import gen.conn.connTest;
+import gen.rel.add_rel_property;
            
     import java.io.File;
     import java.io.FileWriter;
     import java.io.FilenameFilter;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
     import java.util.regex.Pattern;
     import org.neo4j.procedure.Name;
     import org.neo4j.procedure.UserFunction;
@@ -34,7 +37,7 @@ public  String load_ftdna_csv_files(
         
         { 
         double tm = System.currentTimeMillis();
-        load_ftdna_files();
+        String s = load_ftdna_files();
         double tmelapsed = System.currentTimeMillis() - tm;
         return "Completed in " + tmelapsed + " msec";
             }
@@ -45,7 +48,7 @@ public  String load_ftdna_csv_files(
         load_ftdna_files();
     }
     
-    public  void load_ftdna_files() {
+    public  String load_ftdna_files() {
         neo4j_info.neo4j_var_reload(); //initialize user information
         gen.conn.connTest.cstatus();
 
@@ -61,7 +64,7 @@ public  String load_ftdna_csv_files(
         neo4j_qry.CreateIndex("DNA_YMatch","fullname");
         neo4j_qry.CreateIndex("DNA_YMatch","YHG");
         neo4j_qry.CreateIndex("Segment","Indx");
-        //neo4j_qry.CreateIndex("Segment","cm");
+       //neo4j_qry.CreateIndex("Segment","cm");
         //neo4j_qry.CreateIndex("Segment","snp");
         //neo4j_qry.CreateIndex("str","name");
         neo4j_qry.CreateIndex("tg","tgid");
@@ -73,14 +76,19 @@ public  String load_ftdna_csv_files(
         neo4j_qry.CreateRelationshipIndex("match_segment","m");
         neo4j_qry.CreateRelationshipIndex("match_segment","p");
         neo4j_qry.CreateRelationshipIndex("match_by_segment","cm");
+        neo4j_qry.CreateRelationshipIndex("match_segment", "p_rn");
+        neo4j_qry.CreateRelationshipIndex("match_segment", "m_rn");
+ 
         try{ //will fail if index already exists
             neo4j_qry.CreateCompositeIndex("Segment", "chr,strt_pos,end_pos");
             neo4j_qry.CreateCompositeIndex("Segment", "strt_pos,end_pos");
+            neo4j_qry.qry_write("CREATE INDEX rel_match_segement_composit2 FOR ()-[r:match_segment]-() ON (r.p,r.p_anc_rn,r.cm,r.snp_ct)");
+        
         }
         catch (Exception e){};        //neo4j_qry.CreateIndex();
         
         //load curation file
-        file_lib.get_file_transform_put_in_import_dir(root_dir + curated_file, "RN_for_Matches.csv");
+       file_lib.get_file_transform_put_in_import_dir(root_dir + curated_file, "RN_for_Matches.csv");
        neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS line FIELDTERMINATOR '|' merge (l:Lookup{fullname:toString(line.Match_Name),RN:toInteger(case when line.Curated_RN is null then 0 else line.Curated_RN end),Upload:toString(case when line.File_Upload is null then 'N' else line.File_Upload end),kit:toString(case when line.Kit is null then '' else line.Kit end),HG:toString(case when line.HG is null then '' else line.HG end)})");
         
         //create instances class to load reference data
@@ -375,9 +383,10 @@ public  String load_ftdna_csv_files(
                     
                     
                     //add edge between super population and the segment (put the kit number and cm here as it may be different with different kits)
-                    neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///" + chrPainter + "' AS line FIELDTERMINATOR '|'  match (s:Segment{Indx:ltrim(toString(case when line.Chromosome is null then '' else line.Chromosome end)) + ':' + toInteger(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toInteger(case when line.End_Location is null then 0 else line.End_Location end)}) match (sp:pop_group{name:toString(line.Super_Population)}) merge (s)-[r:segment_pop{kit:'" + kit + "'})->(sp)");
+                    neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///" + chrPainter + "' AS line FIELDTERMINATOR '|'  match (s:Segment{Indx:ltrim(toString(case when line.Chromosome is null then '' else line.Chromosome end)) + ':' + toInteger(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toInteger(case when line.End_Location is null then 0 else line.End_Location end)}) match (sp:pop_group{name:toString(line.Super_Population)}) merge (s)-[r:segment_pop{kit:'" + kit + "'}]->(sp)");
 
 
+            
  
     } // end chr painter
  
@@ -396,7 +405,7 @@ if (hasSegs==true){
         //line 391 in VB.NET
         //match_segment edges with phasing paramenters m (match) and p (propositus) (for matches)
         String lc = "LOAD CSV WITH HEADERS FROM 'file:///" + FileSegs + "' as line FIELDTERMINATOR '|' return line ";
-        cq = " match (s:Segment{Indx:toString(case when line.Chromosome is null then '' else line.Chromosome end) + ':' + toString(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toString(case when line.End_Location is null then 0 else line.End_Location end) }) match (m:DNA_Match{fullname:toString(line.Match_Name)}) merge (m)-[r:match_segment{hops:1,m:'" +  kit_fullname + "',p:toString(line.Match_Name),cm:toFloat(line.Centimorgans),snp_ct:toInteger(case when line.Matching_SNPs is null then 0 else line.Matching_SNPs end),cb_version:'" + cb_version + "'}]-(s)";
+        cq = " match (s:Segment{Indx:toString(case when line.Chromosome is null then '' else line.Chromosome end) + ':' + toString(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toString(case when line.End_Location is null then 0 else line.End_Location end) }) match (m:DNA_Match{fullname:toString(line.Match_Name)}) merge (m)-[r:match_segment{m:'" +  kit_fullname + "',p:toString(line.Match_Name),cm:toFloat(line.Centimorgans),snp_ct:toInteger(case when line.Matching_SNPs is null then 0 else line.Matching_SNPs end),cb_version:'" + cb_version + "'}]-(s)";
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
 }
 
@@ -411,21 +420,21 @@ if (hasEthnicity==true){
 
         //Line 397 in VB.NET
         //Kit-Match edges
-if (hasDNAMatch==true) {
-            try{
-           cq = "LOAD CSV WITH HEADERS FROM 'file:///" + FileDNA_Match + "' AS line FIELDTERMINATOR '|' match (f:DNA_Match{fullname:toString(case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end)}) match (k:Kit{kit:'" + kit + "'})  merge (k)-[r:KitMatch{suggested_relationship:toString(case when line.Suggested_Relationship is null then '' else line.Suggested_Relationship end), sharedCM:toFloat(case when line.Shared_cM is null then 0.0 else line.Shared_cM end), longest_block:toFloat(case when line.Longest_Block is null then 0.0 else line.Longest_Block end), linked_relationship:toString(case when line.Linked_Relationship is null then '' else line.Linked_Relationship end)}]-(f)";
-            neo4j_qry.qry_write(cq);
-            }
-            catch (Exception e)
-            {}
-        }
+//if (hasDNAMatch==true) {
+//            try{
+////           cq = "LOAD CSV WITH HEADERS FROM 'file:///" + FileDNA_Match + "' AS line FIELDTERMINATOR '|' match (f:DNA_Match{fullname:toString(case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end)}) match (k:Kit{kit:'" + kit + "'})  merge (k)-[r:KitMatch{suggested_relationship:toString(case when line.Suggested_Relationship is null then '' else line.Suggested_Relationship end), sharedCM:toFloat(case when line.Shared_cM is null then 0.0 else line.Shared_cM end), longest_block:toFloat(case when line.Longest_Block is null then 0.0 else line.Longest_Block end), linked_relationship:toString(case when line.Linked_Relationship is null then '' else line.Linked_Relationship end)}]-(f)";
+////            neo4j_qry.qry_write(cq);
+//            }
+//            catch (Exception e)
+//            {}
+//        }
 
         //Line 406 in VB.NET
         //match-segments 2 unphased (for kit owners that are not found in matches' results)
         // most kit owners also appear in matches' list of matches; but not all. This query address them.
         if (hasSegs==true) {
             String lc = "LOAD CSV WITH HEADERS FROM 'file:///" + FileSegs + "' as line FIELDTERMINATOR '|' return line ";
-           cq = "match (s:Segment{Indx:toString(case when line.Chromosome is null then '' else line.Chromosome end) + ':' + toString(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toString(case when line.End_Location is null then 0 else line.End_Location end) }) match (m:DNA_Match{fullname:'" + kit_fullname + "'}) merge (m)-[r:match_segment{hops:1,p:'" + kit_fullname + "',m:toString(line.Match_Name),cm:toFloat(line.Centimorgans),snp_ct:toInteger(case when line.Matching_SNPs is null then 0 else line.Matching_SNPs end),cb_version:'" + cb_version + "'}]-(s)";
+           cq = "match (s:Segment{Indx:toString(case when line.Chromosome is null then '' else line.Chromosome end) + ':' + toString(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toString(case when line.End_Location is null then 0 else line.End_Location end) }) match (m:DNA_Match{fullname:'" + kit_fullname + "'}) merge (m)-[r:match_segment{p:'" + kit_fullname + "',m:toString(line.Match_Name),cm:toFloat(line.Centimorgans),snp_ct:toInteger(case when line.Matching_SNPs is null then 0 else line.Matching_SNPs end),cb_version:'" + cb_version + "'}]-(s)";
             neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
             
         }
@@ -469,23 +478,31 @@ if (hasDNAMatch==true) {
          
          //match_by_segment
          String mbsf =  "match_by_segment.csv";
-         //cq=   "call apoc.export.csv.query('MATCH (k: DNA_Match)-[r:match_segment]-(s:Segment) with r.p as Match1,r.m as Match2,collect(distinct (s.end_pos-s.strt_pos)/1000000.0) as m,count(*) as segment_ct with Match1,Match2,m,segment_ct,apoc.coll.min(m) as shortest_segment,apoc.coll.max(m) as longest_segment with Match1,Match2,apoc.coll.sum(m) as mbp,segment_ct,shortest_segment,longest_segment RETURN Match1,Match2,segment_ct,mbp,shortest_segment,longest_segment order by mbp desc','" + mbsf + "', {delim:'|', quotes: false, format: 'plain'}) ";
-        cq =  "call apoc.export.csv.query('MATCH (k:DNA_Match)-[r:match_segment]-(s:Segment) with r.p as Match1,r.m as Match2,collect(distinct (s.end_pos-s.strt_pos)/1000000.0) as m,collect(distinct r.cm) as c,count(*) as segment_ct with Match1,Match2,m,c,segment_ct,apoc.coll.min(m) as shortest_mbp,apoc.coll.max(m) as longest_mbp,apoc.coll.min(c) as shortest_cm,apoc.coll.max(c) as longest_cm with Match1,Match2,apoc.coll.sum(m) as mbp,apoc.coll.sum(c) as cm,segment_ct,shortest_mbp,longest_mbp,shortest_cm,longest_cm RETURN Match1,Match2,segment_ct,mbp,cm,shortest_mbp,longest_mbp,shortest_cm,longest_cm order by cm desc','" + mbsf + "', {delim:'|', quotes: false, format: 'plain'}) ";
-        
+
+         String Q = "\"";
+        String qry = "MATCH (k:DNA_Match)-[r:match_segment]-(s:Segment) where s.chr<>'0X' with case when r.p<r.m then r.p else r.m end as Match1, case when r.p>r.m then r.p else r.m end as Match2,collect(distinct (s.end_pos-s.strt_pos)/1000000.0) as m,collect(distinct r.cm) as c,count(*) as segment_ct with Match1,Match2,m,c,segment_ct,apoc.coll.min(m) as shortest_mbp,apoc.coll.max(m) as longest_mbp,apoc.coll.min(c) as shortest_cm,apoc.coll.max(c) as longest_cm with Match1,Match2,apoc.coll.sum(m) as mbp,apoc.coll.sum(c) as cm,segment_ct,shortest_mbp,longest_mbp,shortest_cm,longest_cm RETURN Match1,Match2,segment_ct,mbp,cm,shortest_mbp,longest_mbp,shortest_cm,longest_cm order by cm desc";
+         cq =  "call apoc.export.csv.query(" + Q + qry + Q + ",'" + mbsf + "', {delim:'|', quotes: false, format: 'plain'}) ";
          neo4j_qry.qry_write(cq);
-        
-       String lc = "LOAD CSV WITH HEADERS FROM 'file:///" + mbsf + "' as line FIELDTERMINATOR '|' return line ";
+
+                  String lc = "LOAD CSV WITH HEADERS FROM 'file:///" + mbsf + "' as line FIELDTERMINATOR '|' return line ";
         cq = " match (m1:DNA_Match{fullname:toString(line.Match1)}) match (m2:DNA_Match{fullname:toString(line.Match2)})  merge (m1)-[rz:match_by_segment{cm:toFloat(line.cm),mbp:toFloat(line.mbp),seg_ct:toInteger(line.segment_ct),shortest_cm:toFloat(line.shortest_cm),longest_cm:toFloat(line.longest_cm),shortest_mbp:toFloat(line.shortest_mbp),longest_mbp:toFloat(line.longest_mbp)}]-(m2) ";
            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
-       
+
+         String mbsf_x =  "match_by_segment_x.csv";
+  
+        qry = "MATCH (k:DNA_Match)-[r:match_segment]-(s:Segment) where s.chr='0X' with case when r.p<r.m then r.p else r.m end as Match1, case when r.p>r.m then r.p else r.m end as Match2,collect(distinct (s.end_pos-s.strt_pos)/1000000.0) as m,collect(distinct r.cm) as c,count(*) as segment_ct with Match1,Match2,m,c,segment_ct,apoc.coll.min(m) as shortest_mbp,apoc.coll.max(m) as longest_mbp,apoc.coll.min(c) as shortest_cm,apoc.coll.max(c) as longest_cm with Match1,Match2,apoc.coll.sum(m) as mbp,apoc.coll.sum(c) as cm,segment_ct,shortest_mbp,longest_mbp,shortest_cm,longest_cm RETURN Match1,Match2,segment_ct,mbp,cm,shortest_mbp,longest_mbp,shortest_cm,longest_cm order by cm desc";
+         cq =  "call apoc.export.csv.query(" + Q + qry + Q + ",'" + mbsf_x + "', {delim:'|', quotes: false, format: 'plain'}) ";
+         neo4j_qry.qry_write(cq);
+         
+        cq = "LOAD CSV WITH HEADERS FROM 'file:///" + mbsf_x + "' as line FIELDTERMINATOR '|'  match (m1:DNA_Match{fullname:toString(line.Match1)})-[r:match_by_segment]-(m2:DNA_Match{fullname:toString(line.Match2)}) set r.x_cm=toFloat(line.cm), r.x_seg_ct=toInteger(line.segment_ct), r.x_shortest_cm=toFloat(line.shortest_cm), r.x_longest_cm=toFloat(line.longest_cm)  ";
+        neo4j_qry.qry_write((cq));
+             
         //segment megabase pair property
-        neo4j_qry.qry_write("match (s:Segment) set s.mbp=(s.end_pos-s.strt_pos)/1000000");
-   
-        neo4j_qry.qry_write("CREATE INDEX rel_match_segement_composit2 FOR ()-[r:match_segment]-() ON (r.p,r.p_anc_rn,r.cm,r.snp_ct)");
-        
-//        //add family relationship properties
-//        neo4j_qry.qry_write("return gen.rel.add_relationship_property()");
-        
+        neo4j_qry.qry_write("CALL apoc.periodic.iterate('match (s:Segment) return s','set s.mbp=(s.end_pos-s.strt_pos)/1000000', {batchSize:1000, parallel:true})");
+         
+      
+        return "completed";
+
     }
     
    

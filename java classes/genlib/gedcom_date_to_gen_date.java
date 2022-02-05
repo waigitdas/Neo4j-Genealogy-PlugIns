@@ -41,7 +41,7 @@ public String ged_to_gen_date(
         String dy = "00";
         String mostr = "00";
         String newDate = "" ;
-         
+        try{ 
         if (d.length() > 9)  { //full date
                 y = d.substring(d.length()-4).strip();
                 dy = d.substring(0,d.indexOf(" "));
@@ -61,7 +61,9 @@ public String ged_to_gen_date(
     //        System.out.println(mostr);
     //        System.out.println(dy);
     //        System.out.println(y);
-
+        }
+        catch (Exception e) {newDate="broken";}
+        
                return newDate;
     }
 

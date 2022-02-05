@@ -45,7 +45,7 @@ public class discover_tgs_denovo {
             if (chr.length()==1){chr = "0" + chr; }
 
             
-            gen.neo4jlib.neo4j_qry.qry_to_csv("match p= (m:DNA_Match{ancestor_rn:" + anc_rn + "}) -[r:match_segment{m_anc_rn:" + anc_rn + ", p_anc_rn:" + anc_rn + ",p:m.fullname}]-(s:Segment) where s.chr='" + chr + "' and 100>=r.cm>=7 and r.snp_ct>=500 return s.Indx as Indx,s.chr as chr,  s.strt_pos as strt_pos,s.end_pos as end_pos,r.cm as cm,collect(distinct m.fullname) as matches order by s.strt_pos,s.end_pos","seg_seq.csv").split("\n");
+            gen.neo4jlib.neo4j_qry.qry_to_csv("match p= (m:DNA_Match{ancestor_rn:" + anc_rn + "}) -[[r:match_segment{m_anc_rn:" + anc_rn + ", p_anc_rn:" + anc_rn + ",p:m.fullname}]]-(s:Segment) where s.chr='" + chr + "' and 100>=r.cm>=7 and r.snp_ct>=500 return s.Indx as Indx,s.chr as chr,  s.strt_pos as strt_pos,s.end_pos as end_pos,r.cm as cm,collect(distinct m.fullname) as matches order by s.strt_pos,s.end_pos","seg_seq.csv").split("\n");
            String[] c = gen.neo4jlib.file_lib.readFileByLine(gen.neo4jlib.neo4j_info.Import_Dir + "seg_seq.csv").replace("[","").replace("]","").replace("\"","").split("\n");
         
         //String s = "lvl|db|chr|s|e|smin|emax\n";
@@ -109,7 +109,7 @@ public class discover_tgs_denovo {
         gen.neo4jlib.file_lib.writeFile(schr.replace("|",", "),fn );
         try{
             //Desktop.getDesktop().open(new File(fn ));
-            gen.excelLib.excel_from_csv.load_csv(fn, "tgs", "tgs", 1, "", "0:###;1:###;2:##;3:###,###,###;4:###,###,###;5:###;6:####.#", "", true);
+            gen.excelLib.excel_from_csv.load_csv(fn, "tgs", "tgs", 1, "", "0:###;1:###;2:##;3:###,###,###;4:###,###,###;5:###;6:####.#", "", true,"",false);
             //String csvFile,String FileNm,String SheetName, int SheetNumber, String ColWidths, String colNumberFormat, String ExistingExcelFile, Boolean OpenFile
         }
         catch (Exception e) {return e.getMessage(); }

@@ -5,7 +5,9 @@
  * Woodstock, IL 60098 USA
  */
 package gen.excelLib;
+import static gen.excelLib.queries_to_excel.addLabel;
 import static gen.excelLib.queries_to_excel.createLabel;
+import static gen.excelLib.queries_to_excel.fixCellStr;
 import static gen.excelLib.queries_to_excel.times;
 import static gen.excelLib.queries_to_excel.timesBoldUnderline;
    import gen.neo4jlib.neo4j_info;
@@ -45,12 +47,17 @@ public class excel_from_csv {
         // TODO code application logic here
     }
     
-    public static String load_csv(String csvFile,String FileNm,String SheetName, int SheetNumber, String ColWidths, String colNumberFormat, String ExistingExcelFile, Boolean OpenFile ){
+    public static String load_csv(String csvFile,String FileNm,String SheetName, int SheetNumber, String ColWidths, String colNumberFormat, String ExistingExcelFile,Boolean OpenFile,String message,Boolean include_common_ancestor  ){
    String excelFile = "";
     String excelFileNm = "" ;
     File file;
+    String anc_name="";
     WritableWorkbook w;
-    
+        if (include_common_ancestor==true){
+        gen.rel.anc_rn anc = new gen.rel.anc_rn();
+        anc_name = gen.gedcom.get_family_tree_data.getPersonFromRN(anc.get_ancestor_rn(),true);
+    }
+  
      //set up excel. Create new or open prior if there are to be multiple worksheets
      try{
     if (ExistingExcelFile=="") {
@@ -177,7 +184,21 @@ public class excel_from_csv {
     autoSizeColumns(excelSheet,colct);
     excelSheet.setName(excelSheet.getName() + "-" + rr);
  
+            int extra_rw_ct = rws.length + 5;
+       if (include_common_ancestor==true){
+        String anc_message = "common ancestor is " + anc_name;
+        addLabel(excelSheet, 0, extra_rw_ct , fixCellStr(anc_message));    
+        extra_rw_ct = extra_rw_ct + 1;
+        }
 
+    String[] msg = message.split("\n");
+    for (int m=0;m < msg.length; m++){
+        addLabel(excelSheet, 0, extra_rw_ct , fixCellStr(msg[m]));
+        extra_rw_ct = extra_rw_ct + 1;
+    }
+         addLabel(excelSheet, 0, extra_rw_ct , fixCellStr("database: " + gen.neo4jlib.neo4j_info.user_database));
+ 
+  
     //wrap up and open file
     w.write();
     w.close();

@@ -79,6 +79,7 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
     file = new File(excelFileNm);
     WorkbookSettings wbSettings = new WorkbookSettings();
     wbSettings.setLocale(new Locale("en", "EN"));
+    wbSettings.setEncoding("UTC-8");
     w = Workbook.createWorkbook(file, wbSettings);
     }
     else {
@@ -211,7 +212,8 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
         addLabel(excelSheet, 0, extra_rw_ct , fixCellStr(msg[m]));
         extra_rw_ct = extra_rw_ct + 1;
     }
-    
+         addLabel(excelSheet, 0, extra_rw_ct , fixCellStr("database: " + gen.neo4jlib.neo4j_info.user_database));
+ 
     //wrap up and open file
     w.write();
     w.close();
@@ -252,6 +254,7 @@ public static void createLabel(WritableSheet sheet)
             throws WriteException, RowsExceededException {
         Label label;
         label = new Label(column, row, s);
+        //label.setCellFormat( "UTC_8");
         sheet.addCell(label);
     }
 

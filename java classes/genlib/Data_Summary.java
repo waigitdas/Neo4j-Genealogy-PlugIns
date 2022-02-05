@@ -80,6 +80,10 @@ public class Data_Summary {
         excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "tgs", "Tiangulation groups", ct, "", "2:###;3:##;4:###,###,###;5:###,###,###;6:####.#;7:#####",  excelFile, false, cq, false);
         ct=ct+1;
 
+        cq = "MATCH p=()-[r:match_segment]->() with sum (case when r.p_rn is not null then 1 else 0 end) as p_rn, sum (case when r.p_rn is null and r.m_rn>0 then 1 else 0 end) as m_rn_without_p_rn, sum (case when r.m_rn is null and r.p_rn>0 then 1 else 0 end) as p_rn_without_m_rn, sum (case when r.m_rn is not null and r.p_rn is not null then 1 else 0 end) as p_rn_with_m_rn, sum (case when r.m_rn is not null or r.p_rn is not null then 1 else 0 end) as p_rn_or_m_rn, sum (case when r.m_rn is not null then 1 else 0 end) as m_rn, sum (case when r.p_anc_rn is not null then 1 else 0 end) as p_anc_rn, sum (case when r.m_anc_rn is not null then 1 else 0 end) as m_anc_rn, count(*) as match_segment_ct return match_segment_ct, p_rn, m_rn, p_rn_or_m_rn, p_rn_with_m_rn, p_rn_without_m_rn, m_rn_without_p_rn,p_anc_rn,m_anc_rn";             
+        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Match)seg", "match_seg properties", ct, "", "0:###,###;1:###,###;2:###,###;3:###,###;4:###,###;",  excelFile, false, cq, false);
+        ct=ct+1;
+
 
        //cq = "match (t:tg) return t.project as project,t.name as name,t.tgid as tgid,t.chr as chr,t.strt_pos as start, t.end_pos as end,t.cm as cm, case when t.mrca_rn is not null then t.mrca_rn else '' end as mrca_rn order by chr,start,end";             
       //  excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "tgs", "Tiangulation groups", 3, "", "4:###,###,###;5:###,###,###,6:####.#",  excelFile, false, cq, false);

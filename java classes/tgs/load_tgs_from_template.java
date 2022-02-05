@@ -23,24 +23,26 @@ public class load_tgs_from_template {
         
         { 
         
-        load_tgs_from_csv();
-        
+        String s = load_tgs_from_csv();
+        return s;        
             }
-return "Completed";
+
     }
 
   
-    public  void main(String args[]) {
-        gen.conn.connTest.cstatus();
-        load_tgs_from_csv();
+    public static void main(String args[]) {
+        //gen.conn.connTest.cstatus();
+        //load_tgs_from_csv();
     }
     
-    public String load_tgs_from_csv() {
+    public  String load_tgs_from_csv() {
+        gen.neo4jlib.neo4j_info.neo4j_var_reload();
         gen.neo4jlib.neo4j_info.neo4j_var();
         gen.conn.connTest.cstatus();
         String csvFile =gen.neo4jlib.neo4j_info.root_directory + gen.neo4jlib.neo4j_info.tg_file;
-        String SaveFileName = gen.neo4jlib.file_lib.getFileNameFromPath(csvFile);
-        gen.neo4jlib.file_lib.parse_chr_containing_csv_save_to_import_folder(csvFile, 3);
+        //String SaveFileName = gen.neo4jlib.file_lib.getFileNameFromPath(csvFile);
+        //return SaveFileName;
+        gen.neo4jlib.file_lib.parse_chr_containing_csv_save_to_import_folder(csvFile, 2);
    
         neo4j_qry.qry_write("match ()-[r]-(t:tg) delete r");
          neo4j_qry.qry_write("match (t:tg)-[r]-() delete r");
@@ -65,10 +67,12 @@ return "Completed";
         neo4j_qry.CreateRelationshipIndex("person_tg", "tgid");
  
         //create tg nodes
-        String cq = "LOAD CSV WITH HEADERS FROM 'file:///" + gen.neo4jlib.neo4j_info.tg_file + "' AS line FIELDTERMINATOR '|' merge (t:tg{tgid:toInteger(line.tg_id),Indx:toString(case when line.chr is null then '' else line.chr end) + ':' + toString(case when line.strt_pos is null then 0 else line.strt_pos end) + ':' + toString(case when line.end_pos is null then 0 else line.end_pos end) ,chr:toString(line.chr),strt_pos:toInteger(line.strt_pos),end_pos:toInteger(line.end_pos),cm:toFloat(case when line.cm is null then 0.0 else line.cm end),project:toString(line.project),mrca_rn:toInteger(line.mrca_rn)})";
+        String cq = "LOAD CSV WITH HEADERS FROM 'file:///" + gen.neo4jlib.neo4j_info.tg_file + "' AS line FIELDTERMINATOR '|' merge (t:tg{tgid:toInteger(line.tgid),Indx:toString(case when line.chr is null then '' else line.chr end) + ':' + toString(case when line.strt_pos is null then 0 else line.strt_pos end) + ':' + toString(case when line.end_pos is null then 0 else line.end_pos end) ,chr:toString(line.chr),strt_pos:toInteger(line.strt_pos),end_pos:toInteger(line.end_pos),project:toString(line.project),cm:toFloat(case when line.cm is null then 0.0 else line.cm end), mrca_rn:toInteger(line.mrca_rn)})";
+     
         neo4j_qry.qry_write(cq);
         
-       
+        //add tg cm property if it is not already populated
+        neo4j_qry.qry_write("match (t:tg) where t.cm is null with t,gen.dna.hapmap_cm(t.chr,t.strt_pos,t.end_pos) as cm set t.cm = cm");
         
         //add tg_seg edge
         cq = "match (t:tg) with t match (s:Segment) where " + gen.neo4jlib.neo4j_info.tg_logic_overlap + " merge (t)-[r:tg_seg{tgid:t.tgid}]-(s)";

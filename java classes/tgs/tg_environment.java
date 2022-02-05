@@ -46,17 +46,26 @@ public class tg_environment {
 
         //create seqment sequences for all segments linked to descendants of the specified ancestor after removing previously created edges
         create_segment_sequence_edges e = new create_segment_sequence_edges();
-        e.create_seg_seq_edges();
+        e.create_seg_seq_edges(ancestor_rn);
         
-        //create at-haplotree Excel
-        String  SaveFileNm = "at_haplotree_anc_"  + "_anc_" + ancestor_rn  + "_" + current_date_time.getDateTime() + ".csv" ;
-        String cq = "match p=(m:DNA_Match{ancestor_rn:" + ancestor_rn + "})-[rm:match_segment{p_anc_rn:" + ancestor_rn + ",m_anc_rn:" + ancestor_rn + "}]-(s:Segment)-[rs:seg_seq]-(s2:Segment) where rm.cm>=7 and rm.snp_ct>=500 with rs.tgid as tg,m order by rs.tgid with m.fullname + ' [' + m.RN + ']' as match,collect(distinct tg) as tgs return match,size(tgs) as tg_ct,tgs order by match";
-        String c = gen.neo4jlib.neo4j_qry.qry_to_csv(cq, SaveFileNm);
+        gen.tgs.tg_match_summary ts = new gen.tgs.tg_match_summary();
+        ts.get_matches(7L,100L,false);
+        
+        gen.rel.add_rel_property rp = new gen.rel.add_rel_property();
+        rp.add_rel();
 
-         try {
-             Desktop.getDesktop().open(new File(gen.neo4jlib.neo4j_info.Import_Dir + SaveFileNm ));
-         }
-         catch (Exception ee) {}
+
+//return gen.tgs.matches_tgs()
+        
+//        //create at-haplotree Excel
+//        String  SaveFileNm = "at_haplotree_anc_"  + "_anc_" + ancestor_rn  + "_" + current_date_time.getDateTime() + ".csv" ;
+//        String cq = "match p=(m:DNA_Match{ancestor_rn:" + ancestor_rn + "})-[rm:match_segment{p_anc_rn:" + ancestor_rn + ",m_anc_rn:" + ancestor_rn + "}]-(s:Segment)-[rs:seg_seq]-(s2:Segment) where rm.cm>=7 and rm.snp_ct>=500 with rs.tgid as tg,m order by rs.tgid with m.fullname + ' [' + m.RN + ']' as match,collect(distinct tg) as tgs return match,size(tgs) as tg_ct,tgs order by match";
+//        String c = gen.neo4jlib.neo4j_qry.qry_to_csv(cq, SaveFileNm);
+//
+//         try {
+//             Desktop.getDesktop().open(new File(gen.neo4jlib.neo4j_info.Import_Dir + SaveFileNm ));
+//         }
+//         catch (Exception ee) {}
          
         return "completed";
     }

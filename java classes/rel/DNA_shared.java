@@ -45,7 +45,8 @@ public class DNA_shared{
         gen.neo4jlib.neo4j_info.neo4j_var_reload();
         //get all MRCAs
         double cor = 0.0;
-        File fn = new File(neo4j_info.Import_Dir + "shared_dna_" + gen.genlib.current_date_time.getDateTime() + ".csv");
+        String fname = neo4j_info.Import_Dir + "shared_dna_" + gen.genlib.current_date_time.getDateTime() + ".csv";
+        File fn = new File(fname);
         try{
         Writer fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn), "UTF-8"));
         //FileWriter fw = new FileWriter(fn);
@@ -82,14 +83,20 @@ public class DNA_shared{
                     
             gen.dna.shared_dna dna = new gen.dna.shared_dna();
             String cm = dna.sharedCM(rn1,rn2);
-
+            if (cm.equals("")) {cm = "unknown because neither person has DNA results in the project.";}
+            
             gen.rel.rel_from_rns rr = new gen.rel.rel_from_rns();
             String all_rel = rr.relationship_from_RNs(rn1,rn2);
 
+            gen.dna.shared_cm_from_rel dr = new gen.dna.shared_cm_from_rel();
+            String scm = dr.getCM(all_rel);
+            
             fw.write("," + all_rel  + ",,,,," + String.valueOf(cor) + "," + gen.genlib.handy_Functions.fix_str(cm) + ",");
             fw.flush();
             fw.close();
-            Desktop.getDesktop().open(fn);
+            int total_cm = 6000;
+            gen.excelLib.excel_from_csv.load_csv(fname, "shared_dna","cor",1, "","3:###;4:###;5:###;6:#.#######","",true,"The total COR is " + cor + "\nFrom the shared centimorgan project the expected value and range is " + scm + " cm.\nThe observed shared DNA is " + cm + ".\nThe predicted DNA is " + cor + " x " + total_cm +" = " + cor*total_cm + " cm\n\nUDF:\nreturn gen.rel.shared_DNA(" + rn1 + "," + rn2 +")\n\nThe coefficient of relationship (COR) is a measure of pedigree collapse resulting from ancstors appearing more that one in the family tree.\nThe paths are the generations to the common ancestor for each person in the analysis.\n\nreferences:\nhttps://www.yourdnaguide.com/ydgblog/2019/7/26/pedigree-collapse-and-genetic-relationships\nhttp://www.genetic-genealogy.co.uk/Toc115570135.html\nhttps://isogg.org/wiki/Coefficient_of_relationship",false);
+            //Desktop.getDesktop().open(fn);
         }
         catch (Exception e) {}
         

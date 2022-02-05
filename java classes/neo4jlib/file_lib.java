@@ -22,18 +22,38 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.*;
+import org.apache.commons.io.IOUtils;
 
 
 public class file_lib {
- 
+
+    public static String[] ReadGEDCOM(String filePath) {
+        String delimiter = "%^&*"; 
+        String c = gen.neo4jlib.file_lib.ReadFileByLineWithEncoding(filePath);
+        String[] s = c.replace("|","^").split("0 @");
+        String g = "";
+        
+        //pull out only the desired elements
+        for (int i=0; i<s.length; i++){
+                if (s[i].substring(0,1).equals("P") || s[i].substring(0,1).equals("F")) {
+                   g = g + delimiter +  s[i];
+                    }     
+                }
+                
+        String ged[] = g.split(Pattern.quote(delimiter));
+        System.out.println(ged.length );
+
+        return ged;
+    }
+     
     public static String ReadFileByLineWithEncoding(String filePath) {
-                   StringBuilder contentBuilder = new StringBuilder();
+        StringBuilder contentBuilder = new StringBuilder();
  
         try {
           Stream<String> stream = Files.lines( Paths.get(filePath), StandardCharsets.ISO_8859_1);
                         
         {
-            try{stream.forEach(s -> contentBuilder.append(s.replace("\"", "")).append("\n"));}
+            try{stream.forEach(s -> contentBuilder.append(s.replace("\"", "********************")).append("\n"));}
             catch(Exception eee){System.out.println(eee.getMessage() + "^^^");}
         }
         }
@@ -52,7 +72,7 @@ public class file_lib {
  
         try {
             //read unicode
-          Stream<String> stream = Files.lines( Paths.get(filePath), StandardCharsets.ISO_8859_1);
+          Stream<String> stream = Files.lines( Paths.get(filePath), StandardCharsets.UTF_8);
                         
         {
             stream.forEach(s -> contentBuilder.append(s).append("\n"));
@@ -121,7 +141,7 @@ public static void parse_chr_containing_csv_save_to_import_folder(String FileNam
     FileWriter fw = null;
         gen.neo4jlib.neo4j_info.neo4j_var();
         try {
-            String c = file_lib.readFileByLine(FileName);
+            String c = file_lib.ReadFileByLineWithEncoding(FileName);
             c = c.replace("|"," ").replace(",","|").replace("\"", "");
             //System.out.println("\n" + neo4j_info.Import_Dir);
             String[] cc = c.split("\n");
@@ -150,13 +170,16 @@ public static void parse_chr_containing_csv_save_to_import_folder(String FileNam
             }
             fw.flush();
             fw.close();
-        } catch (IOException ex) {
-            Logger.getLogger(file_lib.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+//Logger.getLogger(file_lib.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
                 fw.close();
             } catch (IOException ex) {
-                Logger.getLogger(file_lib.class.getName()).log(Level.SEVERE, null, ex);
+                    System.out.println(ex.getMessage());
+
+                //Logger.getLogger(file_lib.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 }

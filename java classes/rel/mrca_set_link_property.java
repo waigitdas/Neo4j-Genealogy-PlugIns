@@ -36,14 +36,14 @@ public class mrca_set_link_property {
 
         gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("match_segment", "p_anc_rn");
         gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("match_segment", "m_anc_rn");
-        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("match_segment", "p_rn");
-        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("match_segment", "m_rn");
-  
+//        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("match_segment", "p_rn");
+//        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("match_segment", "m_rn");
+//  
         try{
-        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("tg_match", "p_anc_rn");
-        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("tg_match", "m_anc_rn");
-        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("tg_match", "p_rn");
-        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("tg_match", "m_rn");
+        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("match_tg", "p_anc_rn");
+        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("match_tg", "m_anc_rn");
+        //gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("tg_match", "p_rn");
+        //gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("tg_match", "m_rn");
         }
         catch (Exception e){}
 //re-set existing property
@@ -53,8 +53,8 @@ public class mrca_set_link_property {
         
         gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:match_segment]-() remove r.p_anc_rn");
         gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:match_segment]-() remove r.m_anc_rn");
-        gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:match_segment]-() remove r.p_rn");
-        gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:match_segment]-() remove r.m_rn");
+        //gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:match_segment]-() remove r.p_rn");
+        //gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:match_segment]-() remove r.m_rn");
 
         gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:tg_match]-() remove r.p_anc_rn");
         gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:tg_match]-() remove r.m_anc_rn");
@@ -68,9 +68,9 @@ public class mrca_set_link_property {
         
         //set relationship property
         
-        gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() where r.cm>=7 and r.snp_ct>=500 and m1.fullname=r.p and m1.RN is not null set r.p_rn=m1.RN");
+
         gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() where r.cm>=7 and r.snp_ct>=500 and m1.fullname=r.p and m1.ancestor_rn is not null set r.p_anc_rn = m1.ancestor_rn");
-        gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() where r.cm>=7 and r.snp_ct>=500 and r.m is not null  match (m2:DNA_Match) where m2.fullname=r.m and m2.RN is not null set r.m_rn=m2.RN");
+//        gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() where r.cm>=7 and r.snp_ct>=500 and r.m is not null  match (m2:DNA_Match) where m2.fullname=r.m and m2.RN is not null set r.m_rn=m2.RN");
         gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() where r.cm>=7 and r.snp_ct>=500 and r.m is not null  match (m2:DNA_Match) where m2.fullname=r.m and m2.ancestor_rn is not null set r.m_anc_rn=m2.ancestor_rn");
 
         gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(m:DNA_Match)-[r:match_tg]->() where  r.p=m.fullname and m.ancestor_rn is not null set r.p_anc_rn = m.ancestor_rn");
@@ -84,10 +84,10 @@ public class mrca_set_link_property {
 //        //gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() with r match (m2:DNA_Match) where m2.fullname = r.p and m2.RN is not null set r.p_rn = m2.RN");
         
 
-        //add genealogical relationship to edges to speed queries
-        add_rel_property rr = new gen.rel.add_rel_property();
-        rr.add_relationship_property(); 
-        
+//        //add genealogical relationship to edges to speed queries
+//        add_rel_property rr = new gen.rel.add_rel_property();
+//        rr.add_relationship_property(); 
+//        
     
         return "Completed";
     } 

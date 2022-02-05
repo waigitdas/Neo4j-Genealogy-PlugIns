@@ -92,7 +92,7 @@ public class neo4j_qry {
         return java_session.readTransaction( tx -> {
             String c = "";
              //int rw = 0;
-            Result result = tx.run(cq );
+            Result result = tx.run(cq.replace("[[","[").replace("]]","]") );
             while ( result.hasNext() )
             {
                 Record r = result.next();
@@ -343,14 +343,14 @@ public class neo4j_qry {
      
    }
 
-public static void APOCPeriodicIterateCSV(String LoadCSV, String ReplaceCypher, int batchsize) {
+public static String APOCPeriodicIterateCSV(String LoadCSV, String ReplaceCypher, int batchsize) {
     //use parallel = false to avoid deadlocks!
     String Q = "\"";
     String csv = "CALL apoc.periodic.iterate(" + Q + LoadCSV + Q + ", " + Q + ReplaceCypher + Q + ",{batchSize: " + batchsize + ", parallel:false, iterateList:true, retries:25})";
     
     qry_write(csv);
+    return csv; 
 }
-
 
 
 

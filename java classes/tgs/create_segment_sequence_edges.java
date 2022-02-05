@@ -19,15 +19,15 @@ public class create_segment_sequence_edges {
     @Description("Will not run on its own. Access this by running gen.tgs.setup_tg_environmen which uses it. Creates edge between segments in the order their are arranged on the chromosome. The segments are those of a triangulation group including DNA testers descended from the common ancestor. This is used in visualizations of triangulation groups.")
 
     public  String create_seg_seq_edges(
-//        @Name("ancestor_rn") 
-//            Long ancestor_rn
+        @Name("ancestor_rn") 
+            Long ancestor_rn
 ////        @Name("rn2") 
 //            Long rn2
   )
    
          { 
              
-        String s = create_seg_seq();
+        String s = create_seg_seq(ancestor_rn);
          return s;
             }
 
@@ -37,11 +37,11 @@ public class create_segment_sequence_edges {
         //create_seg_seq(Long.valueOf());
     }
     
-     public static  String create_seg_seq() 
+     public static  String create_seg_seq(Long anc_rn) 
     {
-        gen.rel.anc_rn anc = new gen.rel.anc_rn();
-        Long anc_rn = anc.get_ancestor_rn();
-        
+//        gen.rel.anc_rn anc = new gen.rel.anc_rn();
+//        Long anc_rn = anc.get_ancestor_rn();
+//        
                 
         gen.neo4jlib.neo4j_info.neo4j_var();
         //delete prior seg_seq edges
@@ -113,7 +113,7 @@ public class create_segment_sequence_edges {
                             fwp.close();
 
                             //load seg_seq edges into Neo4j
-                            cq = "LOAD CSV WITH HEADERS FROM 'file:///" + fns + "' AS line FIELDTERMINATOR '|' match (s1:Segment{Indx:toString(line.from)}) match (s2:Segment{Indx:toString(line.to)}) merge (s1)-[r:seg_seq{tgid:toInteger(line.tgid),ancestor_rn:" + anc_rn + "}]-(s2) ";
+                            cq = "LOAD CSV WITH HEADERS FROM 'file:///" + fns + "' AS line FIELDTERMINATOR '|' match (s1:Segment{Indx:toString(line.from)}) match (s2:Segment{Indx:toString(line.to)}) where s1<>s2 merge (s1)-[r:seg_seq{tgid:toInteger(line.tgid),ancestor_rn:" + anc_rn + "}]-(s2) ";
                             neo4j_qry.qry_write(cq);
 
             }
@@ -133,7 +133,9 @@ public class create_segment_sequence_edges {
         //return "completed";
 //    }
         }
-    
+        
+        //rare event, but somethings happens
+        neo4j_qry.qry_write("MATCH p=(s1:Segment)-[r:seg_seq]->(s2:Segment) where s1=s2 delete r");
         return "COMPLETED";
     }
 }
