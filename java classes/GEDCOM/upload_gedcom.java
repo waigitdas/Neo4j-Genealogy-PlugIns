@@ -156,108 +156,86 @@ public class upload_gedcom {
             String lc = "";
             String cq = "";
             String csv = "";
-            //Load Persons
-          try{
+
+          //Load Persons
           lc = "LOAD CSV WITH HEADERS FROM 'file:///person.csv' AS line FIELDTERMINATOR '|'  return line ";
-          cq = "merge (p:Person{RN:toInteger(line.rn),fullname:toString(line.fullname),first_name:toString(case when line.first_name is null then '' else line.first_name end),surname:toString(case when line.surname is null then '' else line.surname end), BDGed:toString(case when line.bd is null then '' else line.bd end), BP:toString(case when line.bp is null then '' else line.bp end), DDGed:toString(case when line.dd is null then '' else line.dd end), DP:toString(case when line.dp is null then '' else line.dp end), nm:toInteger(case when line.nm is null then -1 else line.nm end), uid:toInteger(case when line.uid is null then 0 else line.uid end), sex:toString(case when line.sex is null then '' else line.sex end)})";
-          csv = neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
-          }
-          catch (Exception e) {return e.getMessage() + "\n\n" + csv;}
+          cq = "create (p:Person{RN:toInteger(line.rn),fullname:toString(line.fullname),first_name:toString(case when line.first_name is null then '' else line.first_name end),surname:toString(case when line.surname is null then '' else line.surname end), BDGed:toString(case when line.bd is null then '' else line.bd end), BP:toString(case when line.bp is null then '' else line.bp end), DDGed:toString(case when line.dd is null then '' else line.dd end), DP:toString(case when line.dp is null then '' else line.dp end), nm:toInteger(case when line.nm is null then -1 else line.nm end), uid:toInteger(case when line.uid is null then 0 else line.uid end), sex:toString(case when line.sex is null then '' else line.sex end)})";
+         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
           
-           // String cqp = "LOAD CSV WITH HEADERS FROM 'file:///person.csv' AS line FIELDTERMINATOR '|' merge (p:Person{RN:toInteger(line.rn),fullname:toString(line.fullname),first_name:toString(case when line.first_name is null then '' else line.first_name end),surname:toString(case when line.surname is null then '' else line.surname end),BDGed:toString(line.bd),BP:toString(line.bp),DDGed:toString(line.dd),DP:toString(line.dp),nm:toInteger(case when line.nm is null then -1 else line.nm end),uid:toInteger(case when line.uid is null then 0 else line.uid end),sex:toString(line.sex)})";
-           //neo4j_qry.qry_write(cqp);
-
-           //Load unions/marriages
+                   
+        //Load unions/marriages
           lc = "LOAD CSV WITH HEADERS FROM 'file:///union.csv' AS line FIELDTERMINATOR '|'  return line ";
-          cq = "merge (u:Union{uid:toInteger(line.uid),U1:toInteger(line.u1),U2:toInteger(line.u2),UDGed:toString(line.ud),Union_Place:toString(line.up)})";
-          neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
+          cq = "create (u:Union{uid:toInteger(line.uid),U1:toInteger(line.u1),U2:toInteger(line.u2),UDGed:toString(line.ud),Union_Place:toString(line.up)})";
+          neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
 
-            
-           String cqpl =  "match (p1:Person) with 'b' as type, p1.BP as Place return type,Place union match (p2:Person) with 'd' as type,p2.DP as Place return type, Place union match (u:Union) with 'u' as type,u.UDP as Place where Place is not null return type,Place" ;
+           //Create place nodes using extant data
+            String cqpl =  "match (p1:Person) with 'b' as type, p1.BP as Place return type,Place union match (p2:Person) with 'd' as type,p2.DP as Place return type, Place union match (u:Union) with 'u' as type,u.UDP as Place where Place is not null return type,Place" ;
            neo4j_qry.qry_to_pipe_delimited(cqpl, "places.csv");
 
- 
+            lc = "LOAD CSV WITH HEADERS FROM 'file:///places.csv' AS line FIELDTERMINATOR '|'  return line ";
+            cq = " merge (p:Place{desc:toString(line.Place)})";
+            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
+          
+
+           neo4j_qry.qry_write("match (p:Person) with p match (u:Union) where u.uid=p.uid with p,u match (f:Person) where f.RN=u.U1 with p,f,u merge (p)-[r:father]->(f)");
+           
+           neo4j_qry.qry_write("match (p:Person) with p match (u:Union) where u.uid=p.uid with p,u match (m:Person) where m.RN=u.U2 with p,m,u merge (p)-[r:mother]->(m)");
+           
+           neo4j_qry.qry_write("match (p:Person) with p match (u:Union) where u.uid=p.uid with p,u merge (p)-[r:child]->(u)");
+           
+           neo4j_qry.qry_write("match (u:Union) where u.uid>1 match (h:Person) where h.RN = u.U1 and u.U1>1 with h,u match (w:Person) where w.RN=u.U2 and u.U2>1 with h,w merge (h)-[r:spouse]-(w)");
+           
+           
+           
 //           String cqu = "LOAD CSV WITH HEADERS FROM 'file:///union.csv' AS line FIELDTERMINATOR '|' merge (u:Union{uid:toInteger(line.uid),U1:toInteger(line.u1),U2:toInteger(line.u2),UDGed:toString(line.ud),Union_Place:toString(line.up)})";
 //           neo4j_qry.qry_write(cqu);
 
-           //Create place nodes using extant data
-//           String cqpl =  "match (p1:Person) with 'b' as type, p1.BP as Place return type,Place union match (p2:Person) with 'd' as type,p2.DP as Place return type, Place union match (u:Union) with 'u' as type,u.UDP as Place where Place is not null return type,Place" ;
-//           neo4j_qry.qry_to_pipe_delimited(cqpl, "places.csv");
 
            
-            lc = "LOAD CSV WITH HEADERS FROM 'file:///places.csv' AS line FIELDTERMINATOR '|'  return line ";
-            cq = " merge (p:Place{desc:toString(line.Place)})";
-            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
-
-           
-//           String cqplup = "LOAD CSV WITH HEADERS FROM 'file:///places.csv' AS line FIELDTERMINATOR '|' merge (p:Place{desc:toString(line.Place)})";
-//           neo4j_qry.qry_write(cqplup);
-           
-           //create child edges using extant data
-           String pu = "match (p:Person) where p.uid>1 return p.RN as rn,p.uid as uid";
-           neo4j_qry.qry_to_pipe_delimited(pu, "child.csv");
+ 
+//          //create child edges using extant data
+//           String pu = "match (p:Person) where p.uid>1 return p.RN as rn,p.uid as uid";
+//           neo4j_qry.qry_to_pipe_delimited(pu, "child.csv");
 
  
-            lc = "LOAD CSV WITH HEADERS FROM 'file:///child.csv' AS line FIELDTERMINATOR '|'  return line ";
-            cq = " match (p:Person{RN:toInteger(line.rn)}) match (u:Union{uid:toInteger(line.uid)}) merge (p)-[r:child]-(u)";
-            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
-
-
-
-//           String puup = "LOAD CSV WITH HEADERS FROM 'file:///child.csv' AS line FIELDTERMINATOR '|' match (p:Person{RN:toInteger(line.rn)}) match (u:Union{uid:toInteger(line.uid)}) merge (p)-[r:child]-(u)";
-//           neo4j_qry.qry_write(puup);
-
-           //create father-union edges using extant data
-           String fu = "match (p:Person)-[r:child]->(u:Union) where u.U1 >0 return p.RN as rn,u.U1 as father";
-           neo4j_qry.qry_to_pipe_delimited(fu, "father.csv");
-
-           lc = "LOAD CSV WITH HEADERS FROM 'file:///father.csv' AS line FIELDTERMINATOR '|'  return line ";
-            cq = " match (p:Person{RN:toInteger(line.rn)}) match (u:Union{U1:toInteger(line.father)}) merge (p)-[r:ufather]-(u)";
-            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
-  
-           
-           
-//           String fuup = "LOAD CSV WITH HEADERS FROM 'file:///father.csv' AS line FIELDTERMINATOR '|' match (p:Person{RN:toInteger(line.rn)}) match (u:Union{U1:toInteger(line.father)}) merge (p)-[r:ufather]-(u)";
-//           neo4j_qry.qry_write(fuup);
-
-           //create mother-union edges using extant data
-           String mu = "match (p:Person)-[r:child]->(u:Union) where u.U2 >0 return p.RN as rn,u.U2 as mother";
-           neo4j_qry.qry_to_pipe_delimited(mu, "mother.csv");
- 
-           lc = "LOAD CSV WITH HEADERS FROM 'file:///mother.csv' AS line FIELDTERMINATOR '|'  return line ";
-            cq = " match (p:Person{RN:toInteger(line.rn)}) match (u:Union{U2:toInteger(line.mother)}) merge (p)-[r:umother]-(u)";
-            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
-  
-
-
-//           String muup = "LOAD CSV WITH HEADERS FROM 'file:///mother.csv' AS line FIELDTERMINATOR '|' match (p:Person{RN:toInteger(line.rn)}) match (u:Union{U2:toInteger(line.mother)}) merge (p)-[r:umother]-(u)";
-//           neo4j_qry.qry_write(muup);
-
-           //create person-father edges using extant data
-           lc = "LOAD CSV WITH HEADERS FROM 'file:///father.csv' AS line FIELDTERMINATOR '|'  return line ";
-            cq = " match (p1:Person{RN:toInteger(line.rn)}) match (p2:Person{RN:toInteger(line.father)}) merge (p1)-[r:father]-(p2)";
-            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
-
-//            String fup = "LOAD CSV WITH HEADERS FROM 'file:///father.csv' AS line FIELDTERMINATOR '|' match (p1:Person{RN:toInteger(line.rn)}) match (p2:Person{RN:toInteger(line.father)}) merge (p1)-[r:father]-(p2)";
-//           neo4j_qry.qry_write(fup);
-
-           //create person-mother edges using extant data
-           lc = "LOAD CSV WITH HEADERS FROM 'file:///mother.csv' AS line FIELDTERMINATOR '|'  return line ";
-            cq = " match (p1:Person{RN:toInteger(line.rn)}) match (p2:Person{RN:toInteger(line.mother)}) merge (p1)-[r:mother]-(p2)";
-            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
-
-//            String mup = "LOAD CSV WITH HEADERS FROM 'file:///mother.csv' AS line FIELDTERMINATOR '|' match (p1:Person{RN:toInteger(line.rn)}) match (p2:Person{RN:toInteger(line.mother)}) merge (p1)-[r:mother]-(p2)";
-//           neo4j_qry.qry_write(mup);
-
-           //create spouse edges using extant data
-           lc = "LOAD CSV WITH HEADERS FROM 'file:///union.csv' AS line FIELDTERMINATOR '|'  return line ";
-            cq = " match (p1:Person{RN:toInteger(line.u1)}) match (p2:Person{RN:toInteger(line.u2)}) merge (p1)-[r:spouse]-(p2)";
-            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
-
-//            String hwup = "LOAD CSV WITH HEADERS FROM 'file:///union.csv' AS line FIELDTERMINATOR '|' match (p1:Person{RN:toInteger(line.u1)}) match (p2:Person{RN:toInteger(line.u2)}) merge (p1)-[r:spouse]-(p2)";
-//           neo4j_qry.qry_write(hwup);
-
-           //create edges of Person & Union events to places
+//            lc = "LOAD CSV WITH HEADERS FROM 'file:///child.csv' AS line FIELDTERMINATOR '|'  return line ";
+//            cq = " match (p:Person{RN:toInteger(line.rn)}) match (u:Union{uid:toInteger(line.uid)}) merge (p)-[r:child]-(u)";
+//            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
+//
+//           //create father-union edges using extant data
+//           String fu = "match (p:Person)-[r:child]->(u:Union) where u.U1 >0 return p.RN as rn,u.U1 as father";
+//           neo4j_qry.qry_to_pipe_delimited(fu, "father.csv");
+//
+////           lc = "LOAD CSV WITH HEADERS FROM 'file:///father.csv' AS line FIELDTERMINATOR '|'  return line ";
+////            cq = " match (p:Person{RN:toInteger(line.rn)}) match (u:Union{U1:toInteger(line.father)}) merge (p)-[r:ufather]-(u)";
+////            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
+////  
+// 
+//           //create mother-union edges using extant data
+//           String mu = "match (p:Person)-[r:child]->(u:Union) where u.U2 >0 return p.RN as rn,u.U2 as mother";
+//           neo4j_qry.qry_to_pipe_delimited(mu, "mother.csv");
+// 
+////           lc = "LOAD CSV WITH HEADERS FROM 'file:///mother.csv' AS line FIELDTERMINATOR '|'  return line ";
+////            cq = " match (p:Person{RN:toInteger(line.rn)}) match (u:Union{U2:toInteger(line.mother)}) merge (p)-[r:umother]-(u)";
+////            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
+//  
+//           //create person-father edges using extant data
+//           lc = "LOAD CSV WITH HEADERS FROM 'file:///father.csv' AS line FIELDTERMINATOR '|'  return line ";
+//            cq = " match (p1:Person{RN:toInteger(line.rn)}) match (p2:Person{RN:toInteger(line.father)}) merge (p1)-[r:father]-(p2)";
+//            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
+//
+//           //create person-mother edges using extant data
+//           lc = "LOAD CSV WITH HEADERS FROM 'file:///mother.csv' AS line FIELDTERMINATOR '|'  return line ";
+//            cq = " match (p1:Person{RN:toInteger(line.rn)}) match (p2:Person{RN:toInteger(line.mother)}) merge (p1)-[r:mother]-(p2)";
+//            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
+//
+//
+//           //create spouse edges using extant data
+//           lc = "LOAD CSV WITH HEADERS FROM 'file:///union.csv' AS line FIELDTERMINATOR '|'  return line ";
+//            cq = " match (p1:Person{RN:toInteger(line.u1)}) match (p2:Person{RN:toInteger(line.u2)}) merge (p1)-[r:spouse]-(p2)";
+//            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
+//
+         //create edges of Person & Union events to places
            neo4j_qry.qry_write("match (p:Person) with p Match (l:Place) where l.desc=p.BP create (p)-[r:person_place{type:'bp'}]->(l) ");
            neo4j_qry.qry_write("match (p:Person) with p Match (l:Place) where l.desc=p.DP create (p)-[r:person_place{type:'dp'}]->(l) ");
            neo4j_qry.qry_write("match (p:Union) with p Match (l:Place) where l.desc=p.Union_Place create (p)-[r:person_place{type:'up'}]->(l) ");

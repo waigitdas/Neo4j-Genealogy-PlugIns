@@ -48,13 +48,13 @@ public class tg_environment {
         create_segment_sequence_edges e = new create_segment_sequence_edges();
         e.create_seg_seq_edges(ancestor_rn);
         
-        gen.tgs.tg_match_summary ts = new gen.tgs.tg_match_summary();
-        ts.get_matches(7L,100L,false);
-        
-        gen.rel.add_rel_property rp = new gen.rel.add_rel_property();
+       gen.rel.add_rel_property rp = new gen.rel.add_rel_property();
         rp.add_rel();
 
-
+       gen.tgs.tg_match_summary ts = new gen.tgs.tg_match_summary();
+        ts.get_matches(7L,100L,false);
+        
+     
 //return gen.tgs.matches_tgs()
         
 //        //create at-haplotree Excel

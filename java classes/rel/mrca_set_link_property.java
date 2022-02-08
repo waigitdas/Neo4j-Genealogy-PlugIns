@@ -58,8 +58,8 @@ public class mrca_set_link_property {
 
         gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:tg_match]-() remove r.p_anc_rn");
         gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:tg_match]-() remove r.m_anc_rn");
-        gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:tg_match]-() remove r.p_rn");
-        gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:tg_match]-() remove r.m_rn");
+//        gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:tg_match]-() remove r.p_rn");
+//        gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:tg_match]-() remove r.m_rn");
 
         //set node property with new common ancestor phasing
          gen.neo4jlib.neo4j_qry.qry_write("match (p1:Person)-[r:father|mother*0..15]->(p2:Person{RN:" + ancestor_rn + "}) set  p1.ancestor_rn=case when p2 is not null then " + ancestor_rn + " else 0 end");

@@ -140,6 +140,7 @@ public static String getFileNameFromPath(String FileName) {
 public static void parse_chr_containing_csv_save_to_import_folder(String FileName,int ChrColNumber){
     FileWriter fw = null;
         gen.neo4jlib.neo4j_info.neo4j_var();
+        String s ="";
         try {
             String c = file_lib.ReadFileByLineWithEncoding(FileName);
             c = c.replace("|"," ").replace(",","|").replace("\"", "");
@@ -155,7 +156,7 @@ public static void parse_chr_containing_csv_save_to_import_folder(String FileNam
             for (int ii=1; ii<ccc.length; ii++){
                 String[] xxx = ccc[ii].split(Pattern.quote("|"));
                 
-                String s = "";
+                s = "";
                 for(int j=0; j<xxx.length; j++) {
                     if (j==ChrColNumber) {  //chr
                         if (xxx[j].strip().length()==1) {
@@ -168,6 +169,7 @@ public static void parse_chr_containing_csv_save_to_import_folder(String FileNam
                 s = s +  "\n";
                if (s !="") {fw.write(s);}  //ignore blank lines
             }
+            if (s !="") {fw.write(s);}  //ignore blank lines
             fw.flush();
             fw.close();
         } catch (Exception ex) {
@@ -175,6 +177,7 @@ public static void parse_chr_containing_csv_save_to_import_folder(String FileNam
 //Logger.getLogger(file_lib.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
+                fw.flush();
                 fw.close();
             } catch (IOException ex) {
                     System.out.println(ex.getMessage());
