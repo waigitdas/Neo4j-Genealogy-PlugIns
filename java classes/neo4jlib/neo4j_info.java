@@ -33,18 +33,10 @@ public class neo4j_info {
     public static String activeProjectData = "C:/Genealogy/Neo4j/active_neo4j.wai";
     public static String neo4j_home_dir;
 
-//public static String getHomeDir() {
-    //System.out.println($NEO4j_HOME);
-    //String dir =gen.neo4jlib.neo4j_qry.qry_to_csv("Call dbms.listConfig() YIELD name, value where name='dbms.directories.neo4j_home' RETURN replace(value,'\\','^') as path");
-    
-//    return dir;
-//}
-    
 public static Boolean neo4j_var() {
     Boolean WasFilled =false;
     if (Import_Dir == null) {  //variable not available
-   
-    //neo4j_home_dir = gen.neo4jlib.neo4j_qry.qry_str("call dbms.listConfig() YIELD name, value where name='dbms.directories.neo4j_home' RETURN replace(value,'\\\\','^') as path");
+ 
     String c = file_lib.readFileByLine(activeProjectData);
     String[] s = c.split("\n");
     int ct = 0;
@@ -84,11 +76,6 @@ public static Boolean neo4j_var() {
     
     return WasFilled;
 
-// testing results    
-// System.out.println(neo4j_username);
-// System.out.println(neo4j_password);
-// System.out.println(Import_Dir);
-// System.out.println(user_database);
   } 
 
 
@@ -127,14 +114,8 @@ public static Boolean neo4j_var_reload() {
     alt_left_bracket = "\u298B";
     alt_right_bracket = "\u298C";
    
-       
     return WasFilled;
 
-// testing results    
-// System.out.println(neo4j_username);
-// System.out.println(neo4j_password);
-// System.out.println(Import_Dir);
-// System.out.println(user_database);
   } 
 
   

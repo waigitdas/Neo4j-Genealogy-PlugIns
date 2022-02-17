@@ -40,7 +40,7 @@ public class queries_to_excel {
     public static WritableCellFormat timesBoldUnderline;
     public static WritableCellFormat times;
     public static String excelFile;
-
+    
     //main is for testing only. Must comment out database calls and use a properly formated file in the Import Neo4j folder
     public static void main(String args[]) {
         String cq = "MATCH p=(m:DNA_Match)-[r:match_tg]->(t:tg) where m.RN is not null with t,m,  trim(m.fullname)  as mm with t,m,mm order by mm with t,collect(mm + ';') as matches,collect(m.RN) as rns \n with t,matches   RETURN t.tgid as tg,t.chr as chr, t.strt_pos as strt_pos,t.end_pos as end_pos,t.cm as cm,size(matches) as ct,matches order by chr,strt_pos,end_pos";
@@ -73,7 +73,7 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
     
      //set up excel. Create new or open prior if there are to be multiple worksheets
      try{
-    if (ExistingExcelFile=="") {
+    if ("".equals(ExistingExcelFile)) {
     excelFile = gen.neo4jlib.neo4j_info.Import_Dir + FileNm + "_" + gen.genlib.current_date_time.getDateTime() + ".xls";;
     excelFileNm=excelFile;
     file = new File(excelFileNm);
@@ -212,14 +212,16 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
         addLabel(excelSheet, 0, extra_rw_ct , fixCellStr(msg[m]));
         extra_rw_ct = extra_rw_ct + 1;
     }
-         addLabel(excelSheet, 0, extra_rw_ct , fixCellStr("database: " + gen.neo4jlib.neo4j_info.user_database));
+         addLabel(excelSheet, 0, extra_rw_ct , fixCellStr("\n\ndatabase: " + gen.neo4jlib.neo4j_info.user_database));
  
     //wrap up and open file
     w.write();
     w.close();
+    if (OpenFile.equals(true)){
     Desktop.getDesktop().open(new File(excelFileNm));
     }
-    catch (Exception e) {return "Error in queries_to_excel\n\n" +  e.getMessage(); }
+    }
+    catch (Exception e) {return "Error in queries_to_excel\n\n" + gen.neo4jlib.file_lib.currExcelFile + "\n\n" +  e.getMessage(); }
        
     return excelFile;  // excelFile;
  }

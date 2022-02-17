@@ -26,12 +26,14 @@ import org.apache.commons.io.IOUtils;
 
 
 public class file_lib {
+    public static String currExcelFile;
+    public static Boolean openExcelFile;
 
     public static String[] ReadGEDCOM(String filePath) {
-        String delimiter = "%^&*"; 
-        String c = gen.neo4jlib.file_lib.ReadFileByLineWithEncoding(filePath);
-        String[] s = c.replace("|","^").split("0 @");
-        String g = "";
+    String delimiter = "%^&*"; 
+    String c = gen.neo4jlib.file_lib.ReadFileByLineWithEncoding(filePath);
+    String[] s = c.replace("|","^").split("0 @");
+    String g = "";
         
         //pull out only the desired elements
         for (int i=0; i<s.length; i++){

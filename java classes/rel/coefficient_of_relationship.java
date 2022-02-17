@@ -15,7 +15,7 @@ import org.neo4j.procedure.UserFunction;
 
 public class coefficient_of_relationship {
     @UserFunction
-    @Description("computes the coefficient of relationship (COR) from two RNs. COR is used to estimate the expected shared cm and as a measure of pedigree collapse." )
+    @Description("computes the coefficient of relationship (COR) from two RNs. COR is used to estimate the expected shared cm and as a measure of pedigree collapse. Returns zero if there is an error or no relationship." )
 
     public double compute_cor(
         @Name("rn1")
@@ -34,6 +34,7 @@ public class coefficient_of_relationship {
         double cor=0.0;
         
         //get all MRCAs
+        try{
         mrca_path_lengths mm = new mrca_path_lengths();
         String[] mrca =  mm.get_mrca_path_len(rn1,rn2).split("\n");
         for (int i=0; i<mrca.length; i++){
@@ -44,6 +45,8 @@ public class coefficient_of_relationship {
             cor = cor + Math.pow(0.5,path1 + path2);
                          
         }
+        }
+        catch (Exception e){return 0;}
          return cor;
         }
 }

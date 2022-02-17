@@ -159,8 +159,11 @@ public class upload_Y_DNA_Haplotree {
 
        gen.neo4jlib.neo4j_qry.qry_write("MATCH (b1:block) with b1 match (b2:block) where b2.haplogroupId=b1.parentId merge (b2)-[r:block_child]-(b1)");
        
-       //match-block edge
-       gen.neo4jlib.neo4j_qry.qry_write("match (y:DNA_YMatch) where trim(y.YHG)>' ' with y match (b:block) where b.name=y.YHG merge (y)-[r:match_block]-(b)");
+       //Ymatch-block edge
+       gen.neo4jlib.neo4j_qry.qry_write("match (y:DNA_YMatch) where trim(y.YHG)>' ' with y match (b:block) where b.name=y.YHG merge (y)-[r:y_match_block]-(b)");
+       
+       //match_block
+       gen.neo4jlib.neo4j_qry.qry_write("MATCH (m:DNA_Match) where m.YHG is not null with m match (b:block) where b.name=m.YHG merge (m)-[mb:match_block]->(b)");
        
        return "Completed";
     }

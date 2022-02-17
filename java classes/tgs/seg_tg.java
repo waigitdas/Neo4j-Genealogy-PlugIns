@@ -30,7 +30,7 @@ public class seg_tg {
     @UserFunction
     @Description("Segment tg if it maps to a tg; returns tg id.")
         
-    public List<Long> segment_tgs(
+    public String segment_tgs(
         @Name("segment_indx") 
             String segment_indx,
         @Name("project") 
@@ -38,15 +38,17 @@ public class seg_tg {
     )
 
         {
-        String qry = "match (s:Segment{Indx:'" + segment_indx + "'})-[:tg_seg]-(t:tg{project:'" + project + "'}) with distinct t as td order by td.tgid  return td.tgid";
-        List<Long> r =tg_qry(qry);
+        String qry = "match (s:Segment{Indx:'" + segment_indx + "'})-[:tg_seg]-(t:tg{project:'" + project + "'})  with t order by t.tgid  with collect(distinct t.tgid) as td return td";
+        String r =tg_qry(qry);
         return r;
             }
     
    
-    public List<Long> tg_qry(String qry) 
+    public String tg_qry(String qry) 
     {
-        return neo4j_qry.qry_long_list(qry);
+        //only 1 row expected
+        String[] s = neo4j_qry.qry_to_csv(qry).replace(",", ";").split("\n");
+        return s[0];
 
 }
               
