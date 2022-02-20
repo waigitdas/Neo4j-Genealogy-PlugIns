@@ -305,15 +305,21 @@ public class neo4j_qry {
         Session java_session =  gen.conn.connTest.session;
 
             return java_session.writeTransaction( tx -> {
+            String q = "";
             
-            
-            String q = "call apoc.export.csv.query(\"" + cq+ "\",'" + csv_File + "' , {delim:'|', stream:true, quotes: false, format: 'plain'})"; 
+            try{
+            q = "call apoc.export.csv.query(\"" + cq+ "\",'" + csv_File + "' , {delim:'|', stream:true, quotes: false, format: 'plain'})"; 
                         
             tx.run(q);
   
                         
             java_session.close();
              return q;
+            }
+            catch (Exception e) {
+            return "Error in qry_to_pipe_elimited\n\n" + q + "\n\n" + e.getMessage();
+            }
+            
         } 
             );
            

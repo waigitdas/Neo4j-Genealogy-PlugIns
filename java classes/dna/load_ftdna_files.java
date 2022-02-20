@@ -65,6 +65,8 @@ public  String load_ftdna_csv_files(
         neo4j_qry.CreateIndex("DNA_YMatch","mtHG");
         neo4j_qry.CreateIndex("DNA_YMatch","YHG");
         neo4j_qry.CreateIndex("Segment","Indx");
+        neo4j_qry.CreateIndex("YMatch","fullname");
+        neo4j_qry.CreateIndex("YMatcht","YHG");
         neo4j_qry.CreateIndex("tg","tgid");
         neo4j_qry.CreateIndex("tg","strt_pos");
         neo4j_qry.CreateIndex("tg","end_pos");
@@ -78,6 +80,7 @@ public  String load_ftdna_csv_files(
         neo4j_qry.CreateRelationshipIndex("match_by_segment","cm");
         neo4j_qry.CreateRelationshipIndex("match_segment", "p_rn");
         neo4j_qry.CreateRelationshipIndex("match_segment", "m_rn");
+        neo4j_qry.CreateRelationshipIndex("match_segment", "fam_branch");
         neo4j_qry.qry_write("CREATE FULLTEXT INDEX ancestor_surnames_names FOR (n:ancestor_surnames)\n" +
 "ON EACH [n.name]");
  
@@ -125,7 +128,8 @@ public  String load_ftdna_csv_files(
         String chrPainter ="";
         
         String kit_fullname="";
-       
+        
+        //sorted list of Lookup node set
         String[] kit_list = gen.neo4jlib.neo4j_qry.qry_to_csv("MATCH p=(k:Lookup{Upload:'Y'}) return k.kit as kit").replace("\"","").split("\n");
         //String srn="";
 //        
@@ -133,7 +137,7 @@ public  String load_ftdna_csv_files(
         for (int i = 0; i < directories.length; i++) {
             String x = directories[i];
             //System.out.print(x + "***\n");
-            
+     
             String[] paths;
             File f = new File(root_dir + directories[i]);
             
@@ -142,7 +146,7 @@ public  String load_ftdna_csv_files(
             
             String kit="";
             Long kit_rn = 0L; // "";
-            int ct = 0;
+            int ct = -1;
             Boolean hasDNAMatch = false;
             Boolean hasSegs = false;
             Boolean kit_found=false;
@@ -176,15 +180,16 @@ public  String load_ftdna_csv_files(
   
                   try{
                       cq = "match (l:Lookup{kit:'" + kit + "'}) return case when l.RN is null then 0 else l.RN end as kit_rn";
-                kit_rn = neo4j_qry.qry_long_list(cq).get(0);
+                      kit_rn = neo4j_qry.qry_long_list(cq).get(0);
                                  }
                     catch (Exception e) {kit_rn=0L;};
                
                   
-                  try{fwtrack.write(kit + ":" + kit_fullname + " : " +  kit_rn + "\n");
-                    fwtrack.flush();
+                  try{
+                      fwtrack.write(kit + ":" + kit_fullname + " : " +  kit_rn + "\n");
+                      fwtrack.flush();
                   }
-                  catch (Exception e){}
+                  catch (Exception exx){}
                    //placeholder match needed to create edges before full match set up
                     try
                     {
@@ -257,12 +262,9 @@ public  String load_ftdna_csv_files(
 //                    cq = "LOAD CSV WITH HEADERS FROM 'file:///" + FileDNA_Match + "' AS line FIELDTERMINATOR '|' match(m1:DNA_Match{fullname:'" + kit_fullname + "'}) match(m2:DNA_Match{fullname:toString(case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end)}] merge(m1)-[r:shared_match{cm:toFloat(line.Shared_DNA),longest_seg:toFloat(line.Longest_Block),rel:toString(line.Relationship_Range)}]-(m2)";
 //                    neo4j_qry.qry_write(cq);
 
-               cq="LOAD CSV WITH HEADERS FROM 'file:///" + FileDNA_Match + "' as line FIELDTERMINATOR '|' match (f:DNA_Match{fullname:toString(case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end)}) with f.fullname as match, line.Ancestral_Surnames as anc where line.Ancestral_Surnames > '  ' merge (a:ancestor_surnames{p:toString(match),name:toString(anc)})";
+               cq="LOAD CSV WITH HEADERS FROM 'file:///" + FileDNA_Match + "' as line FIELDTERMINATOR '|' with line,line.Ancestral_Surnames as anc with line,anc where anc is not null merge (a:ancestor_surnames{p:toString(case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end),name:toString(anc)})";
                neo4j_qry.qry_write(cq);
                
-               cq = "MATCH (n:ancestor_surnames) merge (m:DNA_Match{fullname:n.p})-[r:match_ancestors]-(n)";
-               neo4j_qry.qry_write(cq);
-
 
                 cq ="LOAD CSV WITH HEADERS FROM 'file:///" + FileDNA_Match + "' as line FIELDTERMINATOR '|' with case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end as fn, line.Y_DNA_Haplogroup as YHG where line.Y_DNA_Haplogroup is not null match (m:DNA_Match{fullname:fn}) with m,YHG set m.YHG=YHG";
                neo4j_qry.qry_write(cq);
@@ -270,7 +272,7 @@ public  String load_ftdna_csv_files(
                cq = "LOAD CSV WITH HEADERS FROM 'file:///" + FileDNA_Match + "' as line FIELDTERMINATOR '|' with case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end as fn, line.mtDNA_Haplogroup as mtHG where line.mtDNA_Haplogroup is not null match(m:DNA_Match{fullname:fn}) with m,mtHG set m.mtHG=mtHG";
                neo4j_qry.qry_write(cq);
                
-               cq = "LOAD CSV WITH HEADERS FROM 'file:///" + FileDNA_Match + "' as line FIELDTERMINATOR '|' with case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end as fn, line.Matching_Bucket as mb where mb<>'None' merge (k:Kit{kit:'" + kit + "'})-[r:KitMatch]-(m2:DNA_Match{fullname:fn}) with r,mb set r.fam_branch=mb";
+               cq = "LOAD CSV WITH HEADERS FROM 'file:///" + FileDNA_Match + "' as line FIELDTERMINATOR '|' with case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end as fn, line.Matching_Bucket as mb where mb<>'None' match (k:Kit{kit:'" + kit + "'})-[r:KitMatch]-(m2:DNA_Match{fullname:fn}) with r,mb set r.fam_branch=mb";
                neo4j_qry.qry_write(cq);
                
                cq = "LOAD CSV WITH HEADERS FROM 'file:///" + FileDNA_Match + "' as line FIELDTERMINATOR '|' with case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end as fn, line.Linked_Relationship as mb where mb<>'None' match (k:Kit{kit:'" + kit + "'})-[r:KitMatch]-(m2:DNA_Match{fullname:fn}) with r,mb set r.linked_rel=mb";
@@ -538,8 +540,13 @@ if (hasSegs==true){
         //line 391 in VB.NET
         //match_segment edges with phasing paramenters m (match) and p (propositus) (for matches)
         lc = "LOAD CSV WITH HEADERS FROM 'file:///" + FileSegs + "' as line FIELDTERMINATOR '|' return line ";
-        cq = " match (s:Segment{Indx:toString(case when line.Chromosome is null then '' else line.Chromosome end) + ':' + toString(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toString(case when line.End_Location is null then 0 else line.End_Location end) }) match (m:DNA_Match{fullname:toString(line.Match_Name)}) merge (m)-[r:match_segment{p:toString(line.Name),m:toString(line.Match_Name), p_rn:" + kit_rn + ", cm:toFloat(line.Centimorgans),snp_ct:toInteger(case when line.Matching_SNPs is null then 0 else line.Matching_SNPs end),cb_version:'" + cb_version + "'}]-(s)";
+        cq = " with line where line.Match_Name is not null match (s:Segment{Indx:toString(case when line.Chromosome is null then '' else line.Chromosome end) + ':' + toString(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toString(case when line.End_Location is null then 0 else line.End_Location end) }) match (m:DNA_Match{fullname:toString(line.Name)}) merge (m)-[r:match_segment{p:toString(line.Name),m:toString(line.Match_Name), cm:toFloat(line.Centimorgans),snp_ct:toInteger(case when line.Matching_SNPs is null then 0 else line.Matching_SNPs end),cb_version:'" + cb_version + "'}]-(s)";
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
+        
+        cq = "MATCH (n:ancestor_surnames) match (m:DNA_Match{fullname:n.p})  merge (m)-[r:match_ancestors]-(n)";
+        neo4j_qry.qry_write(cq);
+
+
 }
 
 if (hasEthnicity==true){
@@ -568,15 +575,15 @@ if (hasEthnicity==true){
 //            {}
 //        }
 
-        //Line 406 in VB.NET
-        //match-segments 2 unphased (for kit owners that are not found in matches' results)
-        // most kit owners also appear in matches' list of matches; but not all. This query address them.
-        if (hasSegs==true) {
-            lc = "LOAD CSV WITH HEADERS FROM 'file:///" + FileSegs + "' as line FIELDTERMINATOR '|' return line ";
-           cq = "match (s:Segment{Indx:toString(case when line.Chromosome is null then '' else line.Chromosome end) + ':' + toString(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toString(case when line.End_Location is null then 0 else line.End_Location end) }) match (m:DNA_Match{fullname:'" + kit_fullname + "'}) merge (m)-[r:match_segment{p:toString(line.Name),m:toString(line.Match_Name),p_rn:" + kit_rn + ", cm:toFloat(line.Centimorgans),snp_ct:toInteger(case when line.Matching_SNPs is null then 0 else line.Matching_SNPs end),cb_version:'" + cb_version + "*'}]-(s)";
-            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
-            
-        }
+//        //Line 406 in VB.NET
+//        //match-segments 2 unphased (for kit owners that are not found in matches' results)
+//        // most kit owners also appear in matches' list of matches; but not all. This query address them.
+//        if (hasSegs==true) {
+//            lc = "LOAD CSV WITH HEADERS FROM 'file:///" + FileSegs + "' as line FIELDTERMINATOR '|' return line ";
+//           cq = " with line where line.Match_Name is not null match (s:Segment{Indx:toString(case when line.Chromosome is null then '' else line.Chromosome end) + ':' + toString(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toString(case when line.End_Location is null then 0 else line.End_Location end) }) match (m:DNA_Match{fullname:'" + kit_fullname + "'}) merge (m)-[r:match_segment{p:toString(line.Name),m:toString(line.Match_Name),cm:toFloat(line.Centimorgans),snp_ct:toInteger(case when line.Matching_SNPs is null then 0 else line.Matching_SNPs end),cb_version:'" + cb_version + "*'}]-(s)";
+//            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
+//            
+//        }
         } //kit_found 
             }
 } // next kit   

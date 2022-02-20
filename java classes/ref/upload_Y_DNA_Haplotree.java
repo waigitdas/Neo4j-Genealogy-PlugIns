@@ -60,7 +60,11 @@ public class upload_Y_DNA_Haplotree {
         neo4j_qry.CreateIndex("block", "haplogroupId");
         neo4j_qry.CreateIndex("block", "name");
         neo4j_qry.CreateIndex("variant", "name");
-   
+        try{
+        neo4j_qry.CreateIndex("DNA_YMatch", "YHG");
+        neo4j_qry.CreateIndex("DNA_YMatch", "fullname");
+        }
+        catch (Exception e){}
 
         //read, parse  and load json into Neo4j
         File file = new File(FileNm);
