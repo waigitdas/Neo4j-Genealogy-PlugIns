@@ -68,6 +68,8 @@ public class load_tgs_from_template {
         String cq = "LOAD CSV WITH HEADERS FROM 'file:///" + gen.neo4jlib.neo4j_info.tg_file + "' AS line FIELDTERMINATOR '|' merge (t:tg{tgid:toInteger(line.tgid),Indx:toString(case when line.chr is null then '' else line.chr end) + ':' + toString(case when line.strt_pos is null then 0 else line.strt_pos end) + ':' + toString(case when line.end_pos is null then 0 else line.end_pos end) ,chr:toString(line.chr),strt_pos:toInteger(line.strt_pos),end_pos:toInteger(line.end_pos),project:toString(line.project),cm:toFloat(case when line.cm is null then 0.0 else line.cm end), mrca_rn:toInteger(line.mrca_rn)})";
         neo4j_qry.qry_write(cq);
   
+        neo4j_qry.qry_write("match (t:tg) where size(t.chr)=1 set t.chr=apoc.text.lpad(t.chr,2,'0')");
+        
         //add tg cm property if it is not already populated
         neo4j_qry.qry_write("match (t:tg) where t.cm is null with t,gen.dna.hapmap_cm(t.chr,t.strt_pos,t.end_pos) as cm set t.cm = cm");
         

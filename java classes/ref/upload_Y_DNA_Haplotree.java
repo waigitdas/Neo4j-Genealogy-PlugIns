@@ -61,8 +61,8 @@ public class upload_Y_DNA_Haplotree {
         neo4j_qry.CreateIndex("block", "name");
         neo4j_qry.CreateIndex("variant", "name");
         try{
-        neo4j_qry.CreateIndex("DNA_YMatch", "YHG");
-        neo4j_qry.CreateIndex("DNA_YMatch", "fullname");
+        neo4j_qry.CreateIndex("YMatch", "YHG");
+        neo4j_qry.CreateIndex("YMatch", "fullname");
         }
         catch (Exception e){}
 

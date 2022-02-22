@@ -236,9 +236,9 @@ public class upload_gedcom {
 //            neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
 //
          //create edges of Person & Union events to places
-           neo4j_qry.qry_write("match (p:Person) where p.BP>' ' with p Match (l:Place) where l.desc=p.BP create (p)-[r:person_place{type:'bp'}]->(l) ");
-           neo4j_qry.qry_write("match (p:Person) where p.DP > ' ' with p Match (l:Place) where l.desc=p.DP create (p)-[r:person_place{type:'dp'}]->(l) ");
-           neo4j_qry.qry_write("match (p:Union) where p.Union_Place> ' ' with p Match (l:Place) where l.desc=p.Union_Place create (p)-[r:person_place{type:'up'}]->(l) ");
+           neo4j_qry.qry_write("match (p:Person) with p Match (l:Place) where l.desc=p.BP create (p)-[r:person_place{type:'bp'}]->(l) ");
+           neo4j_qry.qry_write("match (p:Person) with p Match (l:Place) where l.desc=p.DP create (p)-[r:person_place{type:'dp'}]->(l) ");
+           neo4j_qry.qry_write("match (p:Union) with p Match (l:Place) where l.desc=p.Union_Place create (p)-[r:person_place{type:'up'}]->(l) ");
            
         }
         catch (IOException e){
