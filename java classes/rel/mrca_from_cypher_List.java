@@ -31,7 +31,7 @@ public class mrca_from_cypher_List {
         try{List r =mrca_from_list_qry(qry,rn_list);
         String s = gen.genlib.listStrToStr.list_to_string(r);
         return s;}
-        catch(Exception e){return "";}
+        catch(Exception e){return "-";}
             }
     
    

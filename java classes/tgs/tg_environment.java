@@ -6,6 +6,7 @@
  */
 package gen.tgs;
 
+import gen.dna.load_ftdna_files;
 import gen.genlib.current_date_time;
 import gen.load.load_ftdna_enhancements;
 import gen.neo4jlib.neo4j_qry;
@@ -18,6 +19,10 @@ import gen.tgs.create_segment_sequence_edges;
 import gen.rel.mrca_set_link_property;
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class tg_environment {
     @UserFunction
@@ -40,21 +45,64 @@ public class tg_environment {
      public String setup(Long ancestor_rn) 
     {
         gen.neo4jlib.neo4j_info.neo4j_var();  //initialize variables
-        
+        FileWriter fwtrack = null;
+        File tracking_rept = new File (gen.neo4jlib.neo4j_info.Import_Dir + "enchancement_tracking.txt");
+           try {
+                fwtrack = new FileWriter(tracking_rept);
+            } catch (Exception ex) {
+                Logger.getLogger(load_ftdna_files.class.getName()).log(Level.SEVERE, null, ex);
+            }
+           
+        try{
         //add ancestor_rn property to Person, Kit and DNA_Match nodes after erasing prior properties
         mrca_set_link_property s = new mrca_set_link_property();
         s.mrca_link_property(ancestor_rn );
-
+        } 
+        catch (Exception e1) {try {
+            fwtrack.write("ancestor rn  MRCA had error\n" + e1.getMessage() + "\n\n");
+            } catch (IOException ex) {
+                Logger.getLogger(tg_environment.class.getName()).log(Level.SEVERE, null, ex);
+            }
+}
+        
+        try{
         //create seqment sequences for all segments linked to descendants of the specified ancestor after removing previously created edges
         create_segment_sequence_edges e = new create_segment_sequence_edges();
         e.create_seg_seq_edges(ancestor_rn);
+        }catch (Exception e2){
+            try {
+                fwtrack.write("seg_seq edge creation had error\n" + e2.getMessage() + "\n\n");
+            } catch (IOException ex) {
+                Logger.getLogger(tg_environment.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        }
+      
         
-       gen.rel.add_rel_property rp = new gen.rel.add_rel_property();
+      try{ 
+        gen.rel.add_rel_property rp = new gen.rel.add_rel_property();
         rp.add_rel();
+      }
+      catch (Exception ex3) {
+            try {
+                fwtrack.write("rel property creation had error\n" + ex3.getMessage() + "\n\n");
+            } catch (IOException ex) {
+                Logger.getLogger(tg_environment.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
-       gen.tgs.tg_match_summary ts = new gen.tgs.tg_match_summary();
-        ts.get_matches(7L,100L,false);
-        
+      }
+      
+       try{
+           gen.tgs.tg_match_summary ts = new gen.tgs.tg_match_summary();
+            ts.get_matches(25L,100L,false);
+       }
+       catch (Exception ex4){
+            try {
+                fwtrack.write("tg_match summary had error\n" + ex4.getMessage() + "\n\n");
+            } catch (IOException ex) {
+                Logger.getLogger(tg_environment.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                }
 
     
 //return gen.tgs.matches_tgs()

@@ -101,7 +101,7 @@ public class triangle_ct {
         //String fn = gen.excelLib.queries_to_excel.qry_to_excel(cq, "algo", algo, 0, "", "", "", true, "Algorithm: " + algo + "\n\nquery:\n" + cq, true);
         // end create virtual graph
         
-        cq ="CALL gds.triangleCount.stream('" + virtual_graph + "') YIELD nodeId, triangleCount AS count RETURN gds.util.asNode(nodeId).fullname AS name, count order by count desc";
+        cq ="CALL gds.triangleCount.stream('" + virtual_graph + "') YIELD nodeId, triangleCount AS count with nodeId,count where count>1 RETURN gds.util.asNode(nodeId).fullname AS name, count order by count desc";
       gen.excelLib.queries_to_excel.qry_to_excel(cq, "algo_","counts", 1, "", "1:#######;", "", true, "UDF: return gen.algo.triangle_count(" + min_cm + "," + max_cm + "," + known_matches_only + ")\n\nAlgorithm: " + algorithm + " with shared centimorgan range of " + min_cm + " to " +  max_cm + "\nThese analytics use the Neo4j Graph Data Science PlugIn\nThe virtual graph created had " + node_ct + " nodes and  " + rel_ct +" relationships\n\nvirtual graph query:\n" + cqv + "\n\nalgorithm query:\n" + cq + "\n\nThere ia still a virtual graph '" + virtual_graph + "' in the database; to remove it, restart the database or use this command CALL gds.graph.drop('icw') ", true);  
         return "completed";
     }

@@ -42,10 +42,7 @@ public class load_all_files {
         
         load_tgs_from_template t = new load_tgs_from_template();
         t.load_tgs_from_csv();
-       
-//       load_ftdna_enhancements e = new load_ftdna_enhancements();
-//       e.add_match_segment_properties();
-//        
+            
         return "Completed";
     }
     

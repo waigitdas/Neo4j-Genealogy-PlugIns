@@ -14,7 +14,7 @@ import org.neo4j.procedure.UserFunction;
 
 public class Data_Summary {
     @UserFunction
-    @Description("Template used in creating new functions.")
+    @Description("Prepares a set of report tolaunch the user experience with graph methods")
 
     public String understand_your_data(
 //        @Name("rn1") 
@@ -40,7 +40,7 @@ public class Data_Summary {
         int ct = 0;
         
         String cq = "match (n) return labels(n) as Node_label, count(*) as ct order by labels(n)";
-        String excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Know_your_data", "Nodes", ct, "",  "1:######", "",  false, cq, false);
+        String excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Know_your_data", "Nodes", ct, "",  "1:######", "",  false,"UDF for this set of worksheets:\nreturn gen.quality.understand_your_data()\n\ncypher query:\n" +  cq, false);
         ct=ct+1;
         
 //        cq = "MATCH (n) with DISTINCT labels(n) as nd,apoc.coll.sort(keys(n)) as props with nd,apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten(collect(props)))) as pr with nd,pr unwind pr as property return nd as nodes,property order by nodes,property";
@@ -81,7 +81,7 @@ public class Data_Summary {
         ct=ct+1;
 
         cq = "MATCH p=()-[r:match_segment]->() with sum (case when r.p_rn>0 then 1 else 0 end) as p_rn, sum (case when (r.p_rn=0 or r.p_rn is null) and r.m_rn>0 then 1 else 0 end) as m_rn_without_p_rn, sum (case when (r.m_rn=0 or r.m_rn is null) and r.p_rn>0 then 1 else 0 end) as p_rn_without_m_rn, sum (case when r.m_rn >0 and r.p_rn >0 then 1 else 0 end) as p_rn_with_m_rn, sum (case when r.m_rn >0 or r.p_rn >0 then 1 else 0 end) as p_rn_or_m_rn, sum (case when r.m_rn >0 then 1 else 0 end) as m_rn, sum (case when r.p_anc_rn >0 then 1 else 0 end) as p_anc_rn, sum (case when r.m_anc_rn >0 then 1 else 0 end) as m_anc_rn, count(*) as match_segment_ct return match_segment_ct, p_rn, m_rn, p_rn_or_m_rn, p_rn_with_m_rn, p_rn_without_m_rn, m_rn_without_p_rn,p_anc_rn,m_anc_rn";             
-        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Match_seg", "match_seg properties", ct, "", "0:###,###;1:###,###;2:###,###;3:###,###;4:###,###;",  excelFile, false, cq, false);
+        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Match_seg", "match_seg properties", ct, "", "0:###,###;1:###,###;2:###,###;3:###,###;4:###,###;",  excelFile, false,"Cypher quers\n" + cq + "\n\nYou can re-run this function after enhancements, which will update the last two columns based on the ancestor_rn used.", false);
         ct=ct+1;
 
 
@@ -92,7 +92,7 @@ public class Data_Summary {
       //  excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "tgs", "Tiangulation groups", 3, "", "4:###,###,###;5:###,###,###,6:####.#",  excelFile, false, cq, false);
 
        cq = "Show Functions yield name, signature, description,returnDescription,aggregating where name STARTS WITH 'gen' return name, signature, description,returnDescription,aggregating";             
-       gen.excelLib.queries_to_excel.qry_to_excel(cq, "functions", "Functions", ct, "", "1:###,###,###",  excelFile, true, cq, false);
+       gen.excelLib.queries_to_excel.qry_to_excel(cq, "functions", "Functions", ct, "", "1:###,###,###",  excelFile, true,"cypher query:\n" +  cq + "\n\nYou ", false);
 
 //        cq ="MATCH (p:Person)-[r:Gedcom_DNA]->(m:DNA_Match) where p.RN=m.RN RETURN p.fullname, p.RN,m.fullname, m.RN order by p.fullname";
 //        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "person_match", "Person_Match quality", ct, "", "1:######;3:#####",  excelFile, false, cq, false);

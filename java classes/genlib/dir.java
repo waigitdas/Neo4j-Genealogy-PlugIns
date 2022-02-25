@@ -46,32 +46,28 @@ public class dir {
 
     public static String getDirOfKit(String dir,String srchKit){
         String kit="";
-         File file = new File(dir);
+        File file = new File(dir);
         String[] names = file.list();
 
-    for(String name : names)
-    {
-        if (new File(dir + name).isDirectory())
+        for(String name : names)
         {
-            File folder = new File(dir + name);
-            File[] listOfFiles = folder.listFiles();
-            for (int i=0; i< listOfFiles.length; i++){
-                String f = listOfFiles[i].getName();
-                if (f.contains("Family_Finder")){
-                    String[] k =f.split("_");
-                    kit= k[0];
-                    if (kit.equals(srchKit)){
-                    //System.out.println(name + "\n\t" + kit);
-                    return name;
-                    //break;
-                    }
-              }
-                //kit = p[0].strip();
-        }
-//            System.out.println(name + "\n\t" + listOfFiles[0]);
-        }
-}
-       return kit;
+            if (new File(dir + name).isDirectory())
+            {
+                File folder = new File(dir + name);
+                File[] listOfFiles = folder.listFiles();
+                for (int i=0; i< listOfFiles.length; i++){
+                    String f = listOfFiles[i].getName();
+                    if (f.contains("Chromosome_Browser") || f.contains("Family_Finder") || f.contains("Y_DNA_Matches")){
+                        String[] k =f.split("_");
+                        kit= k[0];
+                        if (kit.equals(srchKit)){
+                        return name;
+                        }
+                  }
+                 }
+            }
+    }
+           return "None";
     }
 
     

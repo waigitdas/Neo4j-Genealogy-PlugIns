@@ -60,13 +60,12 @@ public class mrca_set_link_property {
         
         //set relationship property
         
-
+       gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(m:DNA_Match)-[r:match_segment]->(s:Segment) where r.cm>=7 and r.snp_ct>=500 and  m.ancestor_rn>0 and r.p_anc_rn is null set r.p_anc_rn=m.ancestor_rn");
         gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() where r.cm>=7 and r.snp_ct>=500 and m1.fullname=r.p and m1.ancestor_rn is not null set r.p_anc_rn = m1.ancestor_rn");
         gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() where r.cm>=7 and r.snp_ct>=500 and r.m is not null  match (m2:DNA_Match) where m2.fullname=r.m and m2.ancestor_rn is not null set r.m_anc_rn=m2.ancestor_rn");
         gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(m:DNA_Match)-[r:match_tg]->() where  r.p=m.fullname and m.ancestor_rn is not null set r.p_anc_rn = m.ancestor_rn");
         gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(m:DNA_Match)-[r:match_tg]->() where  r.p=m.fullname with r match (m2:DNA_Match) where m2.fullname=r.m and m2.ancestor_rn is not null set r.m_anc_rn=m2.ancestor_rn");
         
-       gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(m:DNA_Match)-[r:match_segment]->(s:Segment) where r.cm>=7 and r.snp_ct>=500 and  m.ancestor_rn>0 and r.p_anc_rn is null set r.p_anc_rn=m.ancestor_rn");
 
 //        gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() with m1,r match (m2:DNA_Match) where r.p=m1.fullname and m1.ancestor_rn is not null and r.m=m2.fullname and m2.ancestor_rn is not null set r.m_anc_rn=m2.ancestor_rn, r.p_anc_rn=m1.ancestor_rn");
 //        //gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() with r match (m2:DNA_Match) where m2.fullname = r.m and m2.ancestor_rn is not null set r.m_anc_rn = m2.ancestor_rn");

@@ -31,5 +31,18 @@ public class handy_Functions {
         return ss;
     }
     
+    public static String[] remove_array_element(String[] arr, int index){
+        String[] newArr = new String[arr.length-1];
+       int j = 0;
+       for(int i = 0; i<arr.length; i++){
+       if(i != index){
+       newArr[j] = arr[i];
+       j++;
+       }
+       }
+       return newArr;
+}   
+        
+    
 }
 

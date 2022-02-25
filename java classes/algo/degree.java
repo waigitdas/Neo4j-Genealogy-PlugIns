@@ -39,7 +39,8 @@ public class degree {
     
      public String get_degree(String algorithm, Long min_cm, Long max_cm,Boolean known_matches_only) 
     {
-         String cq ="";
+        gen.neo4jlib.neo4j_info.neo4j_var_reload();
+        String cq ="";
          String cqv ="";
   
         try {
