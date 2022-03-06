@@ -91,7 +91,7 @@ public class Data_Summary {
        //cq = "match (t:tg) return t.project as project,t.name as name,t.tgid as tgid,t.chr as chr,t.strt_pos as start, t.end_pos as end,t.cm as cm, case when t.mrca_rn is not null then t.mrca_rn else '' end as mrca_rn order by chr,start,end";             
       //  excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "tgs", "Tiangulation groups", 3, "", "4:###,###,###;5:###,###,###,6:####.#",  excelFile, false, cq, false);
 
-       cq = "Show Functions yield name, signature, description,returnDescription,aggregating where name STARTS WITH 'gen' return name, signature, description,returnDescription,aggregating";             
+       cq = "Show Functions yield name, signature, description,returnDescription,aggregating where name STARTS WITH 'gen' return name, signature, case when size(description)>300 then left(description,290) + ' (truncated).' else description end as Description,aggregating";             
        gen.excelLib.queries_to_excel.qry_to_excel(cq, "functions", "Functions", ct, "", "1:###,###,###",  excelFile, true,"cypher query:\n" +  cq + "\n\nYou ", false);
 
 //        cq ="MATCH (p:Person)-[r:Gedcom_DNA]->(m:DNA_Match) where p.RN=m.RN RETURN p.fullname, p.RN,m.fullname, m.RN order by p.fullname";

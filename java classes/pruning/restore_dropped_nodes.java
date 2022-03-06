@@ -14,7 +14,7 @@ import org.neo4j.procedure.UserFunction;
 
 public class restore_dropped_nodes {
     @UserFunction
-    @Description("Template used in creating new functions.")
+    @Description("restores DNA_Match nodes dropped because of degree<2.")
 
     public String restore_dropped_match_nodes(
   )

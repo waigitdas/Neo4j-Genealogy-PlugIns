@@ -36,7 +36,7 @@ public class add_rel_property {
    
         String Q = "\"";
         gen.neo4jlib.neo4j_info.neo4j_var_reload();
-        String cq ="MATCH (m1:DNA_Match)-[r:match_segment]->(s:Segment) where r.p_rn>0 and r.m_rn>0 with distinct r.p_rn as rn1,r.m_rn as rn2 return rn1,rn2,gen.rel.relationship_from_RNs(rn1,rn2) as rel";
+        String cq ="MATCH (m1:DNA_Match)-[r:match_segment]->(s:Segment) where r.p_rn>0 and r.m_rn>0 with distinct r.p_rn as rn1,r.m_rn as rn2 with distinct rn1,rn2,gen.rel.relationship_from_RNs(rn1,rn2) as rel with rn1,rn2,rel where rel>' ' return rn1,rn2,rel";
                 //"MATCH (m1:DNA_Match)-[r:match_segment]->(s:Segment) where r.p_rn>0 and r.m_rn>0 with distinct r.p_rn as rn1,r.m_rn as rn2 with rn1,rn2,gen.rel.relationship_from_RNs(rn1,rn2) as rel1 with rn1,rn2,rel1 where trim(rel1)>' ' with rn1,rn2,collect(rel1) as rel2 return  rn1, rn2,apoc.text.join(rel2, ' ') as rel order by rn1,rn2"; 
        String qry =  "call apoc.export.csv.query(" + Q + cq +  Q + ",'rel_property.csv', {delim:'|', quotes: false, format: 'plain'}) ";
 //        neo4j_qry.qry_write(qry);

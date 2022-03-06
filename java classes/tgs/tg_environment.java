@@ -7,17 +7,11 @@
 package gen.tgs;
 
 import gen.dna.load_ftdna_files;
-import gen.genlib.current_date_time;
-import gen.load.load_ftdna_enhancements;
-import gen.neo4jlib.neo4j_qry;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
 import org.neo4j.procedure.UserFunction;
-import gen.neo4jlib.neo4j_info;
-import gen.neo4jlib.neo4j_qry;
 import gen.tgs.create_segment_sequence_edges;
 import gen.rel.mrca_set_link_property;
-import java.awt.Desktop;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -45,6 +39,8 @@ public class tg_environment {
      public String setup(Long ancestor_rn) 
     {
         gen.neo4jlib.neo4j_info.neo4j_var();  //initialize variables
+        
+        //set up tracking file
         FileWriter fwtrack = null;
         File tracking_rept = new File (gen.neo4jlib.neo4j_info.Import_Dir + "enchancement_tracking.txt");
            try {
@@ -78,7 +74,21 @@ public class tg_environment {
             
         }
       
+        try{
+        //create seqment sequences for all segments linked to descendants of the specified ancestor after removing previously created edges
+        gen.dna.ancestor_seg_property asp = new gen.dna.ancestor_seg_property();
+        asp.phase_segments();
+        }catch (Exception e2){
+            try {
+                fwtrack.write("phased_anc property added to Segment nodes and match_segment relationships\n" + e2.getMessage() + "\n\n");
+            } catch (IOException ex) {
+                Logger.getLogger(tg_environment.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        }
+      
         
+         
       try{ 
         gen.rel.add_rel_property rp = new gen.rel.add_rel_property();
         rp.add_rel();
@@ -91,14 +101,31 @@ public class tg_environment {
             }
 
       }
+    
+      
+      
+            try{ 
+        gen.rel.add_rel_property rp = new gen.rel.add_rel_property();
+        rp.add_rel();
+      }
+      catch (Exception ex3) {
+            try {
+                fwtrack.write("rel property creation had error\n" + ex3.getMessage() + "\n\n");
+            } catch (IOException ex) {
+                Logger.getLogger(tg_environment.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+      }
+    
+      
       
        try{
-           gen.tgs.tg_match_summary ts = new gen.tgs.tg_match_summary();
-            ts.get_matches(25L,100L,false);
+           gen.load.create_mss mss = new gen.load.create_mss();
+            mss.create_monophylytic_segment_sets();
        }
        catch (Exception ex4){
             try {
-                fwtrack.write("tg_match summary had error\n" + ex4.getMessage() + "\n\n");
+                fwtrack.write("error creating monophylytic segment sets.\n" + ex4.getMessage() + "\n\n");
             } catch (IOException ex) {
                 Logger.getLogger(tg_environment.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -116,7 +143,13 @@ public class tg_environment {
 //             Desktop.getDesktop().open(new File(gen.neo4jlib.neo4j_info.Import_Dir + SaveFileNm ));
 //         }
 //         catch (Exception ee) {}
-         
+    
+
+//       //prepare summary of data
+//        gen.quality.Data_Summary ds = new gen.quality.Data_Summary();
+//        ds.understand_your_data();
+
+
         return "completed";
     }
 }

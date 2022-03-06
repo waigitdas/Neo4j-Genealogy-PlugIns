@@ -116,7 +116,7 @@ public class neo4j_qry {
    public static List<String> qry_str_list(String cq) {
         gen.conn.connTest.cstatus();
         Session java_session =  gen.conn.connTest.session;
-
+        
         return java_session.readTransaction( tx -> {
             List<String> names = new ArrayList<>();
             Result result = tx.run(cq );

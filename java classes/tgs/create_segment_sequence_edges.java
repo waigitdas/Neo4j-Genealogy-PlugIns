@@ -39,9 +39,7 @@ public class create_segment_sequence_edges {
     
      public static  String create_seg_seq(Long anc_rn) 
     {
-//        gen.rel.anc_rn anc = new gen.rel.anc_rn();
-//        Long anc_rn = anc.get_ancestor_rn();
-//        
+     
                 
         gen.neo4jlib.neo4j_info.neo4j_var();
         //delete prior seg_seq edges

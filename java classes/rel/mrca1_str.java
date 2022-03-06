@@ -29,17 +29,32 @@ import gen.neo4jlib.neo4j_qry;
     {
          { 
         gen.neo4jlib.neo4j_info.neo4j_var();
-       //gen.conn.connTest.cstatus();
+        String s = mrca_qry(rn1,rn2);
+        return s;
+        //gen.conn.connTest.cstatus();
              
-        String cq = "match (p1:Person{RN:" + rn1 + "})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(p2:Person{RN:" + rn2 + "}) with mrca order by mrca.sex desc with mrca.fullname + ' ⦋' + mrca.RN + '⦌ (' + left(mrca.BD,4) +'-' + left(mrca.DD,4) +')' as mrca_indv return collect(mrca_indv) as mrca" ;    
-        String r =mrca_qry(cq).replace("\"", "");  //.replace("[[", "").replace("]]", ",").
-        return r;
-            }
+             }
      }
    
-    public String mrca_qry(String cq) 
+    public String mrca_qry(Long rn1, Long rn2) 
     {
-        return neo4j_qry.qry_str(cq);
+        Long rnmin;
+        Long rnmax;
+        if (rn1<rn2){
+            rnmin=rn1;
+            rnmax=rn2;
+        }
+        else {
+            rnmin=rn2;
+            rnmax=rn1;
+    }
+                    
+       
+        String cq = "match (p1:Person{RN:" + rnmin + "})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(p2:Person{RN:" + rnmax + "}) where p1.RN<p2.RN with mrca order by mrca.sex desc with mrca.fullname + ' ⦋' + mrca.RN + '⦌ (' + left(mrca.BD,4) +'-' + left(mrca.DD,4) +')' as mrca_indv return collect(mrca_indv) as mrca" ;    
+       // String r =mrca_qry(cq).replace("\"", "");  //.replace("[[", "").replace("]]", ",");
+        //return r;
+
+        return neo4j_qry.qry_str(cq).replace("\"", "");  
     }
 
 }

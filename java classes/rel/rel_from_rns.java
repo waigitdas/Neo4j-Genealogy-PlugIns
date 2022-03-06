@@ -38,7 +38,18 @@ public class rel_from_rns {
     
      public static String get_rel(Long rn1, Long rn2) 
     {
-         String cq = "match path=(p1:Person)-[rp1:father|mother*1..10]->(mrca:Person)<-[rp2:father|mother*1..10]-(p2:Person) where p1.RN=" + rn1 + " and p2.RN=" + rn2 + " with count(mrca) as mc,size(rp1) as l1,size(rp2) as l2 with mc, case when l1<l2 then l1 else l2 end as path1, case when l1<l2 then l2 else l1 end as path2 with  path1 + ':' + path2 + ':' + mc as Indx  with collect(Indx) as Indx with Indx MATCH (n:fam_rel) where n.Indx in Indx return collect(n.relationship) as rel";
+            Long rnmin;
+            Long rnmax;
+            if (rn1<rn2){
+                rnmin=rn1;
+                rnmax=rn2;
+            }
+            else {
+                rnmin=rn2;
+                rnmax=rn1;
+            }
+            
+         String cq = "match path=(p1:Person)-[rp1:father|mother*0..15]->(mrca:Person)<-[rp2:father|mother*0..15]-(p2:Person) where p1.RN=" + rnmin + " and p2.RN=" + rnmax + " and p1.RN<p2.RN with count(mrca) as mc,size(rp1) as l1,size(rp2) as l2 with mc, case when l1<l2 then l1 else l2 end as path1, case when l1<l2 then l2 else l1 end as path2 with  path1 + ':' + path2 + ':' + mc as Indx  with collect(Indx) as Indx with Indx MATCH (n:fam_rel) where n.Indx in Indx return collect(n.relationship) as rel";
          String r = gen.neo4jlib.neo4j_qry.qry_str(cq).replace("[[", "").replace("]]", ",").replace("\"", "").replace(",",";"); 
          r = r.substring(0,r.length()-1 );
          return r;

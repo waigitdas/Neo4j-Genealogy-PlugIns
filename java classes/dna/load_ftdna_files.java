@@ -625,7 +625,7 @@ if (hasEthnicity==true){
 //          neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
 //         
 
-        neo4j_qry.qry_write("MATCH p=()-[r:match_segment]->() where r.m is not null with r match (p:Person{fullname:r.m}) with r,p set r.m_rn=p.RN");
+        neo4j_qry.qry_write("MATCH ()-[r:match_segment]->() where r.m is not null and r.m_rn is null  with r match (p:DNA_Match) where p.fullname = r.m with r,p  where p.RN>0 set r.m_rn=p.RN");
 
       //Links using curated data
         lc = "LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' as line FIELDTERMINATOR '|' return line ";
@@ -670,6 +670,9 @@ neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS 
          {
         cq = "match (f:YMatch) where trim(f.fullname)=toString(line.Match_Name)  set f.RN=toInteger(line.Curated_RN) ";
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
+        
+        //repeat this ... it add more 
+        neo4j_qry.qry_write("MATCH ()-[r:match_segment]->() where r.m is not null and r.m_rn is null  with r match (p:DNA_Match) where p.fullname = r.m with r,p  where p.RN>0 set r.m_rn=p.RN");
 
              
 //             neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS line FIELDTERMINATOR '|' match (f:YMatch) where trim(f.fullname)=toString(line.Match_Name)  set f.RN=toInteger(line.Curated_RN)");
@@ -737,10 +740,13 @@ neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS 
         neo4j_qry.qry_write(cq) ;
         
         neo4j_qry.qry_write("MATCH p=()-[r:match_segment]->() where r.m_rn>0 and r.m_anc_rn is null with r match (m:Person{RN:r.m_rn}) where m.ancestor_rn>0 set r.m_anc_rn=m.ancestor_rn");
-//       //prepare summary of data
-//        gen.genlib.Data_Summary ds = new gen.genlib.Data_Summary();
-//        ds.understand_your_data();
-//        
+        
+        //make segment Indx properly sortable
+        neo4j_qry.qry_write("match (s:Segment) with s,s.chr + ':' + apoc.text.lpad(toString(s.strt_pos),9,'0') + ':' + apoc.text.lpad(toString(s.end_pos),9,'0') as Indx set s.Indx=Indx");
+
+        //add?? MATCH p=(m:DNA_Match)-[r:match_segment]->() where m.fullname=r.m and r.m_rn is null and m.RN is not null set r.m_rn=m.RN
+        
+        
       //fwtrack.write("Finished FTDNA csv upload\n");
             try {                  
                 fwtrack.flush();

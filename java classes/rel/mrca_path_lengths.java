@@ -34,13 +34,18 @@ public class mrca_path_lengths {
             }
 
         public String get_mrca_path_len(Long rn1, Long rn2){
-            String s =gen.neo4jlib.neo4j_qry.qry_to_csv("match path = (p:Person{RN:" + rn1 + "})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(b:Person{RN:" + rn2 + "})  return mrca.RN as mrca, size(r1) as path1,size(r2) as path2");
+            Long rnmin;
+            Long rnmax;
+            if (rn1<rn2){
+                rnmin=rn1;
+                rnmax=rn2;
+            }
+            else {
+                rnmin=rn2;
+                rnmax=rn1;
+            }
+                String s =gen.neo4jlib.neo4j_qry.qry_to_csv("match path = (p:Person{RN:" + rnmin + "})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(b:Person{RN:" + rnmax + "}) where p.RN<b.RN return mrca.RN as mrca, size(r1) as path1,size(r2) as path2");
             gen.neo4jlib.file_lib.writeFile(s, "c://temp/mrcatest.csv");
-            //"match (p:Person{RN:11})<-[:father]-(c:Person) with p as p,collect(c.fullname) as c return p.RN,c");
-                    
-                    //"match (p:Person)where p.RN<10 return p.RN,p.fullname,p.BD");
-                    
-                    //"match path = (p:Person{RN:" + rn2 + "})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(b:Person{RN:" + rn2 + "})  return count(*) as ct,size(r1) as path1,size(r2) as path2");
            return s; 
         }
 }
