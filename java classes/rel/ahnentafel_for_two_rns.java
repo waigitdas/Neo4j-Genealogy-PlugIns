@@ -37,12 +37,25 @@ public class ahnentafel_for_two_rns {
     
      public String get_ahn(Long rn1, Long rn2) 
     {
-        String cq = "match path=(p1:Person)-[rp1:father|mother*1..15]->(p2:Person) where p1.RN=" + rn1 + " and p2.RN=" + rn2  + " with rp1, reduce(srt2 ='', q IN nodes(path)|srt2 + case when q.sex='M' then 0 else 1 end ) as SO with '1' + substring(SO,1,size(rp1)) as SO with gen.rel.ahn_path(SO) as SO with SO[size(SO)-1] as Ahnentafel return Ahnentafel";
+                Long rnmin;
+        Long rnmax;
+        if (rn1<rn2){
+            rnmin=rn1;
+            rnmax=rn2;
+        }
+        else {
+            rnmin=rn2;
+            rnmax=rn1;
+    }
+                    
+       
+
+        String cq = "match path=(p1:Person)-[rp1:father|mother*1..25]->(p2:Person) where p1.RN=" + rn1 + " and p2.RN=" + rn2  + " and p1.RN<p2.RN with rp1, reduce(srt2 ='', q IN nodes(path)|srt2 + case when q.sex='M' then 0 else 1 end ) as SO with '1' + substring(SO,1,size(rp1)) as SO with gen.rel.ahn_path(SO) as SO with SO[size(SO)-1] as Ahnentafel return Ahnentafel";
         try{
         String ahn = gen.neo4jlib.neo4j_qry.qry_str(cq).replace("\"","").replace("[","").replace("]","").replace(":","");
         return ahn;}
         catch (Exception e) {
-            return "not an ancestor";
+            return "not an ancestor or too remote";
                 }
        
     }

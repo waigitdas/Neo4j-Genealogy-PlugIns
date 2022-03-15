@@ -48,8 +48,8 @@ import gen.neo4jlib.neo4j_qry;
             rnmin=rn2;
             rnmax=rn1;
         }
-        String cq = "match (p1:Person{RN:" + rnmin + "})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(p2:Person{RN:" + rnmax + "}) where p1.RN<p2.RN where mrca.ancestor_rn is not null with mrca order by mrca.sex desc with mrca.fullname + ' ⦋' + mrca.RN + '⦌ (' + left(mrca.BD,4) +'-' + left(mrca.DD,4) +')' as mrca_indv return collect(mrca_indv) as mrca" ;    
-        return neo4j_qry.qry_str(cq).replace("\"", "");
+        String cq = "match (p1:Person{RN:" + rnmin + "})-[r1:father|mother*0..20]->(mrca:Person)<-[r2:father|mother*0..20]-(p2:Person{RN:" + rnmax + "}) where p1.RN<p2.RN and mrca.ancestor_rn is not null with mrca order by mrca.sex desc with mrca.fullname + ' ⦋' + mrca.RN + '⦌ (' + left(mrca.BD,4) +'-' + left(mrca.DD,4) +')' as mrca_indv return collect(mrca_indv) as mrca" ;    
+        return neo4j_qry.qry_str(cq).replace("\"", "").replace("[", "").replace("]","");
     }
 
     }

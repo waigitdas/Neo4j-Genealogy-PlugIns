@@ -41,24 +41,22 @@ public class tg_environment {
         gen.neo4jlib.neo4j_info.neo4j_var();  //initialize variables
         
         //set up tracking file
-        FileWriter fwtrack = null;
-        File tracking_rept = new File (gen.neo4jlib.neo4j_info.Import_Dir + "enchancement_tracking.txt");
-           try {
-                fwtrack = new FileWriter(tracking_rept);
-            } catch (Exception ex) {
-                Logger.getLogger(load_ftdna_files.class.getName()).log(Level.SEVERE, null, ex);
-            }
+//        FileWriter fwtrack = null;
+//        File tracking_rept = new File (gen.neo4jlib.neo4j_info.Import_Dir + "enchancement_tracking.txt");
+//           try {
+//                fwtrack = new FileWriter(tracking_rept);
+//            } catch (Exception ex) {
+//                Logger.getLogger(load_ftdna_files.class.getName()).log(Level.SEVERE, null, ex);
+//            }
            
         try{
         //add ancestor_rn property to Person, Kit and DNA_Match nodes after erasing prior properties
         mrca_set_link_property s = new mrca_set_link_property();
         s.mrca_link_property(ancestor_rn );
         } 
-        catch (Exception e1) {try {
-            fwtrack.write("ancestor rn  MRCA had error\n" + e1.getMessage() + "\n\n");
-            } catch (IOException ex) {
-                Logger.getLogger(tg_environment.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        catch (Exception e1) {
+           // fwtrack.write("ancestor rn  MRCA had error\n" + e1.getMessage() + "\n\n");
+            
 }
         
         try{
@@ -66,12 +64,7 @@ public class tg_environment {
         create_segment_sequence_edges e = new create_segment_sequence_edges();
         e.create_seg_seq_edges(ancestor_rn);
         }catch (Exception e2){
-            try {
-                fwtrack.write("seg_seq edge creation had error\n" + e2.getMessage() + "\n\n");
-            } catch (IOException ex) {
-                Logger.getLogger(tg_environment.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
+                      
         }
       
         try{
@@ -79,58 +72,48 @@ public class tg_environment {
         gen.dna.ancestor_seg_property asp = new gen.dna.ancestor_seg_property();
         asp.phase_segments();
         }catch (Exception e2){
-            try {
-                fwtrack.write("phased_anc property added to Segment nodes and match_segment relationships\n" + e2.getMessage() + "\n\n");
-            } catch (IOException ex) {
-                Logger.getLogger(tg_environment.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
+           
         }
       
         
          
-      try{ 
-        gen.rel.add_rel_property rp = new gen.rel.add_rel_property();
-        rp.add_rel();
-      }
-      catch (Exception ex3) {
-            try {
-                fwtrack.write("rel property creation had error\n" + ex3.getMessage() + "\n\n");
-            } catch (IOException ex) {
-                Logger.getLogger(tg_environment.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-      }
+//      try{ 
+//        gen.rel.add_rel_property rp = new gen.rel.add_rel_property();
+//        rp.add_rel();
+//      }
+//      catch (Exception ex3) {
+//            try {
+//                fwtrack.write("rel property creation had error\n" + ex3.getMessage() + "\n\n");
+//            } catch (IOException ex) {
+//                Logger.getLogger(tg_environment.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//
+//      }
     
-      
-      
-            try{ 
-        gen.rel.add_rel_property rp = new gen.rel.add_rel_property();
-        rp.add_rel();
-      }
-      catch (Exception ex3) {
-            try {
-                fwtrack.write("rel property creation had error\n" + ex3.getMessage() + "\n\n");
-            } catch (IOException ex) {
-                Logger.getLogger(tg_environment.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-      }
-    
-      
       
        try{
-           gen.load.create_mss mss = new gen.load.create_mss();
-            mss.create_monophylytic_segment_sets();
+           
+        gen.mss.create_mss_entities mss = new gen.mss.create_mss_entities();
+        mss.create_mss();
+           
+              
        }
        catch (Exception ex4){
-            try {
-                fwtrack.write("error creating monophylytic segment sets.\n" + ex4.getMessage() + "\n\n");
-            } catch (IOException ex) {
-                Logger.getLogger(tg_environment.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            
                 }
+      
+          try{ 
+        gen.rel.add_rel_property rp = new gen.rel.add_rel_property();
+        rp.add_rel();
+      }
+      catch (Exception ex3) {
+            
+      }
+    
+ 
 
+      
+      
     
 //return gen.tgs.matches_tgs()
         

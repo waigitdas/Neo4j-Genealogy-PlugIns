@@ -36,8 +36,18 @@ public class ancestral_surname_search {
     
      public String find_matches(String search_term) 
     {
-        String cq = "CALL db.index.fulltext.queryNodes('ancestor_surnames_names', '" + search_term + "') YIELD node, score WITH score,node.p as match,node.name as anc_names MATCH (m:DNA_Match{fullname:match}) return distinct m.fullname as DNA_Match_name,case when m.RN is null then '-' else toString(m.RN) end as RN,round(score,2) as score,anc_names as ancestor_list order by score desc,m.fullname";
- try{       gen.excelLib.queries_to_excel.qry_to_excel(cq, "sncestor_surnames", "matches_with_surname", 1, "","1:###,2:##.##", "", true,"UDF:\nreturn gen.discovery.ancestral_surnames('" + search_term + "')\n\nCypher query:\n\n" + cq + "\n\nYou can use wildcards to find variations in the surname.\nSee: https://graphaware.com/neo4j/2019/01/11/neo4j-full-text-search-deep-dive.html ", true);
+        String[] ss = search_term.split(",");
+        String s = "";
+        for (int i=0; i<ss.length; i++)
+        {
+            s = s + "'" + ss[i].toUpperCase() + "'";
+            if (i<ss.length-1){s = s + ",";}
+        }
+            
+            String cq = "CALL db.index.fulltext.queryNodes('ancestor_surnames_names', '" + search_term + "') YIELD node, score WITH [" + s + "] as submitted,score,node.p as match, node.m as match_with_surnames, case when size(node.name)>20000 then left(node.name,200) + ' (truncated)' else node.name end as anc_names , apoc.coll.flatten(collect(split(toUpper(replace(node.name,' ','')),'/'))) as anc_list MATCH (m:DNA_Match{fullname:match})-[[rs:match_by_segment]]-(m2:DNA_Match{fullname:match_with_surnames}) with distinct m.fullname as source,case when m.RN is null then '~' else m.RN end as source_rn,apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.intersection(anc_list,submitted))) as found, match_with_surnames,rs.cm as cm,rs.seg_ct as segs,case when rs.rel is null then '~' else rs.rel end as rel,round(score,2) as score,anc_names as ancestor_list,submitted,anc_list  where found<>[[]] return source,source_rn,found,score,match_with_surnames,cm,segs,rel,ancestor_list order by rel desc,score desc,source";
+        
+ try{      
+    gen.excelLib.queries_to_excel.qry_to_excel(cq, "sncestor_surnames", "matches_with_surname", 1, "","1:###;3:##.##;5:###.#;6:####", "", true,"UDF:\nreturn gen.discovery.ancestral_surnames('" + search_term + "')\n\nCypher query:\n\n" + cq + "\n\nYou can use wildcards to find variations in the surname.\nSee: https://graphaware.com/neo4j/2019/01/11/neo4j-full-text-search-deep-dive.html ", true);
         return "completed";
  }
  catch (Exception e) {return "Error. Try modifying your search term\n\nSee for a deeper dive into full text searching.\n https://graphaware.com/neo4j/2019/01/11/neo4j-full-text-search-deep-dive.html"; }

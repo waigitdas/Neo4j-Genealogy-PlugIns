@@ -23,7 +23,7 @@ import org.neo4j.procedure.UserFunction;
 
 public class upload_HapMap_Files {
     @UserFunction
-    @Description("Not working. Template used in creating new functions.")
+    @Description("Uploads HapMap to the Neo4j database HapMap.")
 
     public String load_HapMap(
   )
@@ -93,6 +93,9 @@ public class upload_HapMap_Files {
             gen.neo4jlib.neo4j_qry.APOCPeriodicIterateCSV("LOAD CSV WITH HEADERS FROM 'file:///" +fn + "' as line FIELDTERMINATOR '|' return line ", "create (h:HapMap{Indx:toString(line.Indx), chr:toString(line.chr),strt_pos:toInteger(line.strt_pos),rate:toFloat(line.rate),cm:toFloat(line.cm)})", 10000);
 //gen.neo4jlib.neo4j_qry.qry_write("Using periodic commit 5000 LOAD CSV With HEADERS FROM 'file:///" + fn + "' AS line FIELDTERMINATOR '|' create (h:HapMap{chr:toString(line.chr),strt_pos:toInteger(line.strt_pos),rate:toFloat(line.rate),cm:toFloat(line.cm),Indx:toString(line.Indx)})");
    
+            gen.neo4jlib.neo4j_qry.CreateCompositeIndex("HapMap","chr,strt_pos");
+            gen.neo4jlib.neo4j_qry.CreateIndex("HapMap", "chr");
+            gen.neo4jlib.neo4j_qry.CreateIndex("HapMap", "strt_pos");
             
         }
                 

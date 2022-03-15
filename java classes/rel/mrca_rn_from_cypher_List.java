@@ -35,7 +35,7 @@ public class mrca_rn_from_cypher_List {
    
     public List<Long> mrca_from_list_qry(List rn_list,Long generations) 
     {
-        String qry = "match (c:Person) where c.RN in " + rn_list + " With c order by c.RN With collect(distinct c.RN) As cc match (c2:Person)-[:father|mother*0.." + generations + "]->(MRCA:Person)<-[:father|mother*0.." + generations + "]-(c3:Person) where c2.RN in cc And c3.RN in cc  and c2.RN<>c3.RN with MRCA,cc,c2 order by c2.RN with MRCA,cc,collect(distinct c2.RN) as cc2 with distinct cc,cc2,MRCA.RN  as CommonAncestor where cc2=cc return CommonAncestor";
+        String qry = "match (c:Person) where c.RN in " + rn_list + " With c order by c.RN With collect(distinct c.RN) As cc match (c2:Person)-[:father|mother*0.." + generations + "]->(MRCA:Person)<-[:father|mother*0.." + generations + "]-(c3:Person) where c2.RN in cc And c3.RN in cc  and c2.RN<>c3.RN with MRCA,cc,c2 order by c2.RN, MRCA.sex desc with MRCA,cc,collect(distinct c2.RN) as cc2 with distinct cc,cc2,MRCA.RN  as CommonAncestor where cc2=cc return CommonAncestor";
         try{
             List<Long> r =gen.neo4jlib.neo4j_qry.qry_long_list(qry);
            return r;

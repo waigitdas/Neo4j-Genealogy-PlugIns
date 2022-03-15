@@ -42,6 +42,10 @@ public class load_all_files {
         
         load_tgs_from_template t = new load_tgs_from_template();
         t.load_tgs_from_csv();
+        
+        //add x_gen_dist property
+        load_ftdna_enhancements fe = new load_ftdna_enhancements();
+        fe.add_match_segment_properties();
             
         return "Completed";
     }

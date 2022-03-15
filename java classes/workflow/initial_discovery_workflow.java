@@ -42,6 +42,8 @@ public class initial_discovery_workflow {
     
      public String run_workflow() 
     {
+        gen.neo4jlib.neo4j_info.neo4j_var_reload();
+        
         String msg="";
         String nextItem = "\n\n----------------------------------\n\n";
         ///////////////////////////////////////////////////////////////////////////

@@ -1,5 +1,7 @@
 package gen.genlib;
 
+import java.util.List;
+
 public class handy_Functions {
 
     public static void main(String args[]) {
@@ -50,6 +52,31 @@ public class handy_Functions {
            }
            return n;
        }
+       
+       public static String list_to_quoted_list(String s){
+           String[] ss = s.split(",");
+           String sn ="";
+           for (int i=0;i<ss.length; i++){
+               sn = sn + "'" + ss[i].strip() + "'";
+               if (i<ss.length-1){sn = sn + ",";
+           }
+       }
+           return sn;
+       }
+       
+       public static String cypher_list_to_quoted_list(List<String> s){
+           String sn ="";
+           int i =0;
+           for (String si : s){
+               sn = sn + "'" + si.strip() + "'";
+               if (i<s.size()-1){sn = sn + ",";
+           }
+               i = i + 1;
+       }
+           return sn;
+       }
+       
+       
 }   
         
     
