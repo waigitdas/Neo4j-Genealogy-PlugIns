@@ -16,7 +16,7 @@ import gen.tgs.tg_label;
  */
 public class tg_report_strict {
         @UserFunction
-        @Description("Propositus and their match at the triangulation group, limited to those with specified common ancestor. Report includes segment data, ahnentafel path from a propositus to the common ancestor. Variables are:\r\nTriangulation group ID\r\nPropositus: the person whose ahnentafel path is reported\r\nanonymized: true or false.")
+        @Description("Propositus and their match at the triangulation group, limited to those with specified common ancestor.")
 
 public String tg_report_exclusive(
         @Name("tgid") 

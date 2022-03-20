@@ -16,7 +16,7 @@ import gen.tgs.tg_label;
  */
 public class tg_report_lenient {
         @UserFunction
-        @Description("Persons with ANY match (e.g., not necessarily the propositus) triangulating within the triangulation group. Report includes segment data, ahnentafel path from a propositus to the common ancestor. Variables are:\r\nTriangulation group ID\r\nPropositus: the person whose ahnentafel path is reported\r\nanonymized: true or false. ")
+        @Description("Persons with ANY match triangulating within the triangulation group.")
 
 public String tg_report_inclusive(
         @Name("tgid") 

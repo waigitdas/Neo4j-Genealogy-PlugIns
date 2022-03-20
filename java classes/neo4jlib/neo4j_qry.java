@@ -110,6 +110,39 @@ public class neo4j_qry {
             java_session.close();
             return c;
         }) ;
+        
+        
+        
+    }
+     
+    public static String qry_to_pipe_delimited_str(String cq) {
+        gen.conn.connTest.cstatus();
+        Session java_session =  gen.conn.connTest.session;
+
+        return java_session.readTransaction( tx -> {
+            String c = "";
+             //int rw = 0;
+            Result result = tx.run(cq.replace("[[","[").replace("]]","]") );
+            while ( result.hasNext() )
+            {
+                Record r = result.next();
+           
+                List<Value> v =  r.values();
+                  for (int i = 0; i < v.size(); i++) {
+                  c = c + String.valueOf(r.values().get(i));
+                  if (i <v.size()-1) { c = c + "|";
+                  }
+                  else { c = c + "\n"; }
+                 }
+                    //rw = rw + 1;
+                }
+            gen.neo4jlib.file_lib.writeFile(gen.neo4jlib.neo4j_info.user_database, "c://temp/csv1.csv");
+            java_session.close();
+            return c;
+        }) ;
+        
+        
+        
     }
      
     

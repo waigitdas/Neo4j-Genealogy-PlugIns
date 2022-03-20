@@ -10,7 +10,7 @@ import java.util.List;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
 import org.neo4j.procedure.UserFunction;
-import gen.rel.base2to10;
+import gen.rel.ahnentafel;
 import java.util.ArrayList;
 
 public class mrca_path_ahnentafel {

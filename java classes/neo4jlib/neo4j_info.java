@@ -30,7 +30,11 @@ public class neo4j_info {
     public static String tg_file;
     public static String alt_left_bracket ;
     public static String alt_right_bracket ;
+    //windows
     public static String activeProjectData = "C:/Genealogy/Neo4j/active_neo4j.wai";
+    //Linux
+    //public static String activeProjectData = "/Genealogy/Neo4j/active_neo4j.wai";
+
     public static String neo4j_home_dir;
 
 public static Boolean neo4j_var() {
