@@ -28,7 +28,7 @@ public class matches_at_seg {
    
          { 
              
-        String m = get_matches(chr,strt,end,gen.neo4jlib.file_lib.currExcelFile);
+        String m = get_matches(chr,strt,end);
          return m;
             }
 
@@ -38,17 +38,17 @@ public class matches_at_seg {
        //System.out.println(get_matches("21",Long.valueOf(9990360),Long.valueOf(31384543)));
     }
     
-     public String get_matches(String chr,Long strt, Long end, String excelFile)
+     public String get_matches(String chr,Long strt, Long end)
     {
         
         String cq=""; 
         String r = "";
         //String ef = "";
         try{
-            cq= "match (m:DNA_Match)-[[r:match_segment]]-(s:Segment) where  s.chr='" + chr + "' and s.strt_pos>=" + strt + " and s.end_pos<=" + end + " with m,r.cm as cm, case when m.fullname=r.p then  case when r.m_rn is not null then '*' +  r.m + ' ⦋' + r.m_rn + '⦌'  else r.m end  else  case when r.p_rn is not null then '*' + r.p + ' ⦋' + r.m_rn + '⦌' else r.p  end end + ' {' + toInteger(r.cm) + '}'  as seg_match order by m.fullname with  max(cm) as max_cm,min(cm) as min_cm,case when m.RN is not null then '*' + m.fullname + ' ⦋' + m.RN + '⦌' else m.fullname end as match,collect(distinct seg_match) as seg_matches with min_cm,max_cm,match,size(seg_matches) as ct,apoc.coll.sort(seg_matches) as matches_at_region order by ct desc,matches_at_region  return match,min_cm,max_cm,ct,matches_at_region";
+            cq= "match (m:DNA_Match)-[[r:match_segment]]-(s:Segment) where  s.chr='" + chr + "' and s.strt_pos>=" + strt + " and s.end_pos<=" + end + " and (m.fullname=r.p or m.fullname=r.m) with m,r.cm as cm, case when m.fullname=r.p then  case when r.m_rn is not null then '*' +  r.m + ' [' + r.m_rn + ']'  else r.m end  else  case when r.p_rn is not null then '*' + r.p + ' [' + r.m_rn + ']' else r.p  end end + ' {' + toInteger(r.cm) + '}'  as seg_match,r.p as source order by m.fullname with apoc.coll.sort(collect(distinct source)) as source, max(cm) as max_cm,min(cm) as min_cm,case when m.RN is not null then '*' + m.fullname + ' [' + m.RN + ']' else m.fullname end as match,collect(distinct seg_match) as seg_matches with source,min_cm,max_cm,match,size(seg_matches) as ct,apoc.coll.sort(seg_matches) as matches_at_region,size(source) as src_ct order by ct desc,src_ct desc,match  return match,min_cm,max_cm,ct,matches_at_region,src_ct, source";
            //match (m:DNA_Match)-[r:match_segment]-(s:Segment) where m.ancestor_rn is not null and s.chr='" + chr + "' and s.strt_pos>=" + strt + " and s.end_pos<=" + end + " with m order by m.fullname with distinct m.fullname + ' ⦋' + m.RN + '⦌' as match return match";
-       gen.neo4jlib.file_lib.currExcelFile= gen.excelLib.queries_to_excel.qry_to_excel(cq, "Matches at chr_region", "Region matches", 1, "", "1:###.#;2:####.#;3:####;4:###", excelFile,gen.neo4jlib.file_lib.openExcelFile, "UDF: gen.dna.matches_at_chr_region(" + chr + ", " + strt + ", " + end + ")\n\nmatches at chr " + chr + " between positions " + strt + " and " + end + " where the * prefix indicates those who are identified.\nThe number in brackets {} are the centimorgans shared with the match (column A)\n\nthe query is\n" + cq,true);
-        return gen.neo4jlib.file_lib.currExcelFile;
+       gen.neo4jlib.file_lib.currExcelFile= gen.excelLib.queries_to_excel.qry_to_excel(cq,gen.neo4jlib.neo4j_info.project + "_matches at chr_region", "Region matches", 1, "", "1:###.#;2:####.#;3:####;4:###","",true, "UDF: gen.dna.matches_at_chr_region(" + chr + ", " + strt + ", " + end + ")\n\nmatches at chr " + chr + " between positions " + strt + " and " + end + " where the * prefix indicates those who are identified.\nThe number in brackets {} are the centimorgans shared with the match (column A)\n\nthe query is\n" + cq,true);
+        return "completed";
     }
     catch (Exception e) {return "None: " + cq.replace("⦋","[").replace("⦌","]");} 
 
