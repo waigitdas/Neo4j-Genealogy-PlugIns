@@ -9,7 +9,7 @@ package gen.dna;
     import gen.neo4jlib.neo4j_info;
     import gen.neo4jlib.neo4j_qry;
     import gen.conn.connTest;
-    import gen.rel.add_rel_property;
+    //import gen.rel.add_rel_property;
            
     import java.io.File;
     import java.io.FileWriter;
@@ -80,6 +80,18 @@ public  String load_ftdna_csv_files(
         neo4j_qry.CreateRelationshipIndex("match_by_segment","cm");
         neo4j_qry.CreateRelationshipIndex("match_segment", "p_rn");
         neo4j_qry.CreateRelationshipIndex("match_segment", "m_rn");
+        neo4j_qry.CreateRelationshipIndex("match_segment", "rel");
+        neo4j_qry.CreateRelationshipIndex("match_segment", "gen_dist");
+        neo4j_qry.CreateRelationshipIndex("match_segment", "cor");
+        neo4j_qry.CreateRelationshipIndex("match_by_segment", "rel");
+        neo4j_qry.CreateRelationshipIndex("match_by_segment", "gen_dist");
+        neo4j_qry.CreateRelationshipIndex("match_by_segment", "cor");
+        neo4j_qry.CreateRelationshipIndex("shared_match", "rel");
+        neo4j_qry.CreateRelationshipIndex("shared_match", "gen_dist");
+        neo4j_qry.CreateRelationshipIndex("shared_match", "cor");
+        neo4j_qry.CreateRelationshipIndex("KitMatch", "rel");
+        neo4j_qry.CreateRelationshipIndex("KitMatch", "gen_dist");
+        neo4j_qry.CreateRelationshipIndex("KitMatch", "cor");
          
         try{ //will fail if index already exists
             neo4j_qry.CreateCompositeIndex("Segment", "chr,strt_pos,end_pos");
@@ -270,7 +282,7 @@ public  String load_ftdna_csv_files(
                     //shared matches
                     
                     lc = "LOAD CSV WITH HEADERS FROM 'file:///" + FileDNA_Match + "' as line FIELDTERMINATOR '|' return line ";
-                    cq = "match(m1:DNA_Match{fullname:'" + kit_fullname + "'}) match(m2:DNA_Match{fullname:trim(toString(case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end))}) merge(m1)-[r:shared_match{cm:toFloat(case when line.Shared_DNA is null then 0 else line.Shared_DNA end),longest_seg:toFloat(case when line.Longest_Block is null then 0 else line.Longest_Block end),rel:toString(case when line.Relationship_Range is null then '' else line.Relationship_Range end)}]-(m2) ";
+                    cq = "match(m1:DNA_Match{fullname:'" + kit_fullname + "'}) match(m2:DNA_Match{fullname:trim(toString(case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end))}) merge(m1)-[r:shared_match{cm:toFloat(case when line.Shared_DNA is null then 0 else line.Shared_DNA end),longest_seg:toFloat(case when line.Longest_Block is null then 0 else line.Longest_Block end),rel_range:toString(case when line.Relationship_Range is null then '' else line.Relationship_Range end)}]-(m2) ";
                     neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
 
                     
@@ -505,7 +517,7 @@ public  String load_ftdna_csv_files(
 
                     //create seg property to tag segment as in ethnicity role
                     lc = "LOAD CSV WITH HEADERS FROM 'file:///" + chrPainter + "' as line FIELDTERMINATOR '|' return line ";
-                    cq = "match (s:Segment{Indx:ltrim(toString(case when line.Chromosome is null then '' else line.Chromosome end)) + ':' + toInteger(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toInteger(case when line.End_Location is null then 0 else line.End_Location end)}) set s.ethnicity=1 ";
+                    cq = "match (s:Segment{Indx:ltrim(toString(case when line.Chromosome is null then '' else line.Chromosome end)) + ':' + toInteger(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toInteger(case when line.End_Location is null then 0 else line.End_Location end)}) set s.ethnicity=line.Haplotype ";
                     neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
 
 
@@ -713,8 +725,9 @@ neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS 
         //make segment Indx properly sortable
         neo4j_qry.qry_write("match (s:Segment) with s,s.chr + ':' + apoc.text.lpad(toString(s.strt_pos),9,'0') + ':' + apoc.text.lpad(toString(s.end_pos),9,'0') as Indx set s.Indx=Indx");
 
-        //add?? MATCH p=(m:DNA_Match)-[r:match_segment]->() where m.fullname=r.m and r.m_rn is null and m.RN is not null set r.m_rn=m.RN
-        
+    
+
+     
         
       //fwtrack.write("Finished FTDNA csv upload\n");
             try {                  
@@ -723,12 +736,24 @@ neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS 
             
             } 
             catch (Exception ex) {}
-                //fwtrack.write("Error 1005.\n" + ex.getMessage() + "\n" );
-                //Logger.getLogger(load_ftdna_files.class.getName()).log(Level.SEVERE, null, ex);
-            
+
+   gen.rel.add_rel_property arp = new gen.rel.add_rel_property();
+   arp.add_relationship_property();
+
+   
+try{
 neo4j_qry.qry_write("CREATE FULLTEXT INDEX ancestor_surnames_names FOR (n:ancestor_surnames) ON EACH [n.name]");
- 
-            return  "completed";
+}
+ catch(Exception e) {}
+
+//chr_cm node
+cq="MATCH (s:Segment) with s.chr as c,min(s.strt_pos) as s,max(s.end_pos) as e with c,s,e, gen.dna.hapmap_cm(case when c='0X' then 'X' else c end,s,e) as cm return c,s,e,apoc.math.round(cm,1) as cm";
+neo4j_qry.qry_to_pipe_delimited(cq,"chr_cm.csv");
+lc = "LOAD CSV WITH HEADERS FROM 'file:///chr_cm.csv' as line FIELDTERMINATOR '|' return line ";
+        cq = "create (cn:chr_cm{chr:toString(line.c),str_pos:toInteger(line.s),end_pos:toInteger(line.e),cm:toFloat(line.cm)})";
+        neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
+        
+     return  "completed";
 
     }
     

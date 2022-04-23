@@ -40,6 +40,10 @@ public class deidentify {
         gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(k:Kit)-[r:Gedcom_Kit]-(m:Person) set k.fullname=left(m.first_name,1) + ' ' + left(m.surname,1)");
         gen.neo4jlib.neo4j_qry.qry_write("match (p:Kit) remove p.kit_desc, p.surname");
   
+        //do r properties first
+        gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(m:DNA_Match)-[r:match_segment]->() where m.fullname=r.m  set r.m=left(m.first_name,1) + ' ' + left(m.surname,1)");
+       //gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(m:DNA_Match)-[r:match_segment]->()   set r.p=left(r.p,1) + ' ' + left(r.p,1)");
+        
         //DNA_Matches
         gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r1:match_segment]->(s:Segment)<-[r2:match_segment]-(m2:DNA_Match)  set r2.p=left(m2.first_name,1) + ' ' + left(m2.surname,1),r1.p=left(m1.first_name,1) + ' ' + left(m1.surname,1), r2.m=left(m1.first_name,1) + ' ' + left(m1.surname,1),r1.m=left(m2.first_name,1) + ' ' + left(m2.surname,1)");
         gen.neo4jlib.neo4j_qry.qry_write("MATCH (m:DNA_Match)  set m.fullname=left(m.first_name,1) + ' ' + left(m.surname,1)");
@@ -58,6 +62,8 @@ public class deidentify {
          gen.neo4jlib.neo4j_qry.qry_write("match (p:Person) with p match (l:Lookup) where l.RN=p.RN set l.fullname=left(p.first_name,1) + left(p.surname,1)");
          gen.neo4jlib.neo4j_qry.qry_write("match (l:Lookup) where size(l.fullname)>3 set l.fullname= left(l.fullname,1) + right(trim(l.fullname),1)");
  
+        gen.neo4jlib.neo4j_qry.qry_write("match (p:MSS) remove p.fullname");
+     
         
         return "deidentification completed";
     }
