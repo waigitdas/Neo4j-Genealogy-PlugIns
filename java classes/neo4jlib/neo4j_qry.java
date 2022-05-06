@@ -19,6 +19,7 @@ package gen.neo4jlib;
     import org.neo4j.driver.TransactionWork;
     import static org.neo4j.driver.Values.parameters;
     import java.util.*;  
+import java.util.function.Function;
     import java.util.regex.Matcher;
     import java.util.regex.Pattern;
     import org.neo4j.dbms.api.DatabaseManagementService;
@@ -104,9 +105,9 @@ public class neo4j_qry {
                   }
                   else { c = c + "\n"; }
                  }
-                    //rw = rw + 1;
+                    
                 }
-            gen.neo4jlib.file_lib.writeFile(gen.neo4jlib.neo4j_info.user_database, "c://temp/csv1.csv");
+            gen.neo4jlib.file_lib.writeFile("**\n" + c  + "\n**\n\n" + cq, "c://temp/csv1.csv");
             java_session.close();
             return c;
         }) ;
@@ -161,7 +162,32 @@ public class neo4j_qry {
         } );
    }
    
-   //****************************************************
+public static <T> List<T> readCyphers(String cq, Function<Record, T> mapper) {
+        gen.conn.connTest.cstatus();
+        Session java_session =  gen.conn.connTest.session;
+        try (java_session) {
+            Result result = java_session.run(cq);
+            return result.list(mapper);
+//return java_session.readTransaction(tx -> tx.run(cypher).list(mapper));
+        }
+    }
+   
+public static Result qry_obj_all(String cq) {
+        gen.conn.connTest.cstatus();
+        Session java_session =  gen.conn.connTest.session;
+        
+        return java_session.readTransaction( tx -> 
+        {
+            Result result = tx.run(cq );
+            List lr = result.list();
+             
+            return result; 
+        } 
+        );
+   }
+      
+
+//****************************************************
      public static List<Long> qry_long_list(String cq) {
 
         
@@ -263,6 +289,24 @@ public class neo4j_qry {
         } );
    }
   
+//        public static String<List> pack_list_str(List<String> ls) {
+// 
+//        gen.conn.connTest.cstatus();
+//        Session java_session =  gen.conn.connTest.session;
+//
+//
+//        return java_session.readTransaction( tx -> {
+//            List<String> names =  new ArrayList<String>();;
+//            Result result = tx.run(cq);
+//            while ( result.hasNext() )
+//            {
+//                names = names + result.next().values().toString() + "; ";
+//            }
+//            names = names.substring(0, names.length()-2);
+//            return names;
+//        } );
+//   }
+   
     //****************************************************
  
 //  public static List<Object> qry_to_graph(String cq){

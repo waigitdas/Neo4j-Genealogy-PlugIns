@@ -110,7 +110,7 @@ public class communities_icw {
              cq="CALL gds.labelPropagation.stream('icw', {relationshipWeightProperty:'weight'}) YIELD nodeId, communityId with nodeId,case when gds.util.asNode(nodeId).RN is not null then '*' + gds.util.asNode(nodeId).fullname else gds.util.asNode(nodeId).fullname end AS name, communityId as cid with nodeId,cid,name order by name with cid,collect(name) as names,collect(gds.util.asNode(nodeId).RN) as rns with rns,cid as community,size(names) as ct, names as matches order by ct desc with rns,community,ct,matches where ct>1 with community,ct, matches,gen.rel.mrca_from_cypher_list(rns,15) as mrcas, rns with community,rns,'' as cColor,case when mrcas = '-' then community else community + ' - ' + mrcas end as grp MATCH p=(m:DNA_Match)-[[r:match_segment]]->(s:Segment) where m.RN in rns and r.p_rn in rns and r.m_rn in rns return distinct case when s.chr='0X' then 23 else toInteger(s.chr) end as Chr,s.strt_pos as Start_Location,s.end_pos as End_Location,r.cm as Centimorgan,r.snp_ct as SNPs,case when r.p<r.m then r.p + ' - ' + r.m else r.m + ' - ' + r.p end as Match,'good' as Confidence,grp as Group,'maternal' as Side,'~' as Notes,cColor as Color";
          }
            String fn = gen.neo4jlib.neo4j_info.project + "_DNA__Painter_" + algo + "_" + min_cm + "_" + max_cm + "_" + gen.genlib.current_date_time.getDateTime() + ".csv" ;
-          gen.neo4jlib.neo4j_qry.qry_to_csv(cq,fn );
+          gen.neo4jlib.neo4j_qry.qry_to_csv(cq.replace("[[","[").replace("]]","]"),fn );
           Desktop.getDesktop().open(new File(gen.neo4jlib.neo4j_info.Database_Dir + fn));
           
         return algo + " completed\n\nUse csv file to pait at DNA Painter.";  

@@ -133,6 +133,7 @@ public  String load_ftdna_csv_files(
         String FileDNA_Match = "";
         String FileSegs = "";
         String YMatch = "";
+        String mtMatch = "";
         String chrPainter ="";
         
         String kit_fullname="";
@@ -397,7 +398,25 @@ public  String load_ftdna_csv_files(
 
 //                 cq = "LOAD CSV WITH HEADERS FROM 'file:///" + FileSegs + "' AS line FIELDTERMINATOR '|' merge (l:Segment{Indx:ltrim(toString(case when line.Chromosome is null then '' else line.Chromosome end)) + ':' + toInteger(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toInteger(case when line.End_Location is null then 0 else line.End_Location end)  ,chr:toString(case when line.Chromosome is null then '' else line.Chromosome end), strt_pos:toInteger(case when line.Start_Location is null then 0 else line.Start_Location end), end_pos:toInteger(case when line.End_Location is null then 0 else line.End_Location end)})";
 //                   neo4j_qry.qry_write(cq);
-                               
+
+
+              //******************************************************************************
+                //************  mt-DNA  *****************************************
+                //******************************************************************************
+                if (pathitem.contains("mtDNA_Matches_")){
+                   mtMatch = pathitem;
+                    file_lib.get_file_transform_put_in_import_dir(root_dir + KitDir + "\\" + pathitem, pathitem);
+                    neo4j_qry.qry_write("merge (k:Kit{kit:'" + kit + "', vendor:'ftdna', fullname:'" + kit_fullname + "' , RN:" + kit_rn + ", kit_desc:'" + KitDir + "'})");
+                    lc = "LOAD CSV WITH HEADERS FROM 'file:///" + mtMatch + "' as line FIELDTERMINATOR '|' return line ";
+                    cq = "merge (f:DNA_mtMatch{fullname:trim(toString(case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end)),mtHG:toString(case when line.mtDNA_Haplogroup is null then '' else line.mtDNA_Haplogroup end)})";
+                    neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
+
+                    lc = "LOAD CSV WITH HEADERS FROM 'file:///" + mtMatch + "' as line FIELDTERMINATOR '|' return line ";
+                    cq = "match (f:DNA_mtMatch{fullname:trim(toString(case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end))}) match (k:Kit{kit:'" + kit + "'})  merge (k)-[r:KitmtMatch{gd:toInteger(line.Genetic_Distance),mtHG:toString(case when line.mtDNA_Haplogroup is null then '' else line.mtDNA_Haplogroup end),match_date:toString(case when line.Match_Date is null then '' else line.Match_Date end)}]->(f)";
+                   neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
+     
+                    
+                }
                 //******************************************************************************
                 //***************  Y-DNA   *****************************************************
                 //******************************************************************************
@@ -409,7 +428,7 @@ public  String load_ftdna_csv_files(
                     neo4j_qry.qry_write("merge (k:Kit{kit:'" + kit + "', vendor:'ftdna', fullname:'" + kit_fullname + "' , RN:" + kit_rn + ", kit_desc:'" + KitDir + "'})");
  
                     lc = "LOAD CSV WITH HEADERS FROM 'file:///" + YMatch + "' as line FIELDTERMINATOR '|' return line ";
-                    cq = "merge (f:DNA_YMatch{fullname:toString(case when line.Full_Name is null then '' else trim(line.Full_Name) end), first_name:toString(case when line.First_Name is null then '' else line.First_Name end), middle_name:toString(case when line.Middle_Name is null then '' else line.Middle_Name end), surname:toString(case when line.Last_Name is null then '' else line.Last_Name end),YHG:toString(case when line.Y_DNA_Haplogroup is null then '' else line.Y_DNA_Haplogroup end)})";
+                    cq = "merge (f:DNA_YMatch{fullname:trim(toString(case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end))})";
                     neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
 
                     
@@ -419,7 +438,7 @@ public  String load_ftdna_csv_files(
                     //add Y links to kits
  
                     lc = "LOAD CSV WITH HEADERS FROM 'file:///" + YMatch + "' as line FIELDTERMINATOR '|' return line ";
-                    cq = "match (f:DNA_YMatch{fullname:toString(trim(line.Full_Name))}) match (k:Kit{kit:'" + kit + "'})  merge (k)-[r:DNA_YKitMatch{gd:toInteger(line.Genetic_Distance),YHG:toString(case when line.Y_DNA_Haplogroup is null then '' else line.Y_DNA_Haplogroup end),terminal_SNP:toString(case when line.Terminal_SNP is null then '' else line.Terminal_SNP end),match_date:toString(case when line.Match_Date is null then '' else line.Match_Date end),str_diff:toString(case when line.Big_Y_STR_Differences is null then '' else line.Big_Y_STR_Differences end),str_compare:toString(case when line.Big_Y_STRs_Compared is null then '' else line.Big_Y_STRs_Compared end)}]->(f)";
+                    cq = "match (f:DNA_YMatch{fullname:trim(toString(case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end))}) match (k:Kit{kit:'" + kit + "'})  merge (k)-[r:KitYMatch{gd:toString(case when line.Genetic_Distance is null then '' else line.Genetic_Distance end),YHG:toString(case when line.Y_DNA_Haplogroup is null then '' else line.Y_DNA_Haplogroup end),match_date:toString(case when line.Match_Date is null then '' else line.Match_Date end),str_diff:toString(case when line.Big_Y_STR_Differences is null then '' else line.Big_Y_STR_Differences end),str_compare:toString(case when line.Big_Y_STRs_Compared is null then '' else line.Big_Y_STRs_Compared end)}]->(f)";
                     neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
                     
                     
