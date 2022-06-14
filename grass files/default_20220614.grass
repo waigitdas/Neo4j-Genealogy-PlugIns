@@ -1,0 +1,481 @@
+node {
+  diameter: 50px;
+  color: #A5ABB6;
+  border-color: #9AA1AC;
+  border-width: 2px;
+  text-color-internal: #FFFFFF;
+  font-size: 10px;
+}
+relationship {
+  color: #A5ABB6;
+  shaft-width: 1px;
+  font-size: 8px;
+  padding: 3px;
+  text-color-external: #000000;
+  text-color-internal: #FFFFFF;
+  caption: "<type>";
+}
+node.* {
+  color: #C990C0;
+  border-color: #b261a5;
+  text-color-internal: #FFFFFF;
+  defaultCaption: "<id>";
+  caption: "{fullname} [{RN}] {tgs}";
+}
+node.Person {
+  color: #569480;
+  border-color: #447666;
+  text-color-internal: #FFFFFF;
+  defaultCaption: "<id>";
+  caption: "{fullname}";
+  diameter: 100px;
+}
+node.Union {
+  color: #57C7E3;
+  border-color: #23b3d7;
+  text-color-internal: #2A2C34;
+  caption: "{uid}";
+}
+node.Place {
+  color: #C990C0;
+  border-color: #b261a5;
+  text-color-internal: #FFFFFF;
+  caption: "{desc}";
+}
+node.Image {
+  color: #D9C8AE;
+  border-color: #c0a378;
+  text-color-internal: #2A2C34;
+  caption: "{Image_ID}";
+}
+node.FT_Match {
+  color: #8DCC93;
+  border-color: #5db665;
+  text-color-internal: #2A2C34;
+  caption: "{fullname}";
+  diameter: 65px;
+}
+node.SNPNode {
+  color: #FFC454;
+  border-color: #d7a013;
+  text-color-internal: #2A2C34;
+  defaultCaption: "<id>";
+  diameter: 65px;
+}
+node.block {
+  color: #a86132;
+  border-color: #9ca832;
+  text-color-internal: #FFFFFF;
+  defaultCaption: "<id>";
+  diameter: 65px;
+  caption: "{name}";
+}
+node.FT_YMatch {
+  color: #569480;
+  border-color: #447666;
+  text-color-internal: #FFFFFF;
+  defaultCaption: "<id>";
+  caption: "{kit}";
+  diameter: 65px;
+}
+node.variant {
+  defaultCaption: "<id>";
+  caption: "{name}";
+  color: #9ca832;
+  border-color: #a86132;
+  text-color-internal: #FFFFFF;
+}
+node.tg {
+  caption: "{name}";
+  color: #604A0E;
+  border-color: #423204;
+  text-color-internal: #FFFFFF;
+}
+node.fam_rel {
+  defaultCaption: "<id>";
+  caption: "{relationship}";
+  color: #57C7E3;
+  border-color: #23b3d7;
+  text-color-internal: #2A2C34;
+}
+node.proj_kits {
+  defaultCaption: "<id>";
+  color: #57C7E3;
+  border-color: #23b3d7;
+  text-color-internal: #2A2C34;
+  caption: "{fullname}";
+}
+relationship.surname {
+  caption: "{type}";
+}
+node.surname {
+  defaultCaption: "<id>";
+  color: #FFC454;
+  border-color: #d7a013;
+  text-color-internal: #2A2C34;
+  diameter: 65px;
+}
+node.HapMap {
+  defaultCaption: "<id>";
+  color: #604A0E;
+  border-color: #423204;
+  text-color-internal: #FFFFFF;
+  diameter: 65px;
+  caption: "{cm}";
+}
+node.DNA_Test {
+  defaultCaption: "<id>";
+  color: #AAAA55;
+  border-color: #cc3c6c;
+  text-color-internal: #FFFFFF;
+  diameter: 100px;
+}
+node.Lookup {
+  defaultCaption: "<id>";
+  color: #604A0E;
+  border-color: #423204;
+  text-color-internal: #FFFFFF;
+  caption: "{fullname}";
+}
+node.Segment {
+  defaultCaption: "<id>";
+  color: #DA7194;
+  border-color: #cc3c6c;
+  text-color-internal: #FFFFFF;
+  caption: "{Indx}";
+  diameter: 80px;
+}
+node.Kit {
+  defaultCaption: "<id>";
+  color: #4C8EDA;
+  border-color: #2870c2;
+  text-color-internal: #FFFFFF;
+  caption: "{kit_desc}";
+}
+node.DNA_YMatch {
+  caption: "{fullname}";
+  diameter: 80px;
+  color: #FFC454;
+  border-color: #d7a013;
+  text-color-internal: #2A2C34;
+}
+node.DNA_mtMatch {
+  caption: "{fullname}";
+  diameter: 80px;
+  color: #00CC66;
+  border-color: #d7a013;
+  text-color-internal: #2A2C34;
+}node.CreativeWork {
+  defaultCaption: "<id>";
+  color: #DA7194;
+  border-color: #cc3c6c;
+  text-color-internal: #FFFFFF;
+}
+node.ImageProject {
+  defaultCaption: "<id>";
+  color: #FFC454;
+  border-color: #d7a013;
+  text-color-internal: #2A2C34;
+}
+node.MediaProject {
+  defaultCaption: "<id>";
+  color: #604A0E;
+  border-color: #423204;
+  text-color-internal: #FFFFFF;
+  caption: "<id>";
+}
+node.Thing {
+  defaultCaption: "<id>";
+  color: #4C8EDA;
+  border-color: #2870c2;
+  text-color-internal: #FFFFFF;
+}
+node.Node {
+  defaultCaption: "<id>";
+  color: #D9C8AE;
+  border-color: #c0a378;
+  text-color-internal: #2A2C34;
+}
+node.YMatch {
+  defaultCaption: "<id>";
+  caption: "{name}";
+}
+node.str {
+  defaultCaption: "<id>";
+  caption: "{name}";
+}
+relationship.match_segment {
+  color: #DA7194;
+  shaft-width: 1px;
+  font-size: 12px;
+  padding: 3px;
+  text-color-external: #000000;
+  text-color-internal: #FFFFFF;
+  caption: "<type>";
+  border-color: #cc3c6c;
+}
+relationship.seg_seq {
+  color: #F16667;
+  shaft-width: 2px;
+  font-size: 12px;
+  padding: 3px;
+  text-color-external: #000000;
+  text-color-internal: #FFFFFF;
+  caption: "seg_seq {tgid}  {ancestor_rn}";
+  border-color: #eb2728;
+}
+node.DNA_Match {
+  defaultCaption: "<id>";
+  color: #8DCC93;
+  border-color: #5db665;
+  text-color-internal: #2A2C34;
+  diameter: 80px;
+  caption: "{fullname}";
+}
+node.DNA_Match_rn {
+  defaultCaption: "<id>";
+  color: #569480;
+  border-color: #447666;
+  text-color-internal: #FFFFFF;
+  diameter: 80px;
+  caption: "{fullname} [{RN}]";
+}
+node.DNA_Match_mrca {
+  defaultCaption: "<id>";
+  color: #C990C0;
+  border-color: #b261a5;
+  text-color-internal: #FFFFFF;
+  diameter: 80px;
+  caption: "{fullname}      {RN}        {ancestor_rn}";
+}
+relationship.match_by_segment {
+  color: #8DCC93;
+  border-color: #5db665;
+  text-color-internal: #2A2C34;
+  shaft-width: 3px;
+  caption: "{rel}  --  {cm}";
+}
+relationship.match_tg {
+  caption: "<type>";
+  color: #604A0E;
+  border-color: #423204;
+  text-color-internal: #FFFFFF;
+  shaft-width: 2px;
+}
+relationship.tg_seg {
+  shaft-width: 2px;
+  caption: "<type>";
+  color: #604A0E;
+  border-color: #423204;
+  text-color-internal: #FFFFFF;
+}
+relationship.person_tg {
+  color: #604A0E;
+  border-color: #423204;
+  text-color-internal: #FFFFFF;
+  caption: "<type>";
+}
+relationship.shared_match {
+  color: #D9C8AE;
+  border-color: #c0a378;
+  text-color-internal: #2A2C34;
+  shaft-width: 2px;
+  caption: "<type>";
+}
+relationship.KitMatch {
+  color: #569480;
+  border-color: #447666;
+  text-color-internal: #FFFFFF;
+  shaft-width: 2px;
+  caption: "<type>";
+}
+relationship.Gedcom_Kit {
+  color: #8DCC93;
+  border-color: #5db665;
+  text-color-internal: #2A2C34;
+  shaft-width: 2px;
+}
+relationship.Gedcom_DNA {
+  color: #4C8EDA;
+  border-color: #2870c2;
+  text-color-internal: #FFFFFF;
+  shaft-width: 2px;
+}
+relationship.person_place {
+  color: #C990C0;
+  border-color: #b261a5;
+  text-color-internal: #FFFFFF;
+  shaft-width: 2px;
+  caption: "{type}";
+}
+node.Continent {
+  defaultCaption: "<id>";
+  diameter: 65px;
+  color: #4C8EDA;
+  border-color: #2870c2;
+  text-color-internal: #FFFFFF;
+  caption: "{name}";
+}
+node.pop_group {
+  defaultCaption: "<id>";
+  diameter: 65px;
+  color: #57C7E3;
+  border-color: #23b3d7;
+  text-color-internal: #2A2C34;
+  caption: "{name}";
+}
+node.SeqBoundary {
+  defaultCaption: "<id>";
+  color: #F16667;
+  border-color: #eb2728;
+  text-color-internal: #FFFFFF;
+  diameter: 80px;
+}
+relationship.child {
+  color: #57C7E3;
+  border-color: #23b3d7;
+  text-color-internal: #2A2C34;
+  shaft-width: 3px;
+}
+relationship.father {
+  shaft-width: 3px;
+  color: #ECB5C9;
+  border-color: #da7298;
+  text-color-internal: #2A2C34;
+}
+relationship.mother {
+  shaft-width: 3px;
+  color: #4C8EDA;
+  border-color: #2870c2;
+  text-color-internal: #FFFFFF;
+}
+relationship.spouse {
+  color: #57C7E3;
+  border-color: #23b3d7;
+  text-color-internal: #2A2C34;
+  shaft-width: 3px;
+}
+relationship.segment_pop {
+  color: #4C8EDA;
+  border-color: #2870c2;
+  text-color-internal: #FFFFFF;
+}
+node.ancestor_surnames {
+  defaultCaption: "<id>";
+  color: #D9C8AE;
+  border-color: #c0a378;
+  text-color-internal: #2A2C34;
+  diameter: 65px;
+  caption: "{name}";
+}
+relationship.match_ancestors {
+  color: #F79767;
+  border-color: #f36924;
+  text-color-internal: #FFFFFF;
+}
+relationship.match_pop {
+  color: #DA7194;
+  border-color: #cc3c6c;
+  text-color-internal: #FFFFFF;
+}
+relationship.match_pop_segment {
+  color: #C990C0;
+  border-color: #b261a5;
+  text-color-internal: #FFFFFF;
+}
+relationship.continent_pop {
+  color: #4C8EDA;
+  border-color: #2870c2;
+  text-color-internal: #FFFFFF;
+}
+relationship.block_snp {
+  color: #a86132;
+  border-color: #423204;
+  text-color-internal: #FFFFFF;
+}
+relationship.match_block {
+  color: #a86132;
+  border-color: #423204;
+  text-color-internal: #FFFFFF;
+}
+relationship.blockchild {
+  color: #a86132;
+  border-color: #423204;
+  text-color-internal: #FFFFFF;
+}
+relationship.y_match_block {
+  color: #a86132;
+  border-color: #da7298;
+  text-color-internal: #2A2C34;
+}
+node.DNA_Match_dud {
+  caption: "{surname}";
+}
+node.MSS {
+  caption: "{fullname}";
+  diameter: 65px;
+  color: #7932a8;
+  border-color: #423204;
+  text-color-internal: #FFFFFF;
+}
+node.mt_block {
+  color: #006666;
+  border-color: #9CA832;
+  text-color-internal: #FFFFFF;
+  defaultCaption: "<id>";
+  diameter: 65px;
+  caption: "{name}";
+}
+node.mt_variant {
+  color: #9ca832;
+  border-color: #006666;
+  text-color-internal: #FFFFFF;
+  defaultCaption: "<id>";
+  diameter: 65px;
+  caption: "{name}";
+}
+relationship.mt_block_child {
+  color: #006666;
+  border-color: #eb2728;
+  text-color-internal: #FFFFFF;
+}
+relationship.KitmtMatch {
+  color: #006666;
+  border-color: #eb2728;
+  text-color-internal: #FFFFFF;
+}
+relationship.mt_block_snp {
+  color: #006666;
+  border-color: #eb2728;
+  text-color-internal: #FFFFFF;
+}
+relationship.mt_match_block {
+  color: #0066CC;
+  border-color: #eb2728;
+  text-color-internal: #FFFFFF;
+}
+node.chr_cm {
+  color: #CC99FF;
+  defaultCaption: "<id>";
+  text-color-internal: #000000;
+  caption: "{cm}";
+}
+relationship.ms_seg {
+  caption: "{mrca}";
+  color: #7932a8;
+  border-color: #423204;
+  text-color-internal: #FFFFFF;
+  shaft-width: 2px;
+}
+relationship.person_mss {
+  caption: "{mrca}";
+  color: #7932a8;
+  border-color: #423204;
+  text-color-internal: #FFFFFF;
+  shaft-width: 2px;
+}
+relationship.KitYMatch {
+ color: #FFC454;
+  border-color: #d7a013;
+  text-color-internal: #2A2C34;
+}
