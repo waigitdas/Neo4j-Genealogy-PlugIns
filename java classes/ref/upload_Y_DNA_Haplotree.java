@@ -27,8 +27,8 @@ package gen.ref;
     import gen.load.web_file_to_import_folder;
     import gen.neo4jlib.neo4j_info;
     import java.io.FileWriter;
-    import java.util.logging.Level;
-    import java.util.logging.Logger;
+    //import java.util.logging.Level;
+    //import java.util.logging.Logger;
 //import java.util.logging.Level;
 //import java.util.logging.Logger;
 
@@ -170,7 +170,7 @@ public class upload_Y_DNA_Haplotree {
       cq = "match (b:block{haplogroupId:toInteger(line.haplogroupId)}) match (v:variant{name:toString(line.variant_name)}) merge (b)-[r:block_snp]->(v)";
       neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 200000);
 
-       gen.neo4jlib.neo4j_qry.qry_write("MATCH (b1:block) with b1 match (b2:block) where b2.haplogroupId=b1.parentId merge (b2)-[r:block_child]-(b1)");
+       gen.neo4jlib.neo4j_qry.qry_write("MATCH (bc:block) with bc match (bp:block{haplogroupId:bc.parentId}) merge (bp)-[r:blockchild]->(bc)");
        
        //Ymatch-block edge
        gen.neo4jlib.neo4j_qry.qry_write("match (y:DNA_YMatch) where trim(y.YHG)>' ' with y match (b:block) where b.name=y.YHG merge (y)-[r:y_match_block]-(b)");

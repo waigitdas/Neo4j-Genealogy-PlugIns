@@ -12,7 +12,7 @@ import gen.neo4jlib.neo4j_qry;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.logging.Level;
+//import java.util.logging.Level;
 import jxl.common.Logger;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;

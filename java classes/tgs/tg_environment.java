@@ -6,17 +6,11 @@
  */
 package gen.tgs;
 
-import gen.dna.load_ftdna_files;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
 import org.neo4j.procedure.UserFunction;
 import gen.tgs.create_segment_sequence_edges;
 import gen.rel.mrca_set_link_property;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class tg_environment {
     @UserFunction
@@ -70,7 +64,7 @@ public class tg_environment {
         try{
         //create seqment sequences for all segments linked to descendants of the specified ancestor after removing previously created edges
         gen.dna.ancestor_seg_property asp = new gen.dna.ancestor_seg_property();
-        asp.phase_segments();
+        asp.overlap_segments();
         }catch (Exception e2){
            
         }

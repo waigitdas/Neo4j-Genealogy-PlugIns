@@ -14,7 +14,7 @@ import org.neo4j.procedure.UserFunction;
 
 public class chr_portion {
     @UserFunction
-    @Description("Template used in creating new functions.")
+    @Description("computes portion of chr for a segment")
 
     public Double chr_portion_of_segment(
         @Name("chr") 

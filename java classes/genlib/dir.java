@@ -18,8 +18,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import static scala.reflect.internal.util.NoFile.file;
@@ -152,7 +152,7 @@ public class dir {
                 .map(Path::toString)
                 .collect(Collectors.toList());
     }   catch (IOException ex) {
-            Logger.getLogger(dir.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(dir.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
            
@@ -179,7 +179,7 @@ return "x";
                         
                     });     } 
         catch (IOException ex) {
-            Logger.getLogger(dir.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(dir.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

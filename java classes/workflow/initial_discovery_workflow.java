@@ -10,8 +10,8 @@ import gen.neo4jlib.neo4j_qry;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
 import org.neo4j.procedure.UserFunction;
@@ -176,8 +176,8 @@ public class initial_discovery_workflow {
         gen.neo4jlib.file_lib.writeFile(msg, fn);
         try {
             Desktop.getDesktop().open(new File(fn));
-        } catch (IOException ex) {
-            Logger.getLogger(initial_discovery_workflow.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            //Logger.getLogger(initial_discovery_workflow.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return msg;

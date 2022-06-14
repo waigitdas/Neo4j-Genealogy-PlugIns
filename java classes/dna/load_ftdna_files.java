@@ -8,19 +8,17 @@ package gen.dna;
     import gen.neo4jlib.file_lib;
     import gen.neo4jlib.neo4j_info;
     import gen.neo4jlib.neo4j_qry;
-    import gen.conn.connTest;
-    //import gen.rel.add_rel_property;
+    import gen.rel.add_rel_property;
            
     import java.io.File;
     import java.io.FileWriter;
-    import java.io.FilenameFilter;
     import java.io.IOException;
     import java.util.Arrays;
-    import java.util.Collections;
-    import java.util.logging.Level;
-    import java.util.logging.Logger;
+    //import java.util.logging.Level;
+    //import java.util.logging.Logger;
     import java.util.regex.Pattern;
-    import org.neo4j.procedure.Name;
+    //import jxl.common.Logger;
+    //import org.apache.log4j.Level;
     import org.neo4j.procedure.UserFunction;
     import org.neo4j.procedure.Description;
 
@@ -118,7 +116,7 @@ public  String load_ftdna_csv_files(
             try {
                 fwtrack = new FileWriter(tracking_rept);
             } catch (Exception ex) {
-                Logger.getLogger(load_ftdna_files.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(load_ftdna_files.class.getName()).log(Level.SEVERE, null, ex);
             }
 
 //        String[] directories = file.list(new FilenameFilter() {
@@ -162,7 +160,7 @@ public  String load_ftdna_csv_files(
             try {
                 fwtrack.write("Pre-Check of kit data: " + "\nKits to Import:" + NumberOfKits + "\nNumber of Kits in requested list: " + KitCt + "\n\n" + kit_data + "\n\n***************************\n\n");
             } catch (IOException ex) {
-                Logger.getLogger(load_ftdna_files.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(load_ftdna_files.class.getName()).log(Level.SEVERE, null, ex);
             }
         
         // iterating over subdirectories holding DNA data files
@@ -171,7 +169,7 @@ public  String load_ftdna_csv_files(
             try {
                 fwtrack.write(i + 1 + " of " + NumberOfKits + " @ " + gen.genlib.current_date_time.getDateTime() + "\nKit directory: " + KitDir + "\n");
             } catch (IOException ex) {
-                Logger.getLogger(load_ftdna_files.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(load_ftdna_files.class.getName()).log(Level.SEVERE, null, ex);
             }
              
             String[] paths;
@@ -756,22 +754,39 @@ neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS 
             } 
             catch (Exception ex) {}
 
-   gen.rel.add_rel_property arp = new gen.rel.add_rel_property();
-   arp.add_relationship_property();
+    
 
-   
 try{
 neo4j_qry.qry_write("CREATE FULLTEXT INDEX ancestor_surnames_names FOR (n:ancestor_surnames) ON EACH [n.name]");
 }
  catch(Exception e) {}
 
+
+//try{
+//    gen.load.rel_load rl = new gen.load.rel_load();
+//    rl.rel_setup();
+//}
+//catch(Exception e){}
+
+
 //chr_cm node
-cq="MATCH (s:Segment) with s.chr as c,min(s.strt_pos) as s,max(s.end_pos) as e with c,s,e, gen.dna.hapmap_cm(case when c='0X' then 'X' else c end,s,e) as cm return c,s,e,apoc.math.round(cm,1) as cm";
-neo4j_qry.qry_to_pipe_delimited(cq,"chr_cm.csv");
-lc = "LOAD CSV WITH HEADERS FROM 'file:///chr_cm.csv' as line FIELDTERMINATOR '|' return line ";
+try{
+        cq="MATCH (s:Segment) with s.chr as c,min(s.strt_pos) as s,max(s.end_pos) as e with c,s,e, gen.dna.hapmap_cm(case when c='0X' then 'X' else c end,s,e) as cm return c,s,e,apoc.math.round(cm,1) as cm";
+        //cq="MATCH (s:Segment) with s.chr as c,min(s.strt_pos) as s,max(s.end_pos) as e with c,s,e, 0 as cm return c,s,e,apoc.math.round(cm,1) as cm";
+        neo4j_qry.qry_to_pipe_delimited(cq,"chr_cm.csv");
+        lc = "LOAD CSV WITH HEADERS FROM 'file:///chr_cm.csv' as line FIELDTERMINATOR '|' return line ";
         cq = "create (cn:chr_cm{chr:toString(line.c),str_pos:toInteger(line.s),end_pos:toInteger(line.e),cm:toFloat(line.cm)})";
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
+}catch(Exception e){}    
         
+        //neo4j_qry.qry_write("MATCH (n:chr_cm) WITH n,gen.dna.hapmap_cm(case when n.chr='0X' then 'X' else n.chr end,n.str_pos,n.end_pos) as cm set n.cm=cm");     
+try{
+        gen.rel.add_rel_property arp = new gen.rel.add_rel_property();
+        arp.add_relationship_property();
+}
+catch(Exception e){}
+
+
      return  "completed";
 
     }

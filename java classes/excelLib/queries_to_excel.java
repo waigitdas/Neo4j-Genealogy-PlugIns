@@ -5,8 +5,6 @@
  * Woodstock, IL 60098 USA
  */
 package gen.excelLib;
-
-    import static gen.neo4jlib.neo4j_qry.qry_to_csv;
     import gen.neo4jlib.neo4j_info;
     import java.awt.Desktop;
     import java.io.File;
@@ -49,9 +47,10 @@ public class queries_to_excel {
     }
     
 //public static newWorkbook()    
-    
-public static String qry_to_excel(String cq,String FileNm,String SheetName, int SheetNumber, String ColWidths, String colNumberFormat, String ExistingExcelFile, Boolean OpenFile,String message,Boolean include_common_ancestor ) {
 
+  //  <!--https://www.baeldung.com/java-microsoft-excel-->
+
+public static String qry_to_excel(String cq,String FileNm,String SheetName, int SheetNumber, String ColWidths, String colNumberFormat, String ExistingExcelFile, Boolean OpenFile,String message,Boolean include_common_ancestor ) {
     gen.neo4jlib.neo4j_info.neo4j_var_reload();  // initialize user variable
     gen.conn.connTest.cstatus();
     String anc_name="";

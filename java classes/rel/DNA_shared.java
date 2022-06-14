@@ -9,7 +9,7 @@ package gen.rel;
 import gen.neo4jlib.neo4j_info;
 import gen.neo4jlib.neo4j_qry;
 import gen.rel.mrca_path_lengths;
-import java.awt.Desktop;
+//import java.awt.Desktop;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;

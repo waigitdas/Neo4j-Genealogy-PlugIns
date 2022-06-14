@@ -7,7 +7,6 @@
 package gen.genlib;
 
 import gen.neo4jlib.neo4j_qry;
-import java.awt.Color;
 import java.util.Random;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;

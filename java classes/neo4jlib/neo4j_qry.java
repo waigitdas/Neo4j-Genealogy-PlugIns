@@ -5,32 +5,14 @@
  * Woodstock, IL 60098 USA
  */
 package gen.neo4jlib;
-    import gen.conn.connTest;
-    import gen.conn.AuthInfo;
     import java.util.ArrayList;
-    import org.neo4j.driver.Driver;
-    import org.neo4j.driver.GraphDatabase;
     import org.neo4j.driver.Result;
     import org.neo4j.driver.Session;    
-    import org.neo4j.driver.SessionConfig;
     import java.util.List;       
-    import org.neo4j.driver.AccessMode;
-    import org.neo4j.driver.Transaction;
-    import org.neo4j.driver.TransactionWork;
-    import static org.neo4j.driver.Values.parameters;
     import java.util.*;  
-import java.util.function.Function;
-    import java.util.regex.Matcher;
-    import java.util.regex.Pattern;
-    import org.neo4j.dbms.api.DatabaseManagementService;
-    import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
+    import java.util.function.Function;
     import org.neo4j.driver.Record;
-    //import org.javatuples.Pair;
     import org.neo4j.driver.Value;
-    import org.neo4j.driver.Values;
-    import org.neo4j.graphdb.Path;
-    //import org.neo4j.graphdb.Map;
-    import org.neo4j.driver.util.Pair;
 
 public class neo4j_qry {
     
@@ -75,11 +57,11 @@ public class neo4j_qry {
             
                 session.writeTransaction( tx -> {
                    Result result = tx.run( cq );
+                   //session.close();
                return 1;
                
                 } );
             } 
-   
            }
    
 
@@ -108,12 +90,9 @@ public class neo4j_qry {
                     
                 }
             gen.neo4jlib.file_lib.writeFile("**\n" + c  + "\n**\n\n" + cq, "c://temp/csv1.csv");
-            java_session.close();
+            //java_session.close();
             return c;
         }) ;
-        
-        
-        
     }
      
     public static String qry_to_pipe_delimited_str(String cq) {
@@ -137,8 +116,7 @@ public class neo4j_qry {
                  }
                     //rw = rw + 1;
                 }
-            gen.neo4jlib.file_lib.writeFile(gen.neo4jlib.neo4j_info.user_database, "c://temp/csv1.csv");
-            java_session.close();
+            //java_session.close();
             return c;
         }) ;
         
@@ -146,7 +124,6 @@ public class neo4j_qry {
         
     }
      
-    
    public static List<String> qry_str_list(String cq) {
         gen.conn.connTest.cstatus();
         Session java_session =  gen.conn.connTest.session;
@@ -158,6 +135,7 @@ public class neo4j_qry {
             {
                 names.add( result.next().get( 0 ).asString() );
             }
+            //java_session.close();
            return names;
         } );
    }
@@ -167,8 +145,8 @@ public static <T> List<T> readCyphers(String cq, Function<Record, T> mapper) {
         Session java_session =  gen.conn.connTest.session;
         try (java_session) {
             Result result = java_session.run(cq);
+            //java_session.close();            
             return result.list(mapper);
-//return java_session.readTransaction(tx -> tx.run(cypher).list(mapper));
         }
     }
    
@@ -180,7 +158,7 @@ public static Result qry_obj_all(String cq) {
         {
             Result result = tx.run(cq );
             List lr = result.list();
-             
+            //java_session.close();             
             return result; 
         } 
         );
@@ -189,8 +167,6 @@ public static Result qry_obj_all(String cq) {
 
 //****************************************************
      public static List<Long> qry_long_list(String cq) {
-
-        
          gen.conn.connTest.cstatus();
         Session java_session =  gen.conn.connTest.session;
         return java_session.readTransaction( tx -> {
@@ -200,6 +176,7 @@ public static Result qry_obj_all(String cq) {
             {
                 names.add(result.next().get( 0 ).asLong() );
             }
+            //java_session.close();
             return names;
         } );
     }
@@ -217,60 +194,11 @@ public static Result qry_obj_all(String cq) {
             {
                 names.add(result.next().get( 0 ).asObject() );
             }
+            //java_session.close();
             return names;
         } );
    }
    
-//    public static Map qry_obj_list(String cq) {
-// 
-//        gen.conn.connTest.cstatus();
-//        Session java_session =  gen.conn.connTest.session;
-//
-////          graph = new TinkerGraph();
-////  while (result.hasNext()) {
-////    Map<String, Object> map = result.next();
-////  }
-//
-//        return java_session.readTransaction( tx -> {
-//            List<Path> names = new ArrayList<>();
-//            Result result = tx.run(cq );
-//            while ( result.hasNext() )
-//            {
-//                names.add(result.next().get( 0 ).as);
-//            }
-//            return names;
-//        } );
-//   }
-//  
-//  
-//      public static String qry_str(String cq) {
-//        gen.conn.connTest.cstatus();
-//        Session java_session =  gen.conn.connTest.session;
-//            String javasession = java_session.writeTransaction(new TransactionWork<String>()
-//            {
-//                @Override
-//                public String execute( Transaction tx )
-//                {
-//                    Result rslt = tx.run( cq,
-//                            parameters( "message", cq ) );
-//                    
-//                    String output = "";
-//                        while (rslt.hasNext())
-//                        { 
-//                            output = output + rslt.next().values().toString() + "; ";
-//                        
-//                        }
-//                        
-//
-//                       output = output.substring(0, output.length()-2);
-//                       return output;
-//                            
-//                    
-//                }
-//            } );
-//      return javasession;
-//   }
-//   
       public static String qry_str(String cq) {
  
         gen.conn.connTest.cstatus();
@@ -285,55 +213,13 @@ public static Result qry_obj_all(String cq) {
                 names = names + result.next().values().toString() + "; ";
             }
             names = names.substring(0, names.length()-2);
+            //java_session.close();
             return names;
         } );
    }
   
-//        public static String<List> pack_list_str(List<String> ls) {
-// 
-//        gen.conn.connTest.cstatus();
-//        Session java_session =  gen.conn.connTest.session;
-//
-//
-//        return java_session.readTransaction( tx -> {
-//            List<String> names =  new ArrayList<String>();;
-//            Result result = tx.run(cq);
-//            while ( result.hasNext() )
-//            {
-//                names = names + result.next().values().toString() + "; ";
-//            }
-//            names = names.substring(0, names.length()-2);
-//            return names;
-//        } );
-//   }
-   
-    //****************************************************
- 
-//  public static List<Object> qry_to_graph(String cq){
-//      //String q = "CALL apoc.graph.fromCypher( 'MATCH (p:Person)-[r:father]->(a:Person) RETURN *', {}, 'father_son', {description: 'test graph'} ) YIELD graph AS g RETURN g";
-//      List<Object> path ;
-//
-//      return q;
-//  }
-
       
-//    public static Path qry_path(String cq) {
-//            Session java_session =  gen.conn.connTest.session;
-//            return java_session.readTransaction( tx -> {
-//            Result r = tx.run(cq) ;
-//            Path p=r.next().get(0).asPath();
-//           // org.neo4j.driver.types.Path path = r.single().get("p").asPath();        
-//           Path path;
-//           path= r.next().get("path").asMap("path"); //r.next().get(0).asPath();  //.get("path", Path);   //.get(Path, "path");  //r.single().get("path");
-////           while (r.hasNext()) {
-////                //path = path + r.next().values().;
-////            } 
-//            //Path p = null;        
-//            return path;
-//            });
-//    }
-      
-    public static Map<String,Object> qry_map(String cq) {
+public static Map<String,Object> qry_map(String cq) {
         //DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(gen.neo4jlib.neo4j_info.Database_Dir ).build();
         //GraphDatabaseService db = managementService.database( DEFAULT_DATABASE_NAME );
             Session java_session =  gen.conn.connTest.session;
@@ -353,6 +239,7 @@ public static Result qry_obj_all(String cq) {
                    //m = r.next().asMap();
                    
                 }
+            //java_session.close();
             return m;
             }
             }
@@ -360,60 +247,35 @@ public static Result qry_obj_all(String cq) {
             
                    }
 
-//            return java_session.readTransaction( tx -> {
-//            Map<String,Object> m ; 
-//            Result r = tx.run(cq);
-//            while ( r.hasNext() )
-//    {
-//              //Map<String,Object> row = r.next();
-//            m = r.next();
-//    }     
-//            java_session.close();
-//            return m;
-//        } 
-//            );
-     
-//   }
-  
-    //****************************************************
  
  public static String qry_to_pipe_delimited(String cq,String csv_File) {
+        String Q = "\"";
+        String q = "call apoc.export.csv.query(" + Q + cq + Q + ",'" + csv_File + "' , {delim:'|',  quotes: false, format: 'plain'})"; 
         gen.conn.connTest.cstatus();
         Session java_session =  gen.conn.connTest.session;
 
             return java_session.writeTransaction( tx -> {
-            
-            
-            String q = "call apoc.export.csv.query(\"" + cq+ "\",'" + csv_File + "' , {delim:'|', stream:true, quotes: false, format: 'plain'})"; 
-                        
+           
             tx.run(q);
   
                         
-            java_session.close();
-             return q;
+            //java_session.close();
+             return csv_File;
         } 
             );
-           
-        // }
-      
    }
    
-    //****************************************************
- 
  public static String qry_to_csv(String cq,String csv_File) {
         gen.conn.connTest.cstatus();
         Session java_session =  gen.conn.connTest.session;
 
-            return java_session.readTransaction( tx -> {
-         
-            String q = "call apoc.export.csv.query(\"" + cq + "\",'" + csv_File + "' , {delim:',', quotes: true, format: 'plain'})"; 
+            return java_session.writeTransaction(tx -> {
+            String Q = "\"";
+            String q = "call apoc.export.csv.query(" + Q  + cq + Q + ",'" + csv_File + "' , {delim:',', quotes: true, format: 'plain'})"; 
                         
             tx.run(q);
-            
-            
-            
-            
-            java_session.close();
+      
+            //java_session.close();
             return csv_File;
         } 
             );
@@ -426,7 +288,7 @@ public static String APOCPeriodicIterateCSV(String LoadCSV, String ReplaceCypher
     String csv = "CALL apoc.periodic.iterate(" + Q + LoadCSV + Q + ", " + Q + ReplaceCypher + Q + ",{batchSize: " + batchsize + ", parallel:false, iterateList:true, retries:25})";
     
     qry_write(csv);
-    return csv; 
+            return csv; 
 }
 
 

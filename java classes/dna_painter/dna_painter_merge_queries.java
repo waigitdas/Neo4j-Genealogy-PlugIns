@@ -11,8 +11,8 @@ import gen.neo4jlib.neo4j_qry;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
@@ -57,7 +57,7 @@ public class dna_painter_merge_queries {
             try {
               fw= new FileWriter(fo, true);
             } catch (IOException ex) {
-              Logger.getLogger(dna_painter_merge_queries.class.getName()).log(Level.SEVERE, null, ex);
+              //Logger.getLogger(dna_painter_merge_queries.class.getName()).log(Level.SEVERE, null, ex);
             }
              s = cs[6].replace("'green'","''").replace("[[","[").replace("]]","]").replace("'","\'").replace("⦋","[").replace("⦌","]");
                 fw.write(gen.neo4jlib.neo4j_qry.qry_to_csv(s)); 

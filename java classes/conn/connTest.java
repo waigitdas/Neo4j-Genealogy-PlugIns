@@ -39,12 +39,16 @@ public class connTest {
         if (driver == null) {
             gen.neo4jlib.neo4j_info.neo4j_var();
             AuthToken myToken = AuthInfo.getToken();
-            driver = GraphDatabase.driver( "bolt://localhost:7687", myToken );
+            driver = GraphDatabase.driver( "neo4j://localhost:7687", myToken );
+            driver.verifyConnectivity();
             session = driver.session(SessionConfig.forDatabase(gen.neo4jlib.neo4j_info.user_database));
             isSessionOpen = true;
         }
         else { 
-            try{session.close();}
+            try{
+                //session.close();
+                //driver.verifyConnectivity();
+                    }
             catch (Exception e) {}
             session = driver.session(SessionConfig.forDatabase(gen.neo4jlib.neo4j_info.user_database));
 

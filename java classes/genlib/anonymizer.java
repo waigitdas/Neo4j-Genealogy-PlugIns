@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
-import java.util.logging.Level;
+//import java.util.logging.Level;
 import jxl.common.Logger;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
@@ -95,7 +95,7 @@ public class anonymizer {
             return "completed";
     
         } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(anonymizer.class.getName()).log(Level.SEVERE, null, ex);
+            //java.util.logging.Logger.getLogger(anonymizer.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "completed";
         } 

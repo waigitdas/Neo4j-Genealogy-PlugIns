@@ -10,8 +10,8 @@ import gen.neo4jlib.neo4j_qry;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
 import org.neo4j.procedure.UserFunction;
@@ -77,8 +77,8 @@ public class data_dict {
         gen.neo4jlib.neo4j_qry.qry_to_csv(cq, fout);
         try {
             Desktop.getDesktop().open(new File(gen.neo4jlib.neo4j_info.Import_Dir + fout));
-        } catch (IOException ex) {
-            Logger.getLogger(data_dict.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            //Logger.getLogger(data_dict.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         return "dictionary created";

@@ -26,7 +26,7 @@ import org.neo4j.procedure.UserFunction;
  */
 public class upload_mt_haplotree {
        @UserFunction
-       @Description("Loads the entire Y-haplotree directly from the current FTDNA Y-DNA json refernce file into Neo4j. This json is updated frequently as new snps and haplotree branches are discovered. Source: https://www.familytreedna.com/public/mt-dna-haplotree/get")
+       @Description("Loads the entire mt-haplotree directly from the current FTDNA mt-DNA json refernce file into Neo4j. This json is updated frequently as new snps and haplotree branches are discovered. Source: https://www.familytreedna.com/public/mt-dna-haplotree/get")
 
      public String upload_FTDNA_mt_haplotree() {
         gen.neo4jlib.neo4j_info.neo4j_var_reload();
@@ -38,10 +38,10 @@ public class upload_mt_haplotree {
         gen.neo4jlib.neo4j_qry.qry_write("match (b:mt_block) delete b");
         gen.neo4jlib.neo4j_qry.qry_write("match (v:mt_variant) delete v");
         
-        String FileNm = gen.neo4jlib.neo4j_info.Import_Dir + "Y_haplotree.json";
+        String FileNm = gen.neo4jlib.neo4j_info.Import_Dir + "mt_haplotree.json";
         
         //retrieve online FTDNA Y-haplotree json and place in import directory.
-        web_file_to_import_folder.url_file_to_import_dir("https://www.familytreedna.com/public/mt-dna-haplotree/get","Y_haplotree.json");
+        web_file_to_import_folder.url_file_to_import_dir("https://www.familytreedna.com/public/mt-dna-haplotree/get","mt_haplotree.json");
           
         neo4j_qry.CreateIndex("mt_block", "haplogroupId");
         neo4j_qry.CreateIndex("mt_block", "name");

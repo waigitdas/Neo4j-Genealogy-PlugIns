@@ -6,7 +6,7 @@
 package gen.load;
         
 import static gen.load.web_file_to_import_folder.url_file_to_import_dir;
-        import java.io.BufferedReader;
+import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
