@@ -8,7 +8,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 
 <ol>
   <li><b>v 1.0.10</b>. Restored match_segment relationship properties describing the relationship between the match-pair including their relationship (1C, H3C, etc), the correlation of relationship (cor), an the common ancestor. Added a new function -- gen.dna.shared_mt_haplogroup -- to find matches who are both at- and mt-DNA matches. </li>
-  <li><b>v 1.0.11</b>. New reports identifying dual matches for both autosomal and mitochondrial DNA. Upgraded triangulation report. Also upgrade to <a href="https://www.wai.md/product-page/gfg-software">GFG software v 1.0.2</a> to capitalize on its menu driven access to new reporting capabilities.
+  <li><b>v 1.0.11</b>. New reports identifying dual matches for both autosomal and mitochondrial DNA. Robust triangulation report have been improved. Also upgrade to <a href="https://www.wai.md/product-page/gfg-software">GFG software v 1.0.2</a> to capitalize on its menu driven access to new reporting capabilities.
 </ol> 
   
 
