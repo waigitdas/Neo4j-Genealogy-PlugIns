@@ -33,10 +33,10 @@ public class dna_coverage {
             }
    
     public static void main(String args[]) {
-        //get_coverage(3032L);
+        //get_coverage(33454L);
     }
     
-     public String get_coverage(Long anc_rn) 
+     public  String get_coverage(Long anc_rn) 
     {
         //get set of paths to descendants who did a DNA test
         String cq = "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) with path,q match (q)-[rm:Gedcom_DNA]-(m:DNA_Match) with apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten(collect (distinct[x in nodes(path)|x.RN])))) as rns return rns";
@@ -278,9 +278,10 @@ public class dna_coverage {
                 {
                     if (persons[p][2]==indv)
                     {
-                        fw.write("Child: " + gp.person_from_rn(Long.valueOf(persons[p][0]),true).replace("⦋", "[").replace("⦌","]") + "&nbsp;&nbsp;&nbsp;&nbsp;\n");
+                        String per2 = gp.person_from_rn(Long.valueOf(persons[p][0]),true).replace("⦋", "[").replace("⦌","]");
+                        fw.write("Child: " + per2 + "&nbsp;&nbsp;&nbsp;&nbsp;\n");
                         fw.write("coverage: " + coverage[persons[p][4]][0] + "<br>");
-                        fw.write("coverage to parent: " + coverage[persons[p][4]][1]);
+                        fw.write("coverage of " + pp + ": " + coverage[persons[p][4]][1]);
                     }
                 }
 
