@@ -37,6 +37,15 @@ public class load_all_files {
         upload_gedcom g = new upload_gedcom();
         g.load_gedcom();
         
+//        try{
+//            gen.neo4jlib.neo4j_qry.qry_write("create database hapmap");
+//            gen.ref.upload_HapMap_Files hmf = new gen.ref.upload_HapMap_Files();
+//            hmf.load_HapMap();
+//        }
+//        catch (Exception e)
+//        {
+//        }
+        
         load_ftdna_files f = new load_ftdna_files();
         f.load_ftdna_files();
         

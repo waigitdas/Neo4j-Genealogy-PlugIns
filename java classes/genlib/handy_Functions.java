@@ -45,13 +45,13 @@ public class handy_Functions {
        return newArr;
     }
        
-       public static String lpad(String s,int PadLen, String padding){
-           String n = s;
-           for (int i=1;i<s.length()-PadLen; i++){
-               n = padding + n;
-           }
-           return n;
-       }
+//       public static String lpad(String s,int PadLen, String padding){
+//           String n = s;
+//           for (int i=1;i<PadLen-s.length(); i++){
+//               n = padding + n;
+//           }
+//           return n;
+//       }
        
        public static String list_to_quoted_list(String s){
            String[] ss = s.split(",");

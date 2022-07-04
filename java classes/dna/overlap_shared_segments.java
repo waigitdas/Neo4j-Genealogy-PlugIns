@@ -34,11 +34,11 @@ public class overlap_shared_segments {
             }
     
     
-    public static void main(String args[]) {
-        // TODO code application logic here
-         List<String> s3 = Arrays.asList("David A Stumpf", "Diane Collins", "Paul Breevaart");
-        get_segs(s3,100L);
-    }
+//    public static void main(String args[]) {
+//        // TODO code application logic here
+//         List<String> s3 = Arrays.asList("David A Stumpf", "Diane Collins", "Paul Breevaart");
+//        get_segs(s3,100L);
+//    }
     
      public static Object get_segs(List names, Long overlap) 
     {
@@ -59,7 +59,7 @@ public class overlap_shared_segments {
        catch(Exception ex) {return ex.getMessage();}
         
         try{
-           cq = "with [" + ar + "] as x match (m:DNA_Match)-[r:match_segment]->(s:Segment) where r.p in x and r.m in x and r.cm>=7 and r.snp_ct>=500 with x,case when r.p< r.m then r.p + ':' + r.m else r.m +':' + r.p end as match_pair,collect(distinct s.Indx) as sc return sc as x";
+           cq = "with [" + ar + "] as x match (m:DNA_Match)-[r:match_segment]->(s:Segment) where r.p in x and r.m in x and r.p<>r.m and r.cm>=7 and r.snp_ct>=500 with x,case when r.p< r.m then r.p + ':' + r.m else r.m +':' + r.p end as match_pair,collect(distinct s.Indx) as sc return sc as x";
  
         
         ls = gen.neo4jlib.neo4j_qry.qry_obj_list(cq);

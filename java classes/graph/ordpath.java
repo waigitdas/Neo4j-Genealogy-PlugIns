@@ -76,7 +76,7 @@ public class ordpath {
              if (deweyItem >= Long.parseLong(lf[2]) && deweyItem <= Long.parseLong(lf[3]) )
              {
                  X = b2.getBase16(deweyItem - Long.parseLong(lf[2]));
-                 X = gen.genlib.handy_Functions.lpad(X,Integer.parseInt(lf[1]),"0");
+                 //X = gen.genlib.handy_Functions.lpad(X,Integer.parseInt(lf[1]),"0");
                  X = lf[0] + X;
              }
                  }
