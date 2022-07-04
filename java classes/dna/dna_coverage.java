@@ -9,11 +9,15 @@ package gen.dna;
 //import gen.neo4jlib.neo4j_qry;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
 import org.neo4j.procedure.UserFunction;
 //import.java.awt.Desktop;
+import java.util.Collections;
 
 //https://familylocket.com/find-more-ancestors-with-autosomal-dna-by-increasing-coverage/?mc_cid=a28b796d43&mc_eid=530263b9cd
 //https://www.legacytree.com/blog/introduction-autosomal-dna-coverage
@@ -33,10 +37,10 @@ public class dna_coverage {
             }
    
     public static void main(String args[]) {
-        //get_coverage(33454L);
+        get_coverage(33454L);
     }
     
-     public  String get_coverage(Long anc_rn) 
+     public static String get_coverage(Long anc_rn) 
     {
         //get set of paths to descendants who did a DNA test
         String cq = "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) with path,q match (q)-[rm:Gedcom_DNA]-(m:DNA_Match) with apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten(collect (distinct[x in nodes(path)|x.RN])))) as rns return rns";
@@ -52,7 +56,7 @@ public class dna_coverage {
        
         int persons[][] = new int[ca.length][6];
         //persons array will hold data from analytics
-        //one row per gescendant in the paths
+        //one row per descendant in the paths
         //2nd dimension with descendant's data
         //  0 = RN of descendant
         //  1 = number of descendant's children who did a DNA test
@@ -64,9 +68,9 @@ public class dna_coverage {
         coverage = new Double[ca.length][2];
         //coverage array dimensions
         //  0 = personal coverage which is 1 for testers and the fraction contributed by children
-        //  1 = the fraction the person contributes to the parent. ).5 when there is a single child and a fraction when siblings also contribute.
+        //  1 = the fraction the person contributes to the parent. 0.5 when there is a single child and a fraction when siblings also contribute.
 
-        String ordpath[] = new String[ca.length];
+        String[] ordpath = new String[ca.length];
         
         //add computed results to arrays
         for (int i=0;i<ca.length; i++)
@@ -80,7 +84,7 @@ public class dna_coverage {
         cq = "match path=(p:Person{RN:" +  anc_rn + "})<-[:father|mother*0..15]-(q:Person) with path,q match (q)-[rm:Gedcom_DNA]-(m:DNA_Match) with q, [x in nodes(path)|x.RN] as rns return rns";
         String c[] = gen.neo4jlib.neo4j_qry.qry_to_csv(cq).split("\n");
 
-        //get max lentgh
+        //get max lenght
         int maxLen=0;
         for (int i=0; i<c.length; i++){
             String cb[] = c[i].split(",");
@@ -88,7 +92,7 @@ public class dna_coverage {
             }
         
             //get descendants who are DNA testers
-          cq= "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) with path,q match (q)-[rm:Gedcom_DNA]-(m:DNA_Match) with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in " + paths + " RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person{RN:x}) return x,ct as children_descendants_who_tested,length(path2) as gen,gen.graph.get_ordpath([y in nodes(path2) | y.RN]) as op order by op";
+          cq= "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) with path,q match (q)-[rm:Gedcom_DNA]-(m:DNA_Match) with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in " + paths + " RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person{RN:x}) return x,ct as children_descendants_who_tested,length(path2) as gen,gen.graph.get_ordpath([y in nodes(path2) | y.RN]) as op order by  op";
         String[] kids = gen.neo4jlib.neo4j_qry.qry_to_csv(cq).split("\n");
     
         for (int i=0;i<c.length; i++ ){
@@ -123,7 +127,7 @@ public class dna_coverage {
                 {
                     persons[i][1] = Integer.parseInt(css[1]);
                     persons[i][3] = Integer.parseInt(css[2]);
-                   
+                   ordpath[i] = css[3].replace("\"","");
                 }
             }
         }
@@ -144,12 +148,11 @@ public class dna_coverage {
         {
             for (int xrow=0; xrow<persons.length; xrow++ ){  //iterate rows
                 if(persons[xrow][3]==gen){  // row has xrow in processing generaion i
-               
+                
                /////////////////////////////////////////////////////////////////
                /////////  TESTER ... 
                if (persons[xrow][5]==1){  // tester
                     coverage[persons[xrow][4]][0]  = 1.0;
-                    //ordpath[persons[j][4]] = kids[[persons[j][4]][3]; 
                 }
                
                /////////////////////////////////////////////////////////////////
@@ -213,18 +216,17 @@ public class dna_coverage {
             }
                 //print html of table
             
-            //set up Tbl for calculations for current parent
-            
-            // Table 1
   
             /////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////
             
+            
+            
             print_Tbl1(indv, gen, nbr_kids,DescList,Tbl, coverage, fw);
                
-            print_Tbl(indv, gen, persons, Tbl,nbr_kids, sumR, coverage, fw);
+            print_Tbl2(indv, gen, persons, Tbl,nbr_kids, sumR, coverage, fw);
             /////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////
@@ -236,7 +238,8 @@ public class dna_coverage {
         } //next generation
         
           try{
-          fw.write("<br><br>Methods developed by Wesley Johnston<br>&copy; 2022 <a href='http://wai.md/gfg' target='new'>Graphs for Genealogists</a><br><a href='https://www.facebook.com/groups/gfgforum' target='new'>Facebook Forum</a> ");
+          print_summary(persons,kids, coverage, ordpath, fw);
+          fw.write("<br><br>Methods developed by Wesley Johnston<br>&copy; 2022 <a href='http://wai.md/gfg' target='new'>Graphs for Genealogists</a><br><a href='https://www.facebook.com/groups/gfgforum' target='new'>Facebook Forum</a>\n </body>\n</html>\n");
          fw.flush();
           fw.close();}
           catch(Exception e){}
@@ -244,27 +247,142 @@ public class dna_coverage {
           
        // Desktop.getDesktop().open(new File(fn));
 
-        return "completed";
+        return "HTML Report in thr import directory.";
     }
   
-     public static int fill_row(Double[][] Tbl,int nbr_kids, int row_to_fill,String fill_with)
+     public static void print_summary(int[][] persons,String[] kids, Double[][] coverage,String[] ordpath, FileWriter fw)
      {
-         //parses the submitted string of 0's and 1's and distributes them to the Tbl columns
-         try {
-         String ss ="";
-        for (int kkk=0;kkk<nbr_kids;kkk++)
-            { 
-                String s = fill_with.substring(kkk, kkk+1);
-                Tbl[row_to_fill][kkk] = Double.valueOf(s);
-                ss = ss + s + "\t";
-            }
-        return row_to_fill + 1;
-         }
-         catch(Exception e){return row_to_fill;}
+         String summary = "" ; // new String[persons.length][2];
+         gen.gedcom.get_family_tree_data gp = new gen.gedcom.get_family_tree_data();
+        try{
+            fw.write("<h3>List of all testers.</h3>Testers whose parents also tested are shown, but the coverage to parents is null because it is irrelevant in this analysis.<br><br>");
+            fw.write("<table>,<tr><th>gen</th><th>coverage</th><th>coverage to parent</th><th>person</th><th></th><th></th></tr>");
+        } 
+        catch(Exception e){}
          
+        for (int k=0; k<kids.length; k++)
+         {
+            
+            String[] ks = kids[k].split(",");
+             
+             for (int p=0;p<persons.length; p++)
+             {
+                 if(Integer.parseInt(ks[0]) == persons[p][0])
+                 {
+                     try{
+                     fw.write("<tr>");
+                     fw.write("<td>" + persons[p][3] + "</td><td>" + coverage[persons[p][4]][0] + "</td><td>" + coverage[persons[p][4]][1] + "</td><td>" + gen.genlib.handy_Functions.lpad("",persons[p][3],"...") + gp.person_from_rn(Long.valueOf(persons[p][0]),true).replace("⦋", "[").replace("⦌","]") + "</td>" +  "\n");
+                     fw.write("</tr>");
+                     
+                     }
+                     catch(Exception e){}
+                     
+                 }
+             }
+ 
          }
+            try{fw.write("</table>");} catch(Exception e){}
+        
+         
+             System.out.println(summary);
+         
+         
+     }
+         
+//            String pp = gp.person_from_rn(Long.valueOf(persons[i][0]),true).replace("⦋", "[").replace("⦌","]");
+//            
+//            summary[i][0] = pp;
+//            summary[i][1] = ordpath[i]; 
+//            }
+//         
+////         //https://stackoverflow.com/questions/71523721/sort-2d-string-array-with-respect-to-a-column-in-java
+////        List<String[]> collect1 = Arrays.stream(summary).sorted(Comparator.comparing(a -> a[1])).collect(Collectors.toList());
+////        String[][] sortedArray = new String[summary.length][2];
+////        for (int i = 0; i < collect1.size(); i++) {
+////        sortedArray[i] = collect1.get(i);
+////        }        
+////        //System.out.println(Arrays.deepToString(sortedArray));
+////    
+//           for (int i=0; i<persons.length; i++)
+//         {
+//             try{
+//             fw.write(summary[i][0] + "<br>");
+//             }
+//             catch(Exception e){}
+//             
+////System.out.println(summary[i][0] + "\t" + summary[i][1]);
+//        }
+//     }
+//     
      
-     public static void print_Tbl(int indv,int gen,int [][] persons, Double[][] Tbl,int ncol, Double sumR,Double[][] coverage, FileWriter fw)
+      public static void sortbyColumn2DInt(int arr[][], int col)
+    {
+        //https://www.geeksforgeeks.org/sorting-2d-array-according-values-given-column-java/
+        // Using built-in sort function Arrays.sort
+        Arrays.sort(arr, new Comparator<int[]>() {
+                        
+          @Override              
+          // Compare values according to columns
+          public int compare(final int[] entry1, 
+                             final int[] entry2) {
+  
+            // To sort in descending order revert 
+            // the '>' Operator
+            if (entry1[col] > entry2[col])
+                return 1;
+            else
+                return -1;
+          }
+        });  // End of function call sort().
+    }
+     
+    public static void print_Tbl1(int indv, int gen, int nbr_kids,int[][] DescList,Double[][] Tbl,Double[][] coverage, FileWriter fw)
+    {
+                   try{
+              gen.gedcom.get_family_tree_data gp = new gen.gedcom.get_family_tree_data();
+ 
+             if (nbr_kids>1)
+             {
+                String pp = gp.person_from_rn(Long.valueOf(indv),true).replace("⦋", "[").replace("⦌","]");
+                fw.write("<h3>" + pp + "&nbsp;&nbsp;&nbsp;&nbsp;generation:&nbsp;&nbsp;" + gen + "</h3>\n");
+                fw.write("<b>Table 1</b>\n");
+                fw.write("<table>\n");
+                fw.write("<tr>");
+                //header
+                for (int n=0;n<nbr_kids; n++)
+                {
+                    int qq = n + 1;
+                     fw.write("<th>Child " + qq + " </th>");
+                }
+                       fw.write("</tr>\n");
+                
+                //data
+                fw.write("<tr>\n");
+
+                for (int n=0;n<nbr_kids; n++)
+                {
+                    String pk = gp.person_from_rn(Long.valueOf(DescList[n][0]),true).replace("⦋", "[").replace("⦌","]");
+                    fw.write("<td>" + pk + "</td>\n");
+                }    
+                   fw.write("</tr>\n");  
+
+                for (int n=0;n<nbr_kids; n++)
+                {
+                   fw.write("<td style=\"text-align:center\">" + coverage[DescList[n][1]][0]  + "</td>\n");
+                }    
+                   fw.write("</tr>\n");  
+
+                fw.write("</table><hr style='height:1px'>\n");
+             }
+ }
+
+           catch (Exception e){System.out.println("Trouble: " + e.getMessage());}
+           
+
+ 
+    }
+    
+     public static void print_Tbl2(int indv,int gen,int [][] persons, Double[][] Tbl,int ncol, Double sumR,Double[][] coverage, FileWriter fw)
      {
          int colWidth = 150;
           try{
@@ -375,8 +493,24 @@ public class dna_coverage {
          
      } // iterate up to 1000 to find uniques
      }  //end of function
-     
-    
+
+      
+     public static int fill_row(Double[][] Tbl,int nbr_kids, int row_to_fill,String fill_with)
+     {
+         //parses the submitted string of 0's and 1's and distributes them to the Tbl columns
+         try {
+         String ss ="";
+        for (int kkk=0;kkk<nbr_kids;kkk++)
+            { 
+                String s = fill_with.substring(kkk, kkk+1);
+                Tbl[row_to_fill][kkk] = Double.valueOf(s);
+                ss = ss + s + "\t";
+            }
+        return row_to_fill + 1;
+         }
+         catch(Exception e){return row_to_fill;}
+         
+         }
 
     
     ////////////////////////////////////////////////////////
@@ -434,52 +568,5 @@ public static Double get_cov_rollup(Double[][] Tbl, int indv_row, int[][] DescLi
         }
         return sumR;
     }   
-    
-
-    public static void print_Tbl1(int indv, int gen, int nbr_kids,int[][] DescList,Double[][] Tbl,Double[][] coverage, FileWriter fw)
-    {
-                   try{
-              gen.gedcom.get_family_tree_data gp = new gen.gedcom.get_family_tree_data();
- 
-             if (nbr_kids>1)
-             {
-                String pp = gp.person_from_rn(Long.valueOf(indv),true).replace("⦋", "[").replace("⦌","]");
-                fw.write("<h3>" + pp + "&nbsp;&nbsp;&nbsp;&nbsp;generation:&nbsp;&nbsp;" + gen + "</h3>\n");
-                fw.write("<b>Table 1</b>\n");
-                fw.write("<table>\n");
-                fw.write("<tr>");
-                //header
-                for (int n=0;n<nbr_kids; n++)
-                {
-                    int qq = n + 1;
-                     fw.write("<th>Child " + qq + " </th>");
-                }
-                       fw.write("</tr>\n");
-                
-                //data
-                fw.write("<tr>\n");
-
-                for (int n=0;n<nbr_kids; n++)
-                {
-                    String pk = gp.person_from_rn(Long.valueOf(DescList[n][0]),true).replace("⦋", "[").replace("⦌","]");
-                    fw.write("<td>" + pk + "</td>\n");
-                }    
-                   fw.write("</tr>\n");  
-
-                for (int n=0;n<nbr_kids; n++)
-                {
-                   fw.write("<td style=\"text-align:center\">" + coverage[DescList[n][1]][0]  + "</td>\n");
-                }    
-                   fw.write("</tr>\n");  
-
-                fw.write("</table><hr style='height:1px'>\n");
-             }
- }
-
-           catch (Exception e){System.out.println("Trouble: " + e.getMessage());}
-           
-
- 
-    }
     
 }
