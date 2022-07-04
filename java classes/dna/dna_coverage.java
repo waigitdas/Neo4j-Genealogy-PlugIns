@@ -13,6 +13,7 @@ import java.util.List;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
 import org.neo4j.procedure.UserFunction;
+//import.java.awt.Desktop;
 
 //https://familylocket.com/find-more-ancestors-with-autosomal-dna-by-increasing-coverage/?mc_cid=a28b796d43&mc_eid=530263b9cd
 //https://www.legacytree.com/blog/introduction-autosomal-dna-coverage
@@ -30,14 +31,12 @@ public class dna_coverage {
         String s = get_coverage(anc_rn);
          return s;
             }
-
-    
-    
+   
     public static void main(String args[]) {
-        get_coverage(3032L);
+        //get_coverage(3032L);
     }
     
-     public static String get_coverage(Long anc_rn) 
+     public String get_coverage(Long anc_rn) 
     {
         //get set of paths to descendants who did a DNA test
         String cq = "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) with path,q match (q)-[rm:Gedcom_DNA]-(m:DNA_Match) with apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten(collect (distinct[x in nodes(path)|x.RN])))) as rns return rns";
@@ -112,9 +111,7 @@ public class dna_coverage {
                     }
                 }
             }
-            
- 
-        }
+          }
        
         for (int i=0;i<persons.length;i++)
         {
@@ -130,8 +127,8 @@ public class dna_coverage {
                 }
             }
         }
-        
-        File fnc = new File(gen.neo4jlib.neo4j_info.Import_Dir +  "coverage_" + anc_rn + ".html");
+        String fn = gen.neo4jlib.neo4j_info.Import_Dir +  "coverage_" + anc_rn + ".html";
+        File fnc = new File(fn);
         FileWriter fw = null;
         try{
             fw = new FileWriter(fnc);
@@ -185,12 +182,7 @@ public class dna_coverage {
                            
                              DescList[kid_ct][1] = t; 
                              //}
-//                             else
-//                             {
-//                             DescList[kid_ct][0] = persons[t][0];
-//                             DescList[kid_ct][1] = t; 
-//                             }
-                         
+                     
                           kid_ct = kid_ct + 1;
                        }//end kid   
                         
@@ -218,18 +210,10 @@ public class dna_coverage {
             {   //rows
     
            sumR = get_cov_rollup(Tbl, indv_row, DescList, coverage);
-           
- 
             }
-               
-               //print html of table
-
-               if (nbr_kids>3)
-               {
-                   int gfh=0;
-               }
-
-                           //set up Tbl for calculations for current parent
+                //print html of table
+            
+            //set up Tbl for calculations for current parent
             
             // Table 1
   
@@ -240,7 +224,7 @@ public class dna_coverage {
             
             print_Tbl1(indv, gen, nbr_kids,DescList,Tbl, coverage, fw);
                
-               print_Tbl(indv, gen, persons, Tbl,nbr_kids, sumR, coverage, fw);
+            print_Tbl(indv, gen, persons, Tbl,nbr_kids, sumR, coverage, fw);
             /////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////
@@ -256,7 +240,10 @@ public class dna_coverage {
          fw.flush();
           fw.close();}
           catch(Exception e){}
-                          
+             
+          
+       // Desktop.getDesktop().open(new File(fn));
+
         return "completed";
     }
   
