@@ -40,11 +40,13 @@ public class dna_coverage {
             }
    
     public static void main(String args[]) {
-        get_coverage(33454L, 2L);
+        //get_coverage(33454L, 2L);
     }
     
-     public static String get_coverage(Long anc_rn, Long method) 
+     public String get_coverage(Long anc_rn, Long method) 
     {
+        gen.neo4jlib.neo4j_info.neo4j_var();
+        gen.neo4jlib.neo4j_info.neo4j_var_reload();
         String cq="";
 //get set of paths to descendants who did a DNA test
         if (method==1L){
