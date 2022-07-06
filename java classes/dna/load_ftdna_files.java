@@ -754,7 +754,7 @@ neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS 
             } 
             catch (Exception ex) {}
 
-    
+    neo4j_qry.qry_write("MATCH path=(p:Person)-[r:Gedcom_DNA]->(m:DNA_Match) set p.at_DNA_tester='Y'");
 
 try{
 neo4j_qry.qry_write("CREATE FULLTEXT INDEX ancestor_surnames_names FOR (n:ancestor_surnames) ON EACH [n.name]");

@@ -19,31 +19,39 @@ import org.neo4j.procedure.UserFunction;
 //import.java.awt.Desktop;
 import java.util.Collections;
 
+
 //https://familylocket.com/find-more-ancestors-with-autosomal-dna-by-increasing-coverage/?mc_cid=a28b796d43&mc_eid=530263b9cd
 //https://www.legacytree.com/blog/introduction-autosomal-dna-coverage
 public class dna_coverage {
     @UserFunction
-    @Description("Computer DNA reconstructed for an ancestor.")
+    @Description("DNA Coverage. method: 1 = DNA results loaded; 2 = testers whether loaded or not")
  
     public String dna_coverage_of_ancestor(
         @Name("anc_rn") 
-            Long anc_rn
+            Long anc_rn,
+        @Name("methos") 
+            Long method
   )
    
          { 
              
-        String s = get_coverage(anc_rn);
+        String s = get_coverage(anc_rn, method);
          return s;
             }
    
     public static void main(String args[]) {
-        get_coverage(33454L);
+        get_coverage(33454L, 2L);
     }
     
-     public static String get_coverage(Long anc_rn) 
+     public static String get_coverage(Long anc_rn, Long method) 
     {
-        //get set of paths to descendants who did a DNA test
-        String cq = "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) with path,q match (q)-[rm:Gedcom_DNA]-(m:DNA_Match) with apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten(collect (distinct[x in nodes(path)|x.RN])))) as rns return rns";
+        String cq="";
+//get set of paths to descendants who did a DNA test
+        if (method==1L){
+        cq = "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y'] with path,q  with apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten(collect (distinct[x in nodes(path)|x.RN])))) as rns return rns";}
+        if (method==2L){
+        cq = "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y','A'] with path,q  with apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten(collect (distinct[x in nodes(path)|x.RN])))) as rns return rns";}
+
         String paths = gen.neo4jlib.neo4j_qry.qry_to_csv(cq);
         String ca[] = paths.split("\n")[0].replace("[","").replace("]","").split(",");
         int total_rn_in_paths=(ca.length );
@@ -74,14 +82,27 @@ public class dna_coverage {
         
         //add computed results to arrays
         for (int i=0;i<ca.length; i++)
-        {
+        {   try{
             persons[i][0] = Integer.valueOf(ca[i].strip());  //record number
             persons[i][1] = 0;   //iterating below will add person themself
             persons[i][4] = i;  //index to facilitate lookups with ordering is filtered
         }
+        catch(Exception e){
+            //error; do nothing in current version
+        }
+        }
         
         //get descendants
-        cq = "match path=(p:Person{RN:" +  anc_rn + "})<-[:father|mother*0..15]-(q:Person) with path,q match (q)-[rm:Gedcom_DNA]-(m:DNA_Match) with q, [x in nodes(path)|x.RN] as rns return rns";
+        if (method==1L){
+        cq = "match path=(p:Person{RN:" +  anc_rn + "})<-[:father|mother*0..15]-(q:Person{at_DNA_tester:'Y'})  with q, [x in nodes(path)|x.RN] as rns return rns";
+                //"match path=(p:Person{RN:" +  anc_rn + "})<-[:father|mother*0..15]-(q:Person) with path,q match (q)-[rm:Gedcom_DNA]-(m:DNA_Match) with q, [x in nodes(path)|x.RN] as rns return rns";}
+        }
+        
+        if (method==2L){
+        cq = "match path=(p:Person{RN:" +  anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['A', 'Y'] with q, [x in nodes(path)|x.RN] as rns return rns";}
+                //"match path=(p:Person{RN:" +  anc_rn + "})<-[:father|mother*0..15]-(q:Person) with path,q match (q)-[rm:Gedcom_DNA]-(m:DNA_Match) with q, [x in nodes(path)|x.RN] as rns return rns";}
+                
+                
         String c[] = gen.neo4jlib.neo4j_qry.qry_to_csv(cq).split("\n");
 
         //get max lenght
@@ -92,7 +113,12 @@ public class dna_coverage {
             }
         
             //get descendants who are DNA testers
-          cq= "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) with path,q match (q)-[rm:Gedcom_DNA]-(m:DNA_Match) with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in " + paths + " RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person{RN:x}) return x,ct as children_descendants_who_tested,length(path2) as gen,gen.graph.get_ordpath([y in nodes(path2) | y.RN]) as op order by  op";
+            if (method==1L){
+          cq= "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person{at_DNA_tester:'Y'}) with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in " + paths + " RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person{RN:x}) return x,ct as children_descendants_who_tested,length(path2) as gen,gen.graph.get_ordpath([y in nodes(path2) | y.RN]) as op order by  op";}
+            
+            if (method==2L){
+          cq= "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y', 'A'] with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in " + paths + " RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person{RN:x}) return x,ct as children_descendants_who_tested,length(path2) as gen,gen.graph.get_ordpath([y in nodes(path2) | y.RN]) as op, q.at_DNA_tester as test_type order by  op";}
+          
         String[] kids = gen.neo4jlib.neo4j_qry.qry_to_csv(cq).split("\n");
     
         for (int i=0;i<c.length; i++ ){
@@ -131,7 +157,7 @@ public class dna_coverage {
                 }
             }
         }
-        String fn = gen.neo4jlib.neo4j_info.Import_Dir +  "coverage_" + anc_rn + ".html";
+        String fn = gen.neo4jlib.neo4j_info.Import_Dir + gen.neo4jlib.neo4j_info.project +  "_coverage_" + anc_rn + "_" + method + "_" + gen.genlib.current_date_time.getDateTime() + ".html";
         File fnc = new File(fn);
         FileWriter fw = null;
         try{
@@ -212,7 +238,7 @@ public class dna_coverage {
    
             {   //rows
     
-           sumR = get_cov_rollup(Tbl, indv_row, DescList, coverage);
+           sumR = get_cov_rollup(persons, Tbl, indv_row, DescList, coverage);
             }
                 //print html of table
             
@@ -238,7 +264,7 @@ public class dna_coverage {
         } //next generation
         
           try{
-          print_summary(persons,kids, coverage, ordpath, fw);
+          print_summary(persons,kids, coverage, ordpath, method, fw);
           fw.write("<br><br>Methods developed by Wesley Johnston<br>&copy; 2022 <a href='http://wai.md/gfg' target='new'>Graphs for Genealogists</a><br><a href='https://www.facebook.com/groups/gfgforum' target='new'>Facebook Forum</a>\n </body>\n</html>\n");
          fw.flush();
           fw.close();}
@@ -247,15 +273,21 @@ public class dna_coverage {
           
        // Desktop.getDesktop().open(new File(fn));
 
-        return "HTML Report in thr import directory.";
+        return "HTML Report in the import directory.";
     }
   
-     public static void print_summary(int[][] persons,String[] kids, Double[][] coverage,String[] ordpath, FileWriter fw)
+     public static void print_summary(int[][] persons,String[] kids, Double[][] coverage,String[] ordpath, Long method, FileWriter fw)
      {
          String summary = "" ; // new String[persons.length][2];
          gen.gedcom.get_family_tree_data gp = new gen.gedcom.get_family_tree_data();
         try{
-            fw.write("<h3>List of all testers.</h3>Testers whose parents also tested are shown, but the coverage to parents is null because it is irrelevant in this analysis.<br><br>");
+            fw.write("<h3>List of all " + persons.length + " testers and paths to their ancestors.</h3>");
+            if (method==1L){
+            fw.write("Method 1 used. This uses only testers whose DNA is loaded into the database<br>");}
+            if (method==2L){
+            fw.write("Method 2 used. This uses testers whose DNA is loaded into the database and those tagged as testers but not loaded into the database.<br>");}
+            
+            fw.write("Testers whose parents also tested are shown, but the coverage to parents is null because it is irrelevant in this analysis.<br><br>");
             fw.write("<table>,<tr><th>gen</th><th>coverage</th><th>coverage to parent</th><th>person</th><th></th><th></th></tr>");
         } 
         catch(Exception e){}
@@ -514,7 +546,7 @@ public class dna_coverage {
 
     
     ////////////////////////////////////////////////////////
-public static Double get_cov_rollup(Double[][] Tbl, int indv_row, int[][] DescList, Double[][] coverage)
+public static Double get_cov_rollup(int[][] persons, Double[][] Tbl, int indv_row, int[][] DescList, Double[][] coverage)
     {
         int childIndx =0;
         //if (DescList.length==1){return 1.0;}
@@ -524,13 +556,21 @@ public static Double get_cov_rollup(Double[][] Tbl, int indv_row, int[][] DescLi
         {
            //individual child's coverageplaced into array with same ordering as the Tbl and DescList 
            childIndx = DescList[i][1];
-            
+           if(coverage[childIndx][0]!=null)
+           {
            colCov[i] =coverage[childIndx][0];
+           }
+           else
+           {  //error ar indv_row
+               gen.genlib.errors.error_rept(125, "Error 125: coverage not set properly for person with RN=" + persons[indv_row][0]);
+           }
         }
         
         //////////////
         //finl calculation
+        Double M = 0.0;
        Double W_Max = 0.0;
+       Double W_item = 0.0;
        Double R = 0.0;
        Double sumR = 0.0;
        
@@ -540,21 +580,32 @@ public static Double get_cov_rollup(Double[][] Tbl, int indv_row, int[][] DescLi
             
               for (int i=0; i<DescList.length; i++)
             {
+                {   try{
                   if (Tbl[trw][i]==1.0)  //use child Tbl columns that are 1; ignore 0;s
-                {
-                    Double M = Tbl[trw][DescList.length];
-                    Double W_item = Tbl[trw][i] * colCov[i];
+                    M = Tbl[trw][DescList.length];
+                    W_item = Tbl[trw][i] * colCov[i];
                     if(W_Max < W_item)
                     {
                         W_Max=W_item;
                     }
+                }
+                catch(Exception e)
+                {
+                    //error; do nothing in current version
+                }
                 }
  
             
                 Tbl[trw][DescList.length + 1] = W_Max;  // W
                  R = W_Max * Tbl[trw][DescList.length];  //M * W
                  int ci = DescList[i][1];
+                 if (R!=null) {
                  coverage[ci][1]=R;  //conribution to parents coverage in [1]
+                 }
+                 else
+                 {
+                     //error; do nothing in current version
+                 }
                 Tbl[trw][DescList.length + 2] = R;
                 
                
@@ -564,7 +615,12 @@ public static Double get_cov_rollup(Double[][] Tbl, int indv_row, int[][] DescLi
         sumR = 0.0;
         for (int i=0; i<Tbl.length;i++){ 
             sumR = sumR + Tbl[i][DescList.length + 2]; 
+            if (sumR!=null){
             coverage[indv_row][0]=sumR;  //parent's own coverage
+            }
+            else{
+                //error; do nothing in current version
+            }
         }
         return sumR;
     }   
