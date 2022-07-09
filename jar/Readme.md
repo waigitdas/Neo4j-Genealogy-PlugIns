@@ -11,12 +11,12 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
   <li><b>v 1.0.11</b>. New reports identifying dual matches for both autosomal and mitochondrial DNA. Robust triangulation report have been improved. Also upgrade to <a href="https://www.wai.md/product-page/gfg-software">GFG software v 1.0.2</a> to capitalize on its menu driven access to new reporting capabilities.
   <li><b>v 1.0.14</b>. Added enforcing creation of the HapMap before loading other data. Added a new function for computing DNA coverage for any ancestor who has descendant DNA testers.
    <li><b>v 1.0.15</b>. Added function to add DNA testers whose DNA is not in the project. Supported by new Person property at_DNA_tester.
-   <li><b>v 1.0.16</b>.
+   <!--<li><b>v 1.0.16</b>.
    <ul>
    <li>Added Leiden community detection algorithm, which is an improven on the Louvain algorithm. It provides reliable generation of intermediary communities.
    <li>Enhance DNA coverage algorithm. 
    <li>Fix to ancestor reconstruction algorithm's generation of a DNA Painter file.
-   </ul>
+   </ul>-->
 </ol> 
   
 
