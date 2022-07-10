@@ -12,6 +12,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
    <li>Added Leiden community detection algorithm, which is an improven on the Louvain algorithm. It provides reliable generation of intermediary communities.
    <li>Enhance DNA coverage algorithm. 
    <li>Fix to ancestor reconstruction algorithm's generation of a DNA Painter file.
+    <li>Update degree centrality to conform to Neo4j Graph Data Science updates
    <li>Fix in surname search function.
 </ul>-->
 <li><b>v 1.0.15</b>. Added function to add DNA testers whose DNA is not in the project. Supported by new Person property at_DNA_tester.
