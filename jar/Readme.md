@@ -14,7 +14,8 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
    <li>Fix to ancestor reconstruction algorithm's generation of a DNA Painter file.
     <li>Update degree centrality to conform to Neo4j Graph Data Science updates
    <li>Fix in surname search function.
-<li>Fix  in tg_match property p so it align with it sourcing from match_segment 
+<li>Fix  in tg_match property p so it align with it sourcing from match_segment.
+<li>Fix person explore tringulation group report.
 </ul>-->
 <li><b>v 1.0.15</b>. Added function to add DNA testers whose DNA is not in the project. Supported by new Person property at_DNA_tester.
    <li><b>v 1.0.14</b>. Added enforcing creation of the HapMap before loading other data. Added a new function for computing DNA coverage for any ancestor who has descendant DNA testers. 
