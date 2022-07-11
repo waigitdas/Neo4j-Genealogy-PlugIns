@@ -9,6 +9,11 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 <b>History</b>
 
 <ol>
+<!--  <li><b>v 1.0.17</b>. July 11, 2022
+   <ul>
+   <li>Added Y-DNA descendancy haplotree with Y-matches.
+    </ul>
+-->  
   <li><b>v 1.0.16</b>. July 11, 2022
    <ul>
    <li>Added Leiden community detection algorithm, which is an improven on the Louvain algorithm. It provides reliable generation of intermediary communities.
