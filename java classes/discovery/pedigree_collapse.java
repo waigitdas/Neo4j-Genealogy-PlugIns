@@ -34,6 +34,9 @@ public class pedigree_collapse {
         // TODO code application logic here
     }
     
+    //other methods
+    //https://docs.google.com/presentation/d/1ELt-nWxaMJ27pfuwn0hYkeDyPP25lcL055phPN5opvM/edit?fbclid=IwAR0hFA1hXbkuI8A3Rufu7wlfc7kxW1GcIWeoIhdpCjV7D7ry0Jn9eowQse0#slide=id.g131f14a4a75_0_95
+    
      public String find_collapse(Long rn) 
     {
         String cq = "match path=(p1:Person)-[[r1:father|mother*0..25]]->(mrca:Person)<-[[r2:father|mother*0..25]]-(p2:Person)  where p1.RN=" + rn + " and p2<>p1 with distinct r1,mrca with mrca, count(*) as ct with mrca,ct where ct>1 and mrca.uid=0 with mrca,gen.rel.ahnentafel_for_ancestor(" + rn + ",mrca.RN) as ahn return mrca.fullname + ' ⦋' + mrca.RN + '⦌'  as ancestor,ahn as ahnentafel";

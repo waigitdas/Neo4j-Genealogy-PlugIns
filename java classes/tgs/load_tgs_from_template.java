@@ -80,7 +80,7 @@ public class load_tgs_from_template {
         neo4j_qry.qry_write(cq);
 
         //add match_tg edge
-        cq = "match (t:tg)-[:tg_seg]-(s:Segment)-[r:match_segment]-(m:DNA_Match) where (r.p=m.fullname or r.m=m.fullname) and r.cm>=7 and r.snp_ct>=500 with t,m,min(r.cm) as min_cm,max(r.cm) as max_cm,min(r.snp_ct) as min_snp,max(r.snp_ct) as max_snp,count(r) as seg_ct,r.m as rm ,r.p_rn as p_rn,r.m_rn as m_rn,r.p_anc_rn as p_anc_rn,r.m_anc_rn as m_anc_rn,collect(s.Indx) as sc with m,t,t.tgid as tgid,m.fullname as propositus, p_rn, p_anc_rn,rm,m_rn, m_anc_rn, min_cm, max_cm, min_snp, max_snp, seg_ct, sc as match merge (m)-[r1:match_tg{tgid:tgid, p:propositus,m:rm, min_cm:min_cm, max_cm:max_cm, min_snp:min_snp, max_snp:max_snp, seg_ct:seg_ct}]-(t)";
+        cq = "match (t:tg)-[:tg_seg]-(s:Segment)-[r:match_segment]-(m:DNA_Match) where (r.p=m.fullname or r.m=m.fullname) and r.cm>=7 and r.snp_ct>=500 with t,m,min(r.cm) as min_cm,max(r.cm) as max_cm,min(r.snp_ct) as min_snp,max(r.snp_ct) as max_snp,count(r) as seg_ct, r.m as rm , r.p as rp, r.p_rn as p_rn,r.m_rn as m_rn,r.p_anc_rn as p_anc_rn,r.m_anc_rn as m_anc_rn,collect(s.Indx) as sc with m,t,t.tgid as tgid,rp as propositus, p_rn, p_anc_rn,rm,m_rn, m_anc_rn, min_cm, max_cm, min_snp, max_snp, seg_ct, sc as match merge (m)-[r1:match_tg{tgid:tgid, p:propositus,m:rm, min_cm:min_cm, max_cm:max_cm, min_snp:min_snp, max_snp:max_snp, seg_ct:seg_ct}]-(t)";
          neo4j_qry.qry_write(cq);
 
          

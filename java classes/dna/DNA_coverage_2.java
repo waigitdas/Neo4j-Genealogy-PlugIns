@@ -22,11 +22,11 @@ import java.util.Collections;
 
 //https://familylocket.com/find-more-ancestors-with-autosomal-dna-by-increasing-coverage/?mc_cid=a28b796d43&mc_eid=530263b9cd
 //https://www.legacytree.com/blog/introduction-autosomal-dna-coverage
-public class dna_coverage {
+public class DNA_coverage_2 {
     @UserFunction
     @Description("DNA Coverage. method: 1 = DNA results loaded; 2 = testers whether loaded or not")
  
-    public String dna_coverage_of_ancestor(
+    public String dna_coverage_of_ancestor_summary(
         @Name("anc_rn") 
             Long anc_rn,
         @Name("methos") 
@@ -40,10 +40,10 @@ public class dna_coverage {
             }
    
     public static void main(String args[]) {
-        //get_coverage(33454L, 2L);
+        get_coverage(33454L, 2L);
     }
     
-     public String get_coverage(Long anc_rn, Long method) 
+     public static String get_coverage(Long anc_rn, Long method) 
     {
         gen.neo4jlib.neo4j_info.neo4j_var();
         gen.neo4jlib.neo4j_info.neo4j_var_reload();
@@ -169,12 +169,13 @@ public class dna_coverage {
                 }
             }
         }
-        String fn = gen.neo4jlib.neo4j_info.Import_Dir + gen.neo4jlib.neo4j_info.project +  "_coverage_" + anc_rn + "_" + method + "_" + gen.genlib.current_date_time.getDateTime() + ".html";
+        String fnn = gen.neo4jlib.neo4j_info.project +  "_coverage_" + anc_rn + "_" + method + "_" + gen.genlib.current_date_time.getDateTime() + ".csv";
+        String fn = gen.neo4jlib.neo4j_info.Import_Dir + fnn;
         File fnc = new File(fn);
         FileWriter fw = null;
         try{
             fw = new FileWriter(fnc);
-            fw.write("<html>\n<body>\n");
+            
         }
         catch(Exception e){}
         
@@ -212,9 +213,10 @@ public class dna_coverage {
                     Double sumR = 0.0;
                    int colM = nbr_kids; 
                    int kid_ct = 0;
+                   String xis = "";
                    for (int t=0; t<persons.length; t++)  //iterare entire list to find kids
                    {
-                        if (persons[t][2]==indv) // parent value; k = kid's row
+                         if (persons[t][2]==indv) // parent value; k = kid's row
                            {
                              //get each kid's info
  
@@ -230,7 +232,6 @@ public class dna_coverage {
                         
                         if (kid_ct>nbr_kids-1){break;}
                    } //end search for kids
-                   
                    populateUniqueStrTbl(Tbl,nbr_kids);
 
                    
@@ -253,7 +254,7 @@ public class dna_coverage {
     
            sumR = get_cov_rollup(persons, Tbl, indv_row, DescList, coverage);
             }
-                //print html of table
+               
             
   
             /////////////////////////////////////////////////////////////////
@@ -263,9 +264,9 @@ public class dna_coverage {
             
             
             
-            print_Tbl1(indv, gen, nbr_kids,DescList,Tbl, coverage, fw);
+            //print_Tbl1(indv, gen, nbr_kids,DescList,Tbl, coverage, fw);
                
-            print_Tbl2(indv, gen, persons, Tbl,nbr_kids, sumR, coverage, fw);
+            //print_Tbl2(indv, gen, persons, Tbl,nbr_kids, sumR, coverage, fw);
             /////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////
@@ -278,15 +279,14 @@ public class dna_coverage {
         
           try{
           print_summary(persons,kids, coverage, ordpath, method,tester_ct, fw);
-          fw.write("<br><br>Methods developed by Wesley Johnston<br>&copy; 2022 <a href='http://wai.md/gfg' target='new'>Graphs for Genealogists</a><br><a href='https://www.facebook.com/groups/gfgforum' target='new'>Facebook Forum</a>\n </body>\n</html>\n");
+          //fw.write("<br><br>Methods developed by Wesley Johnston<br>&copy; 2022 <a href='http://wai.md/gfg' target='new'>Graphs for Genealogists</a><br><a href='https://www.facebook.com/groups/gfgforum' target='new'>Facebook Forum</a>\n </body>\n</html>\n");
          fw.flush();
           fw.close();}
           catch(Exception e){}
-             
-          
-       // Desktop.getDesktop().open(new File(fn));
+          //gen.excelLib.excel_from_csv.load_csv(s, fn, s, tester_ct, paths, delimiter, delimiter, Boolean.FALSE, s, Boolean.TRUE)
+          gen.excelLib.excel_from_csv.load_csv(fn, "coverage", "summary", 1, "", "", "", true, "", true);
 
-        return "HTML Report in the import directory.";
+        return "completed";
     }
     
   
@@ -295,15 +295,15 @@ public class dna_coverage {
          String summary = "" ; // new String[persons.length][2];
          gen.gedcom.get_family_tree_data gp = new gen.gedcom.get_family_tree_data();
         try{
-            fw.write("<h3>List of " + persons.length + " DNA testers in the paths to their ancestors of whom " + tester_ct + " have DNA results loaded to the database.</h3>");
-            if (method==1L){
-            fw.write("Method 1 used. This uses only testers whose DNA is loaded into the database<br>");}
-            if (method==2L){
-            fw.write("Method 2 used. This uses testers whose DNA is loaded into the database and those tagged as testers but not loaded into the database.<br>");}
-            
+//            fw.write("<h3>List of " + tester_ct + " testers and " + persons.length + " persons in the paths to their ancestors.</h3>");
+//            if (method==1L){
+//            fw.write("Method 1 used. This uses only testers whose DNA is loaded into the database<br>");}
+//            if (method==2L){
+//            fw.write("Method 2 used. This uses testers whose DNA is loaded into the database and those tagged as testers but not loaded into the database.<br>");}
+//            
             //fw.write("Testers whose parents also tested are shown, but the coverage to parents is null because it is irrelevant in this analysis.<br><br>");
             //fw.write("<table>,<tr><th>gen</th><th>coverage</th><th>coverage to parent</th><th>person</th><th></th><th></th></tr>");
-            fw.write("<table>,<tr><th>gen</th><th>coverage</th><th>person</th><th></th><th></th></tr>");
+            fw.write("gen,coverage,person\n");
         } 
         catch(Exception e){}
          
@@ -317,12 +317,9 @@ public class dna_coverage {
                  if(Integer.parseInt(ks[0]) == persons[p][0])
                  {
                      try{
-                     fw.write("<tr>");
-//                     fw.write("<td>" + persons[p][3] + "</td><td>" + coverage[persons[p][4]][0] + "</td><td>" + coverage[persons[p][4]][1] + "</td><td>" + gen.genlib.handy_Functions.lpad("",persons[p][3],"...") + gp.person_from_rn(Long.valueOf(persons[p][0]),true).replace("⦋", "[").replace("⦌","]") + "</td>" +  "\n");
-//                     if (Double.valueOf(coverage[persons[p][4]][1])!=null){
-                        fw.write("<td>" + persons[p][3] + "</td><td>" + coverage[persons[p][4]][0] + "</td><td>" + gen.genlib.handy_Functions.lpad("",persons[p][3],"...") + gp.person_from_rn(Long.valueOf(persons[p][0]),true).replace("⦋", "[").replace("⦌","]") + "</td>" +  "\n");
+                    fw.write(persons[p][3] + "," + coverage[persons[p][4]][0] + "," + gen.genlib.handy_Functions.lpad("",persons[p][3],"...") + gp.person_from_rn(Long.valueOf(persons[p][0]),true).replace("⦋", "[").replace("⦌","]") + "\n");
 //                     }
-                     fw.write("</tr>");
+                    
                      
                      }
                      catch(Exception e){}
@@ -331,10 +328,6 @@ public class dna_coverage {
              }
  
          }
-            try{fw.write("</table>");} catch(Exception e){}
-        
-         
-             System.out.println(summary);
          
          
      }

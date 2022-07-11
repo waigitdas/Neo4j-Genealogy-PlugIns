@@ -68,12 +68,10 @@ public class person_connect {
         gen.excelLib.queries_to_excel.qry_to_excel(cq, "surname_matches", "surname_matches", ct, "", "2:####.#;2:###.#", excelFile,false, cq, false);
         ct = ct + 1;
  
-        cq = "match (m:DNA_Match{fullname:'" + fullname + "'})-[[rs:match_tg]]-(t:tg) with  t,m.fullname as propositus,rs.p as match_propositus, rs.m as match,rs.seg_ct as seg_ct,count(*) as ct order by t.tgid  with propositus,match_propositus,match,seg_ct,ct,collect(distinct t.Indx) as segs  return propositus,match_propositus,match,size(segs) as seg_ct,segs";
+        cq = "match (m:DNA_Match{fullname:'" + fullname + "'})-[rs:match_tg]-(t:tg) with t,m.fullname as propositus,rs.p as match_propositus, rs.m as match,rs.seg_ct as seg_ct,count(*) as ct order by t.name with propositus,match_propositus,match,seg_ct,ct,collect(distinct t.name) as tg,collect(distinct t.Indx) as segs return propositus,match_propositus,match,size(tg) as tg_ct, tg as tgs,size(segs) as seg_ct,segs";
         gen.excelLib.queries_to_excel.qry_to_excel(cq, "tgs", "tgs", ct, "", "3:###.#;3:###.#", excelFile,true, cq, false);
         ct = ct + 1;
-        
-        
-        
+            
         
         return "person report completed";
     }

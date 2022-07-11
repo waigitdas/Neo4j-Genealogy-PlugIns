@@ -48,7 +48,8 @@ public class excel_from_csv {
     }
     
     public static String load_csv(String csvFile,String FileNm,String SheetName, int SheetNumber, String ColWidths, String colNumberFormat, String ExistingExcelFile,Boolean OpenFile,String message,Boolean include_common_ancestor  ){
-   String excelFile = "";
+ System.out.println("#!");
+ String excelFile = "";
     String excelFileNm = "" ;
     File file;
     String anc_name="";
@@ -57,10 +58,11 @@ public class excel_from_csv {
         gen.rel.anc_rn anc = new gen.rel.anc_rn();
         anc_name = gen.gedcom.get_family_tree_data.getPersonFromRN(anc.get_ancestor_rn(),true);
     }
-  
+ System.out.println("#2"); 
      //set up excel. Create new or open prior if there are to be multiple worksheets
      try{
     if (ExistingExcelFile=="") {
+        System.out.println("#3");
     excelFile = gen.neo4jlib.neo4j_info.Import_Dir + FileNm + "_" + gen.genlib.current_date_time.getDateTime() + ".xls";;
     excelFileNm=excelFile;
     file = new File(excelFileNm);
@@ -76,7 +78,7 @@ public class excel_from_csv {
         w = Workbook.createWorkbook(new File(excelFile), existingWorkbook);
      }
    
-
+System.out.println("#4");
     WritableSheet excelSheet = w.createSheet(SheetName, SheetNumber);
     createLabel(excelSheet);
     excelSheet.getSettings().setVerticalFreeze(1);
@@ -120,7 +122,7 @@ public class excel_from_csv {
             catch(Exception e){}
        }
     }
-
+System.out.println("#!");
        if (ColWidths.strip() != "") {
         //initialize column width formats
        for (int i=0;i<colwidth.length ;i++){
