@@ -12,6 +12,9 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 <!--  <li><b>v 1.0.17</b>. July 11, 2022
    <ul>
    <li>Added Y-DNA descendancy haplotree with Y-matches.
+   <li>added capability to find matches to surnames in a person's direct family tree lines.
+   <li>added ancestor descendant monophyletic segment searches for new matches.
+   <li>fixed x_gen_dist which was missin a few relationships.
     </ul>
 -->  
   <li><b>v 1.0.16</b>. July 11, 2022
