@@ -16,7 +16,9 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
    <li>added capability to find matches to surnames in a person's direct family tree lines.
    <li>added ancestor descendant monophyletic segment searches for new matches.
    <li>fixed x_gen_dist which was missin a few relationships.
-   <li>added Y- anf mt-HG to ancestral surname report
+   <li>added Y- and mt-HG to ancestral surname report
+   <li>new function to add parental side of p and m to match_segment relationship
+   <li>New function to report parental origin of segments: paternal, maternal or unknown
     </ul>
 -->  
   <li><b>v 1.0.16</b>. July 11, 2022
