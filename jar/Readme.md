@@ -9,7 +9,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 <b>History</b>
 
 <ol>
-<!--  <li><b>v 1.0.17</b>. July 11, 2022
+<li><b>v 1.0.17</b>. July 11, 2022
    <ul>
    <li>Added monophyletic segment report, including their finding of new matches in a family line.
    <li>Added Y-DNA descendancy haplotree with Y-matches.
@@ -18,9 +18,8 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
    <li>fixed x_gen_dist which was missin a few relationships.
    <li>added Y- and mt-HG to ancestral surname report
    <li>new function to add parental side of p and m to match_segment relationship
-   <li>New function to report parental origin of segments: paternal, maternal or unknown
+   <li>New function to report parental origin of segments: paternal, maternal or unknown; some generations done, but still in development.
     </ul>
--->  
   <li><b>v 1.0.16</b>. July 11, 2022
    <ul>
    <li>Added Leiden community detection algorithm, which is an improven on the Louvain algorithm. It provides reliable generation of intermediary communities.
