@@ -6,6 +6,6 @@ The file must be in the import directory before running the query. This process 
 
 The "condensed" HapMap is dissed further by <a href="https://hapi-dna.org/2020/11/minimal-viable-genetic-maps/?fbclid=IwAR3alJcth1Kpcn5WL8Cl_c-49jloJPSbyOb4TQw2PRvwNhjO-gRaTu_zx34" target="new">Amy Williams</a>.
 
-DNA Painerhas an <a href="https://dnapainter.com/tools/cme?fbclid=IwAR26BX1h9pnXFuXE8qWGaUlGeOB0xqTOOB14GvS6Q2vuRzFuOFr5h-u4mgs" target="new">online rendering</a> of the condensd HaoMap where you can enter a segment and get the cM.
+DNA Painerhas an <a href="https://dnapainter.com/tools/cme?fbclid=IwAR26BX1h9pnXFuXE8qWGaUlGeOB0xqTOOB14GvS6Q2vuRzFuOFr5h-u4mgs" target="new">online rendering</a> of the condensed HaoMap where you can enter a segment and get the cM.
 
 The full HapMap file set is in the folder.
