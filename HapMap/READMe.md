@@ -9,3 +9,9 @@ The "condensed" HapMap is discussed further by <a href="https://hapi-dna.org/202
 DNA Painerhas an <a href="https://dnapainter.com/tools/cme?fbclid=IwAR26BX1h9pnXFuXE8qWGaUlGeOB0xqTOOB14GvS6Q2vuRzFuOFr5h-u4mgs" target="new">online rendering</a> of the condensed HaoMap where you can enter a segment and get the cM.
 
 The full HapMap file set is in the folder.
+
+For GFG the graph has cHapMap nodes with properties of chr, pos, cm and incremental_cm. The query to get the cm then becomes:
+
+MATCH (h:cHapMap) where h.chr=1 and 100000000>h.pos/1000>1000  RETURN sum(h.icm)
+
+The query uses the index to find the start point and then traverses the graph to the end, summing up the incremental cM.
