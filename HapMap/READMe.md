@@ -1,6 +1,6 @@
 The condensed HapMap data was provided by Jonny Perl and DNA Painter and used with their permission. GFG transformed <a href="https://github.com/dnapainter/apis?fbclid=IwAR0tTmkifa0uK-gFJeDdjpc0GNmlIbVlgoYu6a3oOUfM-nINORjKQZ1WjvU" target="new">their file</a> into the csv file genetmap.csv which is suitable for importing into Neo4j using this query: 
 
-LOAD CSV WITH HEADERS FROM 'file:///cHapMap.csv' as line FIELDTERMINATOR ',' create (c:cHapMap{chr:toInteger(line.chr),pos:toInteger(line.pos),cm:toFloat(line.cm),toFloat(line.incremental_cm)})
+LOAD CSV WITH HEADERS FROM 'file:///cHapMap.csv' as line FIELDTERMINATOR ',' create (c:cHapMap{chr:toInteger(line.chr),pos:toInteger(line.pos),cm:toFloat(line.cm),toFloat(line.increment_cm)})
 
 The file must be in the import directory before running the query. This process is automated for users of Graphs for Genealogy. The file will be downloaded from here and imported using GFG code.
 
