@@ -4,7 +4,7 @@ LOAD CSV WITH HEADERS FROM 'file:///cHapMap.csv' as line FIELDTERMINATOR ',' cre
 
 The file must be in the import directory before running the query. This process is automated for users of Graphs for Genealogy. The file will be downloaded from here and imported using GFG code.
 
-The "condensed" HapMap is dissed further by <a href="https://hapi-dna.org/2020/11/minimal-viable-genetic-maps/?fbclid=IwAR3alJcth1Kpcn5WL8Cl_c-49jloJPSbyOb4TQw2PRvwNhjO-gRaTu_zx34" target="new">Amy Williams</a>.
+The "condensed" HapMap is discussed further by <a href="https://hapi-dna.org/2020/11/minimal-viable-genetic-maps/?fbclid=IwAR3alJcth1Kpcn5WL8Cl_c-49jloJPSbyOb4TQw2PRvwNhjO-gRaTu_zx34" target="new">Amy Williams</a>.
 
 DNA Painerhas an <a href="https://dnapainter.com/tools/cme?fbclid=IwAR26BX1h9pnXFuXE8qWGaUlGeOB0xqTOOB14GvS6Q2vuRzFuOFr5h-u4mgs" target="new">online rendering</a> of the condensed HaoMap where you can enter a segment and get the cM.
 
