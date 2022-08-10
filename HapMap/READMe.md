@@ -4,6 +4,6 @@ LOAD CSV WITH HEADERS FROM 'file:///genetmap.csv' as line FIELDTERMINATOR ',' cr
 
 The file must be in the import directory before running the query. This process is automated for users of Graphs for Genealogy. The file will be downloaded from here and imported using GFG code.
 
-The "condensed" HapMap is dissed further by <a href="https://hapi-dna.org/2020/11/minimal-viable-genetic-maps/?fbclid=IwAR3alJcth1Kpcn5WL8Cl_c-49jloJPSbyOb4TQw2PRvwNhjO-gRaTu_zx34" target="new">Ann Williams</a>
+The "condensed" HapMap is dissed further by <a href="https://hapi-dna.org/2020/11/minimal-viable-genetic-maps/?fbclid=IwAR3alJcth1Kpcn5WL8Cl_c-49jloJPSbyOb4TQw2PRvwNhjO-gRaTu_zx34" target="new">Amy Williams</a>
 
 The full HapMap file set is in the folder.
