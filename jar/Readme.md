@@ -13,6 +13,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 <li><b>v 1.1.0</b>August 2022</li>
     <ul>
         <li>reorganized file structure of data to improve usability</li> 
+        <li>simlified Neo4j setup using code to create folders with required file and configuring plugins and Neo4j behavior</li>
         <li>added avatars: virtual in silico ancestors and relatives</li> 
             <ul>
                 <li>augmented monophyletic segment discovery</li>
