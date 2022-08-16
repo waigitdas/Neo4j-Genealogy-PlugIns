@@ -9,6 +9,27 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 <b>History</b>
 
 <ol>
+<1--
+<li><b>v 1.1.0</b>August 2022</li>
+    <ul>
+        <li>added avatars</li> 
+            <ul>
+                <li>augmented monophyletic segment discovery</li>
+                <li>creation of avatars (virtual ancestors and relatives)</li>
+                <li>populate avatars with reconstructed DNA monophyletic segments</li>
+                <li>merged  segments and calculating their cm using a modified HapMap</li>
+                <li>DNA matches of avatars to real world DNA testers</li>
+                <li></li>
+                <li></li>
+            </ul>
+         <li>implemented modified HapMap to speed segment cM calculations</li> 
+         <li></li> 
+         <li></li> 
+         <li></li> 
+         <li></li> 
+         <li></li> 
+    </ul>
+-->
 <li><b>v 1.0.17</b>. July 11, 2022
    <ul>
    <li>Added monophyletic segment report, including their finding of new matches in a family line.
