@@ -9,7 +9,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 <b>History</b>
 
 <ol>
-<1--
+<!--
 <li><b>v 1.1.0</b>August 2022</li>
     <ul>
         <li>added avatars</li> 
