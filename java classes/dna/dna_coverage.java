@@ -40,10 +40,10 @@ public class dna_coverage {
             }
    
     public static void main(String args[]) {
-        //get_coverage(33454L, 2L);
+        get_coverage(41L, 1L);
     }
     
-     public String get_coverage(Long anc_rn, Long method) 
+     public  static String get_coverage(Long anc_rn, Long method) 
     {
         gen.neo4jlib.neo4j_info.neo4j_var();
         gen.neo4jlib.neo4j_info.neo4j_var_reload();
@@ -86,19 +86,10 @@ public class dna_coverage {
             
             if (method==2L){
           cq= "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y', 'A'] with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in  " + paths + "  RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person{RN:x}) with x,ct as children_descendants_who_tested, nodes(path2) as p2, length(path2) as gen,gen.graph.get_ordpath([y in nodes(path2) | y.RN]) as op, q.at_DNA_tester as test_type return x,children_descendants_who_tested,p2[gen-1].RN as parent, gen, op order by op";}
-                  //"match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y', 'A'] with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in " + paths + " RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person{RN:x}) return x,ct as children_descendants_who_tested,length(path2) as gen,gen.graph.get_ordpath([y in nodes(path2) | y.RN]) as op, q.at_DNA_tester as test_type order by  op";}
           
         String[] kids = gen.neo4jlib.neo4j_qry.qry_to_csv(cq).split("\n");
     
-//        //get rns with multiple path = pedigree collapse or endogamy
-//        if (method==1){
-//        cq ="match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y', 'A'] with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in  " + paths + " RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[rp:father|mother*0..15]-(q:Person{RN:x}) with count(path2) as path_ct,x with x,path_ct where path_ct>1 return x,path_ct, 0 as added order by x";}
-//        if (method==2){
-//        cq ="match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y', 'A'] with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in  " + paths + " RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[rp:father|mother*0..15]-(q:Person{RN:x}) with count(path2) as path_ct,x with x,path_ct where path_ct>1 return x,path_ct, 0 as added order by x";}
-//        String[] dups = gen.neo4jlib.neo4j_qry.qry_to_csv(cq).split("\n");
-
         //instantiate variable to hold descendant data and calculations
-       
         int persons[][] = new int[kids.length][7];
         //persons array will hold data from analytics
         //one row per descendant in the paths
@@ -253,15 +244,11 @@ public class dna_coverage {
     
            sumR = get_cov_rollup(persons, Tbl, indv_row, DescList, coverage);
             }
-                //print html of table
-            
   
             /////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////
-            
-            
             
             print_Tbl1(indv, gen, nbr_kids,DescList,Tbl, coverage, fw);
                
@@ -318,9 +305,14 @@ public class dna_coverage {
                  {
                      try{
                      fw.write("<tr>");
-//                     fw.write("<td>" + persons[p][3] + "</td><td>" + coverage[persons[p][4]][0] + "</td><td>" + coverage[persons[p][4]][1] + "</td><td>" + gen.genlib.handy_Functions.lpad("",persons[p][3],"...") + gp.person_from_rn(Long.valueOf(persons[p][0]),true).replace("⦋", "[").replace("⦌","]") + "</td>" +  "\n");
-//                     if (Double.valueOf(coverage[persons[p][4]][1])!=null){
-                        fw.write("<td>" + persons[p][3] + "</td><td>" + coverage[persons[p][4]][0] + "</td><td>" + gen.genlib.handy_Functions.lpad("",persons[p][3],"...") + gp.person_from_rn(Long.valueOf(persons[p][0]),true).replace("⦋", "[").replace("⦌","]") + "</td>" +  "\n");
+                     fw.write("<td>" + persons[p][3] + "</td><td>" + coverage[persons[p][4]][0] + "</td><td>" + gen.genlib.handy_Functions.lpad("",persons[p][3],"...") + gp.person_from_rn(Long.valueOf(persons[p][0]),true).replace("⦋", "[").replace("⦌","]") + "</td>" +  "\n");
+                     
+                     //if method 1, update Avatar coverage
+                     if (method==1)
+                     {
+                       String  cq = "match (a:Avatar{RN:" + Long.valueOf(persons[p][0]) + "}) set a.stat_coverage=" + coverage[persons[p][4]][0];
+                         gen.neo4jlib.neo4j_qry.qry_write(cq);
+                     }
 //                     }
                      fw.write("</tr>");
                      

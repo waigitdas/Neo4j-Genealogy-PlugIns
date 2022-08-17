@@ -47,7 +47,8 @@ public class file_lib {
 
         return ged;
     }
-     
+    
+    
     public static String ReadFileByLineWithEncoding(String filePath) {
         StringBuilder contentBuilder = new StringBuilder();
  
@@ -55,7 +56,7 @@ public class file_lib {
           Stream<String> stream = Files.lines( Paths.get(filePath), StandardCharsets.ISO_8859_1);
                         
         {
-            try{stream.forEach(s -> contentBuilder.append(s.replace("\"", "********************")).append("\n"));}
+            try{stream.forEach(s -> contentBuilder.append(s.replace("\"", "")).append("\n"));}
             catch(Exception eee){System.out.println(eee.getMessage() + "^^^");}
         }
         }

@@ -9,7 +9,7 @@ package gen.dna;
     import gen.neo4jlib.neo4j_info;
     import gen.neo4jlib.neo4j_qry;
     import gen.rel.add_rel_property;
-           
+
     import java.io.File;
     import java.io.FileWriter;
     import java.io.IOException;
@@ -63,9 +63,9 @@ public  String load_ftdna_csv_files(
         neo4j_qry.CreateIndex("DNA_Match","mtHG");
         neo4j_qry.CreateIndex("DNA_YMatch","YHG");
         neo4j_qry.CreateIndex("Segment","Indx");
-        neo4j_qry.CreateIndex("tg","tgid");
-        neo4j_qry.CreateIndex("tg","strt_pos");
-        neo4j_qry.CreateIndex("tg","end_pos");
+//        neo4j_qry.CreateIndex("tg","tgid");
+//        neo4j_qry.CreateIndex("tg","strt_pos");
+//        neo4j_qry.CreateIndex("tg","end_pos");
         neo4j_qry.CreateIndex("Continent","name");
         neo4j_qry.CreateIndex("pop_group","name");
        neo4j_qry.CreateIndex("ancestor_surnames","p");
@@ -775,7 +775,7 @@ try{
         //cq="MATCH (s:Segment) with s.chr as c,min(s.strt_pos) as s,max(s.end_pos) as e with c,s,e, 0 as cm return c,s,e,apoc.math.round(cm,1) as cm";
         neo4j_qry.qry_to_pipe_delimited(cq,"chr_cm.csv");
         lc = "LOAD CSV WITH HEADERS FROM 'file:///chr_cm.csv' as line FIELDTERMINATOR '|' return line ";
-        cq = "create (cn:chr_cm{chr:toString(line.c),str_pos:toInteger(line.s),end_pos:toInteger(line.e),cm:toFloat(line.cm)})";
+        cq = "create (cn:chr_cm{chr:toString(line.c),strt_pos:toInteger(line.s),end_pos:toInteger(line.e),cm:toFloat(line.cm)})";
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
 }catch(Exception e){}    
         
@@ -786,7 +786,17 @@ try{
 }
 catch(Exception e){}
 
+    //load condensed HapMap
+    gen.ref.upload_condensed_hapmap chm = new gen.ref.upload_condensed_hapmap();
+    chm.load_condensed_hapmap();
 
+    //load Y- and mt-haplotree reference data
+    gen.ref.upload_Y_DNA_Haplotree yht = new gen.ref.upload_Y_DNA_Haplotree();
+    yht.upload_FTDNA_Y_haplotree();
+    
+    gen.ref.upload_mt_haplotree mht = new gen.ref.upload_mt_haplotree();
+    mht.upload_FTDNA_mt_haplotree();
+    
      return  "completed";
 
     }

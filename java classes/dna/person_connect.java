@@ -57,7 +57,7 @@ public class person_connect {
         ct = ct + 1;
         
        cq = "match (m:DNA_Match{fullname:'" + fullname + "'})-[[rs:match_segment]]-(s:Segment)-[[rm:ms_seg]]-(mss:MSS) with m,rs,s,mss order by s.Indx with m.fullname as name,rs.p as propositus,rs.m as match,mss.fullname as monophylytic_ancestor,collect(distinct s.Indx) as segs return monophylytic_ancestor,name,propositus,match,segs";
-        gen.excelLib.queries_to_excel.qry_to_excel(cq, "person_explorer", "monophylytic group", ct, "", "", excelFile,false, cq, false);
+        gen.excelLib.queries_to_excel.qry_to_excel(cq, "person_explorer", "monophyletic group", ct, "", "", excelFile,false, cq, false);
         ct = ct + 1;
         
        cq = "CALL db.index.fulltext.queryNodes('ancestor_surnames_names', '" + surname + "') YIELD node, score WITH score,node.p as match,node.m as match_with_surnames,case when size(node.name)>200 then left(node.name,200) + ' (truncated)' else node.name end as anc_names MATCH (m:DNA_Match{fullname:match})-[rs:match_by_segment]]-(m2:DNA_Match{fullname:match_with_surnames}) return distinct m.fullname as source,case when m.RN is null then '~' else toString(m.RN) end  as source_rn, match_with_surnames,rs.cm as cm,rs.seg_ct as segs,rs.rel as rel,round(score,2) as score,anc_names as ancestor_list order by rel desc,score desc,source";

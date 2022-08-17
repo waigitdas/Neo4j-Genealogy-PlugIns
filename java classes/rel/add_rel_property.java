@@ -28,28 +28,19 @@ public class add_rel_property {
     
     
     public static void main(String args[]) {
-       // add_rel();
+        add_rel();
     }
     
-     public String add_rel()
+     public static String add_rel()
     {
    
         String Q = "\"";
         gen.neo4jlib.neo4j_info.neo4j_var();
         gen.neo4jlib.neo4j_info.neo4j_var_reload();
-        String cq ="MATCH (m1:DNA_Match)-[r:match_segment]->(s:Segment) where r.p_rn>0 and r.m_rn>0 with distinct r.p_rn as rn1,r.m_rn as rn2 with distinct rn1,rn2,gen.rel.relationship_from_RNs(rn1,rn2) as rel,gen.rel.gen_distance_from_RNs(rn1,rn2) as gd,gen.rel.compute_cor(rn1,rn2) as cor,replace(replace(gen.rel.mrca_str(rn1,rn2),'[',''),']','')   as pm with rn1,rn2,rel,gd,cor,pm where cor>0 return rn1,rn2,rel,gd as gen_dist,cor,pm as pair_mrca";
+        String cq = "MATCH (m1:DNA_Match)-[r:match_segment]->(s:Segment) where r.p_rn>0 and r.m_rn>0 with distinct r.p_rn as rn1,r.m_rn as rn2 with distinct rn1,rn2,gen.rel.relationship_from_RNs(rn1,rn2) as rel,gen.rel.gen_distance_from_RNs(rn1,rn2) as gd,gen.rel.compute_cor(rn1,rn2) as cor,replace(replace(gen.rel.mrca_str(rn1,rn2),'[',''),']','') as pm with rn1,rn2,cor where cor>0 with rn1,rn2,cor,gen.rel.relationship_from_RNs(rn1,rn2) as rel,gen.rel.mrca_rn(rn1,rn2) as mrca_rn,gen.rel.gen_distance_from_RNs(rn1,rn2) as gd,replace(replace(gen.rel.mrca_str(rn1,rn2),'[',''),']','') as pm,split(gen.rel.parental_path_to_mrca(rn1,rn2),',') as side return rn1,rn2,trim(side[0]) as side1,trim(side[1]) as side2,rel,gd as gen_dist,cor,pm as pair_mrca,mrca_rn" ;
 
-//        String c = gen.neo4jlib.neo4j_qry.qry_to_csv(cq);
-//        //return c;
-//
-//        gen.neo4jlib.file_lib.writeFile(c,gen.neo4jlib.neo4j_info.Import_Dir + "rel_property.csv");
 gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited(cq,"rel_property.csv" );
-        
-//String qry =  "call apoc.export.csv.query(" + Q + cq +  Q + ",'rel_property.csv', {delim:'|', quotes: false, format: 'plain'}) ";
-        //neo4j_qry.qry_write(qry);
-// 
 
-       // gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited(cq, "rel_property.csv");
          
        try{
             gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("match_segment","rel" );
@@ -61,6 +52,10 @@ gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited(cq,"rel_property.csv" );
        
        cq="MATCH p=()-[r:match_by_segment]->() where r.rel>' '  remove r.rel";
         gen.neo4jlib.neo4j_qry.qry_write(cq);
+  cq="MATCH p=()-[r:match_segment]->() where r.rel>' '  remove r.p_side";
+        gen.neo4jlib.neo4j_qry.qry_write(cq);
+  cq="MATCH p=()-[r:match_segment]->() where r.rel>' '  remove r.m_side";
+        gen.neo4jlib.neo4j_qry.qry_write(cq);
 
         cq="MATCH p=()-[r:KitMatch]->() where r.rel>' '  remove r.rel";
         gen.neo4jlib.neo4j_qry.qry_write(cq);
@@ -69,32 +64,44 @@ gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited(cq,"rel_property.csv" );
         gen.neo4jlib.neo4j_qry.qry_write(cq);
 
         String lc = "LOAD CSV WITH HEADERS FROM 'file:///rel_property.csv' as line FIELDTERMINATOR '|' return line ";
-        cq = " match (k:Kit{RN:toInteger(line.rn1)})-[r:KitMatch]-(m:DNA_Match{RN:toInteger(line.rn2)}) set r.rel=toString(line.rel),r.gen_dist=toInteger(line.gen_dist),r.cor=toFloat(line.cor), r.pair_mrca=toString(line.pair_mrca)";
+        cq = " match (k:Kit{RN:toInteger(line.rn1)})-[r:KitMatch]-(m:DNA_Match{RN:toInteger(line.rn2)}) set r.rel=toString(line.rel),r.gen_dist=toInteger(line.gen_dist),r.cor=toFloat(line.cor), r.pair_mrca=toString(line.pair_mrca),r.mrca_rn=toString(line.mrca_rn)";
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
-       cq = " match (k:Kit{RN:toInteger(line.rn2)})-[r:KitMatch]-(m:DNA_Match{RN:toInteger(line.rn1)}) set r.rel=toString(line.rel),r.gen_dist=toInteger(line.gen_dist),r.cor=toFloat(line.cor), r.pair_mrca=toString(line.pair_mrca)";
+       cq = " match (k:Kit{RN:toInteger(line.rn2)})-[r:KitMatch]-(m:DNA_Match{RN:toInteger(line.rn1)}) set r.rel=toString(line.rel),r.gen_dist=toInteger(line.gen_dist),r.cor=toFloat(line.cor), r.pair_mrca=toString(line.pair_mrca),r.mrca_rn=toString(line.mrca_rn)";
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
 
         
-        cq = " match (m1:DNA_Match{RN:toInteger(line.rn1)})-[r:match_by_segment]-(m2:DNA_Match{RN:toInteger(line.rn2)}) set r.rel=toString(line.rel),r.gen_dist=toInteger(line.gen_dist),r.cor=toFloat(line.cor), r.pair_mrca=toString(line.pair_mrca)";
+        cq = " match (m1:DNA_Match{RN:toInteger(line.rn1)})-[r:match_by_segment]-(m2:DNA_Match{RN:toInteger(line.rn2)}) set r.rel=toString(line.rel),r.gen_dist=toInteger(line.gen_dist),r.cor=toFloat(line.cor), r.pair_mrca=toString(line.pair_mrca),r.mrca_rn=toString(line.mrca_rn)";
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
 
-        cq = " match (m1:DNA_Match{RN:toInteger(line.rn2)})-[r:match_by_segment]-(m2:DNA_Match{RN:toInteger(line.rn1)}) set r.rel=toString(line.rel),r.gen_dist=toInteger(line.gen_dist),r.cor=toFloat(line.cor), r.pair_mrca=toString(line.pair_mrca)";
+        cq = " match (m1:DNA_Match{RN:toInteger(line.rn2)})-[r:match_by_segment]-(m2:DNA_Match{RN:toInteger(line.rn1)}) set r.rel=toString(line.rel),r.gen_dist=toInteger(line.gen_dist),r.cor=toFloat(line.cor), r.pair_mrca=toString(line.pair_mrca),r.mrca_rn=toString(line.mrca_rn),r.mrca_rn=toString(line.mrca_rn)";
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
 
-        cq = " match (m1:DNA_Match{RN:toInteger(line.rn1)})-[r:shaed_match]-(m2:DNA_Match{RN:toInteger(line.rn2)}) set r.rel=toString(line.rel),r.gen_dist=toInteger(line.gen_dist),r.cor=toFloat(line.cor), r.pair_mrca=toString(line.pair_mrca)";
+        cq = " match (m1:DNA_Match{RN:toInteger(line.rn1)})-[r:shared_match]-(m2:DNA_Match{RN:toInteger(line.rn2)}) set r.rel=toString(line.rel),r.gen_dist=toInteger(line.gen_dist),r.cor=toFloat(line.cor), r.pair_mrca=toString(line.pair_mrca),r.mrca_rn=toString(line.mrca_rn)";
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
 
-        cq = " match (m1:DNA_Match{RN:toInteger(line.rn2)})-[r:shared_match]-(m2:DNA_Match{RN:toInteger(line.rn1)}) set r.rel=toString(line.rel),r.gen_dist=toInteger(line.gen_dist),r.cor=toFloat(line.cor), r.pair_mrca=toString(line.pair_mrca)";
+        cq = " match (m1:DNA_Match{RN:toInteger(line.rn2)})-[r:shared_match]-(m2:DNA_Match{RN:toInteger(line.rn1)}) set r.rel=toString(line.rel),r.gen_dist=toInteger(line.gen_dist),r.cor=toFloat(line.cor), r.pair_mrca=toString(line.pair_mrca),r.mrca_rn=toString(line.mrca_rn)";
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
 
-        cq = " match (m:DNA_Match)-[r:match_segment{p_rn:toInteger(line.rn1),m_rn:toInteger(line.rn2)}]-(s:Segment) set r.rel=toString(line.rel),r.gen_dist=toInteger(line.gen_dist),r.cor=toFloat(line.cor), r.pair_mrca=toString(line.pair_mrca)";
+        //set match_seg properties differently for order of p and m
+        cq = " match (m:DNA_Match)-[r:match_segment{p_rn:toInteger(line.rn1),m_rn:toInteger(line.rn2)}]-(s:Segment) set r.rel=toString(line.rel),r.gen_dist=toInteger(line.gen_dist),r.cor=toFloat(line.cor), r.pair_mrca=toString(line.pair_mrca),r.mrca_rn=toString(line.mrca_rn), r.p_side=toString(line.side1), r.m_side=toString(line.side2)";
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
 
-        cq = " match (m:DNA_Match)-[r:match_segment{p_rn:toInteger(line.rn2),m_rn:toInteger(line.rn1)}]-(s:Segment) set r.rel=toString(line.rel),r.gen_dist=toInteger(line.gen_dist),r.cor=toFloat(line.cor), r.pair_mrca=toString(line.pair_mrca)";
+        cq = " match (m:DNA_Match)-[r:match_segment{p_rn:toInteger(line.rn2),m_rn:toInteger(line.rn1)}]-(s:Segment) set r.rel=toString(line.rel),r.gen_dist=toInteger(line.gen_dist),r.cor=toFloat(line.cor), r.pair_mrca=toString(line.pair_mrca),r.mrca_rn=toString(line.mrca_rn), r.p_side=toString(line.side2), r.m_side=toString(line.side1)";
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
 
-  
+        cq = "MATCH p=()-[r:match_segment]->() where r.cor>=0.5  set r.p_side='U', r.m_side='U'";
+        gen.neo4jlib.neo4j_qry.qry_write(cq);
 
+        //add union id to relationships with mrcas
+        cq = "MATCH p=()-[r:match_segment]->() where r.pair_mrca is not null with r,r.mrca_rn as mrca with r,[i IN SPLIT(mrca, ',') | TOINTEGER(i)] as mrca match (u:Union) where u.U1 in mrca and u.U2 in mrca with r, collect(u.uid) as uid set r.mrca_uid = uid";
+        gen.neo4jlib.neo4j_qry.qry_write(cq);
+        
+        try 
+        {
+            gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("match_segment", "p_side");
+            gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("match_segment", "m_side");
+            }
+        catch(Exception e){}
         return "completed";
     }
 }

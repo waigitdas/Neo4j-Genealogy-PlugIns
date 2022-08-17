@@ -50,9 +50,12 @@ public class mrca_set_link_property {
         gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:match_segment]-() remove r.p_anc_rn");
         gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:match_segment]-() remove r.m_anc_rn");
  
+        try{
         gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:tg_match]-() remove r.p_anc_rn");
         gen.neo4jlib.neo4j_qry.qry_write("match (m:DNA_Match)-[r:tg_match]-() remove r.m_anc_rn");
-
+        }
+        catch(Exception e){}
+        
         //set node property with new common ancestor phasing
          gen.neo4jlib.neo4j_qry.qry_write("match (p1:Person)-[r:father|mother*0..15]->(p2:Person{RN:" + ancestor_rn + "}) set  p1.ancestor_rn=case when p2 is not null then " + ancestor_rn + " else 0 end");
         gen.neo4jlib.neo4j_qry.qry_write("match (p:Person{ancestor_rn:" + ancestor_rn + "})-[r:Gedcom_DNA]-(m:DNA_Match) set m.ancestor_rn=" + ancestor_rn );
@@ -63,8 +66,12 @@ public class mrca_set_link_property {
        gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(m:DNA_Match)-[r:match_segment]->(s:Segment) where r.cm>=7 and r.snp_ct>=500 and  m.ancestor_rn>0 and r.p_anc_rn is null set r.p_anc_rn=m.ancestor_rn");
         gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() where r.cm>=7 and r.snp_ct>=500 and m1.fullname=r.p and m1.ancestor_rn is not null set r.p_anc_rn = m1.ancestor_rn");
         gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() where r.cm>=7 and r.snp_ct>=500 and r.m is not null  match (m2:DNA_Match) where m2.fullname=r.m and m2.ancestor_rn is not null set r.m_anc_rn=m2.ancestor_rn");
+        
+        try{
         gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(m:DNA_Match)-[r:match_tg]->() where  r.p=m.fullname and m.ancestor_rn is not null set r.p_anc_rn = m.ancestor_rn");
         gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(m:DNA_Match)-[r:match_tg]->() where  r.p=m.fullname with r match (m2:DNA_Match) where m2.fullname=r.m and m2.ancestor_rn is not null set r.m_anc_rn=m2.ancestor_rn");
+        }
+        catch(Exception e){}
         
       gen.neo4jlib.neo4j_qry.qry_write("MATCH p=()-[r:match_segment]->(s) where r.p_anc_rn is not null set s.anc_desc=r.p_anc_rn ");
       

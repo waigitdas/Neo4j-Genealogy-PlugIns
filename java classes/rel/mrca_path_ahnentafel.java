@@ -38,7 +38,7 @@ public List<Long> ahn_path(
     }
     
     public static List<Long> ahnentafel_path(String ahnentafel) {
-        List<Long> ahn = new ArrayList() ;
+        List<Long> ahn = new ArrayList();
         for (int i=1; i < ahnentafel.length()+1; i++) {
             Long x = Long.parseLong(ahnentafel.substring(0,i),2);
             //System.out.println(x);

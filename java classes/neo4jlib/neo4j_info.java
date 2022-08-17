@@ -31,7 +31,7 @@ public class neo4j_info {
     public static String alt_left_bracket ;
     public static String alt_right_bracket ;
     //windows
-    public static String activeProjectData = "C:/Genealogy/Neo4j/active_neo4j.wai";
+    public static String activeProjectData = "C:/Genealogy/gfg/wai/active_neo4j.wai";
     //Linux
     //public static String activeProjectData = "/Genealogy/Neo4j/active_neo4j.wai";
 

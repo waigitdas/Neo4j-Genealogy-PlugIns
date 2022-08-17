@@ -216,7 +216,9 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
     //wrap up and open file
     w.write();
     w.close();
+   
     if (OpenFile.equals(true)){
+    
     Desktop.getDesktop().open(new File(excelFileNm));
     }
     }

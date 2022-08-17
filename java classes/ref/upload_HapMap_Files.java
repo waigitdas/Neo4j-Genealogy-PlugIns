@@ -9,7 +9,10 @@ package gen.ref;
 import gen.load.web_file_to_import_folder;
 import gen.neo4jlib.neo4j_info;
 import gen.neo4jlib.neo4j_qry;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 //import java.util.logging.Level;
@@ -37,22 +40,30 @@ public class upload_HapMap_Files {
     
     
     public void main(String args[]) {
-        upload_HapMap();
+//        try{ 
+            upload_HapMap();
+//        }
+//        catch(Exception e){}
     }
     
-     public static String upload_HapMap() 
+     public static String upload_HapMap() //throws FileNotFoundException 
     {
         gen.neo4jlib.neo4j_info.neo4j_var_reload();
         String activeDb = gen.neo4jlib.neo4j_info.user_database;
     
         gen.neo4jlib.neo4j_info.neo4j_var_reload();
         FileWriter fw = null;
+       FileWriter fwseq = null;
     
         gen.neo4jlib.neo4j_info.user_database="hapmap";
           
         try{
             //takes lots of memory! gen.neo4jlib.neo4j_qry.qry_write("match (h:HapMap) delete h");
             gen.neo4jlib.neo4j_qry.CreateIndex("HapMap", "Indx");
+            gen.neo4jlib.neo4j_qry.CreateIndex("HapMap", "chr");
+           gen.neo4jlib.neo4j_qry.CreateIndex("HapMap", "strt_pos");
+           gen.neo4jlib.neo4j_qry.qry_write("CREATE INDEX IF NOT EXISTS FOR (h:HapMap) ON (h.chr,h.strt_pos)");
+//             gen.neo4jlib.neo4j_qry.CreateCompositeIndex("HapMap","chr,start_pos");
     }
         catch (Exception e){}
         
@@ -74,9 +85,12 @@ public class upload_HapMap_Files {
             //fix header
             String[] s = gen.neo4jlib.file_lib.readFileByLine(gen.neo4jlib.neo4j_info.Import_Dir +  fn).split("\n");
             File fn2 = new File(neo4j_info.Import_Dir + fn);
+            String sprev="0";
+            String prevcm="0.0";
             try {
             fw = new FileWriter(fn2);
-            fw.write("Indx|chr|strt_pos|rate|cm\n");
+            fwseq = new FileWriter(fn2);
+            fw.write("Indx|chr|strt_pos|rate|cm|prev|prevcm\n");
             for (int j=1; j<s.length; j++){
                 String[] ss = s[j].split("\t");
                 String sss = "";
@@ -84,7 +98,12 @@ public class upload_HapMap_Files {
                 sss = sss + chr + "|";
                 sss = sss + ss[1] + "|";
                 sss = sss + ss[2] + "|";
-                sss = sss + ss[3];
+                sss = sss + ss[3] + "|";
+                sss = sss + sprev  + "|";;
+                sss = sss + prevcm;
+                sprev = ss[1];
+                prevcm= ss[3];
+                //if (i.equals(0)) {sprev=String.valueOf(ss[1]); }
                 fw.write(sss + "\n");
             }
             } catch (IOException ex) {
@@ -92,18 +111,34 @@ public class upload_HapMap_Files {
 //Logger.getLogger(upload_HapMap_Files.class.getName()).log(Level.SEVERE, null, ex);
             }
                   
+       try{fw.flush();} catch(Exception e){}
        
-            gen.neo4jlib.neo4j_qry.APOCPeriodicIterateCSV("LOAD CSV WITH HEADERS FROM 'file:///" + fn + "' as line FIELDTERMINATOR '|' return line ", "create (h:HapMap{Indx:toString(line.Indx), chr:toString(line.chr),strt_pos:toInteger(line.strt_pos),rate:toFloat(line.rate),cm:toFloat(line.cm)})", 10000);
+//            gen.neo4jlib.neo4j_qry.APOCPeriodicIterateCSV("LOAD CSV WITH HEADERS FROM 'file:///" + fn + "' as line FIELDTERMINATOR '|' return line ", "create (h:HapMap{Indx:toString(line.Indx), chr:toString(line.chr),strt_pos:toInteger(line.strt_pos),rate:toFloat(line.rate),cm:toFloat(line.cm),icm:toFloat(toFloat(line.cm)-toFloat(line.prevcm))})", 10000);
 //gen.neo4jlib.neo4j_qry.qry_write("Using periodic commit 5000 LOAD CSV With HEADERS FROM 'file:///" + fn + "' AS line FIELDTERMINATOR '|' create (h:HapMap{chr:toString(line.chr),strt_pos:toInteger(line.strt_pos),rate:toFloat(line.rate),cm:toFloat(line.cm),Indx:toString(line.Indx)})");
    
-            gen.neo4jlib.neo4j_qry.CreateCompositeIndex("HapMap","chr,strt_pos");
-            gen.neo4jlib.neo4j_qry.CreateIndex("HapMap", "chr");
-            gen.neo4jlib.neo4j_qry.CreateIndex("HapMap", "strt_pos");
-            
-        }
-                
+      
+         
+         gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///" + fn + "' as line FIELDTERMINATOR '|' create (h:HapMap{Indx:toString(line.Indx), chr:toString(line.chr),strt_pos:toInteger(line.strt_pos),rate:toFloat(line.rate),cm:toFloat(line.cm),icm:toFloat(toFloat(line.cm)-toFloat(line.prevcm))})");
         
-        
+    
+         
+        } // next chr
+               
+    try{
+        fw.flush();
+        fw.close();
+    }
+
+    catch(Exception e){}
+    
+    for (int i=1; i<23; i++){
+            String chr = String.valueOf(i).strip();
+            if (i < 10){chr = "0" + chr; }
+              
+            fn ="HapMap_chr_" + chr + ".csv";
+            gen.neo4jlib.neo4j_qry.APOCPeriodicIterateCSV("LOAD CSV WITH HEADERS FROM 'file:///" + fn + "' AS line FIELDTERMINATOR '|' return line ", "match (h1:HapMap {chr:toString(line.chr),strt_pos:toInteger(line.prev)}) match (h2:HapMap{Indx:toString(line.Indx)}) merge (h1)-[r:seq]->(h2)", 100000);
+
+             }
         
         gen.neo4jlib.neo4j_info.user_database=activeDb;
         

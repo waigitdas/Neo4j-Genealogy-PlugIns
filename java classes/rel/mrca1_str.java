@@ -31,8 +31,7 @@ import gen.neo4jlib.neo4j_qry;
         gen.neo4jlib.neo4j_info.neo4j_var();
         String s = mrca_qry(rn1,rn2);
         return s;
-        //gen.conn.connTest.cstatus();
-             
+              
              }
      }
    

@@ -43,7 +43,7 @@ public class load_ftdna_enhancements {
  
         neo4j_qry.qry_write("match ()-[r:match_by_segment]-() remove r.x_gen_dist");
         
-        neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///x_gen_dist.csv' as line FIELDTERMINATOR '|' MATCH p=(m1:DNA_Match)-[r:match_by_segment]->(m2:DNA_Match) where id(r)=toInteger(line.r) set r.x_gen_dist=toInteger(line.x_gen_dist)");  
+        neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///x_gen_dist.csv' as line FIELDTERMINATOR '|' MATCH p=()-[r:match_by_segment]-() where id(r)=toInteger(line.r) set r.x_gen_dist=toInteger(line.x_gen_dist)");  
  }
  catch(Exception e){}
         return "completed";

@@ -48,7 +48,7 @@ public class excel_from_csv {
     }
     
     public static String load_csv(String csvFile,String FileNm,String SheetName, int SheetNumber, String ColWidths, String colNumberFormat, String ExistingExcelFile,Boolean OpenFile,String message,Boolean include_common_ancestor  ){
- System.out.println("#!");
+ //System.out.println("#!");
  String excelFile = "";
     String excelFileNm = "" ;
     File file;
@@ -58,11 +58,11 @@ public class excel_from_csv {
         gen.rel.anc_rn anc = new gen.rel.anc_rn();
         anc_name = gen.gedcom.get_family_tree_data.getPersonFromRN(anc.get_ancestor_rn(),true);
     }
- System.out.println("#2"); 
+ //System.out.println("#2"); 
      //set up excel. Create new or open prior if there are to be multiple worksheets
      try{
     if (ExistingExcelFile=="") {
-        System.out.println("#3");
+       // System.out.println("#3");
     excelFile = gen.neo4jlib.neo4j_info.Import_Dir + FileNm + "_" + gen.genlib.current_date_time.getDateTime() + ".xls";;
     excelFileNm=excelFile;
     file = new File(excelFileNm);
@@ -78,7 +78,7 @@ public class excel_from_csv {
         w = Workbook.createWorkbook(new File(excelFile), existingWorkbook);
      }
    
-System.out.println("#4");
+//System.out.println("#4");
     WritableSheet excelSheet = w.createSheet(SheetName, SheetNumber);
     createLabel(excelSheet);
     excelSheet.getSettings().setVerticalFreeze(1);
@@ -122,33 +122,33 @@ System.out.println("#4");
             catch(Exception e){}
        }
     }
-System.out.println("#!");
+//System.out.println("#!");
        if (ColWidths.strip() != "") {
         //initialize column width formats
-       for (int i=0;i<colwidth.length ;i++){
-           Boolean willSetWidth = false;
-           String[] cww = ColWidths.split(Pattern.quote(";"));
-            for (int j=0; j<cww.length; j++) {
-             try{
-                 String[] cc = cww[j].split(Pattern.quote(":"));
-               if (Integer.parseInt(cc[0])==i) {  //width specified
-                willSetWidth = true;
-                try{
-                colwidth[Integer.parseInt(cc[0])].setSize(256 * Integer.parseInt(cc[1]));
-                
-                }
-                catch (Exception e) {}
-               }
-               else {
-                colwidth[i]=excelSheet.getColumnView(i);
-                colwidth[i].setAutosize(true);
-           
-               }
+   for (int i=0;i<colwidth.length ;i++){
+       Boolean willSetWidth = false;
+       String[] cww = ColWidths.split(Pattern.quote(";"));
+        for (int j=0; j<cww.length; j++) {
+         try{
+             String[] cc = cww[j].split(Pattern.quote(":"));
+           if (Integer.parseInt(cc[0])==i) {  //width specified
+            willSetWidth = true;
+            try{
+            colwidth[Integer.parseInt(cc[0])].setSize(256 * Integer.parseInt(cc[1]));
+
             }
-             catch (Exception e) {}
-            }
-                excelSheet.setColumnView(i, colwidth[i]);
-       }
+            catch (Exception e) {}
+           }
+           else {
+            colwidth[i]=excelSheet.getColumnView(i);
+            colwidth[i].setAutosize(true);
+
+           }
+        }
+         catch (Exception e) {}
+        }
+            excelSheet.setColumnView(i, colwidth[i]);
+   }
        }
        else{
            

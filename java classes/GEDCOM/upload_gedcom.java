@@ -66,7 +66,7 @@ public class upload_gedcom {
    
     {
         gen.neo4jlib.neo4j_info.neo4j_var_reload();  //initialize variables
-        gen.conn.connTest.cstatus();
+        //gen.conn.connTest.cstatus();
         String filePath =  gen.neo4jlib.neo4j_info.gedcom_file;
  
         //create indices to speed upload using merge

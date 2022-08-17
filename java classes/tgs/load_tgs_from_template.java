@@ -35,13 +35,18 @@ public class load_tgs_from_template {
         //load_tgs_from_csv();
     }
     
-    public  String load_tgs_from_csv() {
+    public String load_tgs_from_csv() {
         gen.neo4jlib.neo4j_info.neo4j_var_reload();
         gen.neo4jlib.neo4j_info.neo4j_var();
         gen.conn.connTest.cstatus();
-        String csvFile =gen.neo4jlib.neo4j_info.root_directory + gen.neo4jlib.neo4j_info.tg_file;
+        String csvFile ="";
+        try{
+        csvFile = gen.neo4jlib.neo4j_info.root_directory + gen.neo4jlib.neo4j_info.tg_file;
        gen.neo4jlib.file_lib.parse_chr_containing_csv_save_to_import_folder(csvFile, 2);
-   
+        }
+        catch (Exception e){
+            return "no tg file";
+        }
         neo4j_qry.qry_write("match ()-[r]-(t:tg) delete r");
          neo4j_qry.qry_write("match (t:tg)-[r]-() delete r");
         neo4j_qry.qry_write("match (t:tg) delete t");

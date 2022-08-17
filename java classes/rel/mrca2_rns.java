@@ -5,12 +5,6 @@
  * Woodstock, IL 60098 USA
  */
 package gen.rel;
-import gen.neo4jlib.neo4j_qry;
-import java.util.List;
-//    import org.neo4j.driver.AuthTokens;
-//    import org.neo4j.driver.net.ServerAddress;
-    import gen.conn.connTest;
-   
     import org.neo4j.procedure.Name;
     import org.neo4j.procedure.UserFunction;
     import org.neo4j.procedure.Description;
@@ -29,18 +23,22 @@ import java.util.List;
   )
     {
          { 
-        //gen.neo4jlib.neo4j_info.neo4j_var();
-       gen.conn.connTest.cstatus();
-       String s = mrca_rn(rn1,rn2);
+       String s = mrca_qry_rn(rn1,rn2);
        return s;
-//         String r =mrca_qry_rn(cq).replace("]; [", ", ");
-//        r = r.replace("[","").replace("]","");
-//        return r;
             }
      }
    
+//       public static void main(String args[]) {
+//        String lo = mrca_qry_rn(1L,600L);
+//        int fgg = 0;
+//    }
+//       
+       
     public String mrca_qry_rn(Long rn1, Long rn2) 
     {
+        gen.neo4jlib.neo4j_info.neo4j_var();
+        gen.neo4jlib.neo4j_info.neo4j_var_reload();
+        
         Long rnmin;
         Long rnmax;
         if (rn1<rn2){
@@ -51,9 +49,10 @@ import java.util.List;
             rnmin=rn2;
             rnmax=rn1;
     }
-           String cq = "match (p1:Person{RN:" + rnmin + "})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(p2:Person{RN:" + rnmax + "}) where p1.RN<p2.RN with mrca order by mrca.sex desc return mrca.RN as rn" ;    
+           String cq = "match (p1:Person{RN:" + rnmin + "})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(p2:Person{RN:" + rnmax + "}) where p1.RN<p2.RN with mrca order by mrca.sex desc return collect(mrca.RN) as rn" ;    
                 
-        return neo4j_qry.qry_str(cq).replace("[","").replace("]","");
+        String s =gen.neo4jlib.neo4j_qry.qry_str(cq).replace("[","").replace("]","").replace(";",";");
+        return s;
     }
 
 }
