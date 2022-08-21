@@ -9,11 +9,11 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 <b>History</b>
 
 <ol>
-<!--
-<li><b>v 1.1.0</b>August 2022</li>
+<li><b>v 1.1.0</b>  August 20, 2022</li>
     <ul>
-        <li>reorganized file structure of data to improve usability</li> 
+        <li>reorganized file structure to improve usability</li> 
         <li>simlified Neo4j setup using code to create folders with required file and configuring plugins and Neo4j behavior</li>
+        <li>added chromosome browser function which is used in a few current functions; more will be added in next release.</li> 
         <li>added avatars: virtual in silico ancestors and relatives</li> 
             <ul>
                 <li>augmented monophyletic segment discovery</li>
@@ -22,15 +22,11 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
                 <li>merged  segments and calculating their cm using a modified HapMap</li>
                 <li>DNA matches of avatars to real world DNA testers</li>
                 <li>avatar reports on segments, matches, etc.</li>
-                <li></li>
             </ul>
-         <li>implemented modified HapMap to speed segment cM calculations</li> 
+         <li>implemented modified HapMap to speed segment cM calculations; automatically uploaded to user Neo4j database with other reference data</li> 
          <li>simplified data loading into single functions that call specific loading functions in sequence</li> 
-         <li></li> 
-         <li></li> 
-         <li></li> 
-    </ul>
--->
+         <li>added half double cousin report to the double cousin report</li> 
+      </ul>
 <li><b>v 1.0.17</b>. July 11, 2022
    <ul>
    <li>Added monophyletic segment report, including their finding of new matches in a family line.
