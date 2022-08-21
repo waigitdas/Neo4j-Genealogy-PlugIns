@@ -9,10 +9,6 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 <b>History</b>
 
 <ol>
-<!--
-
--->
-
 <li><b>v 1.1.0</b>August 20, 2022</li>
     <ul>
         <li>reorganized file structure to improve usability</li> 
