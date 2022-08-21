@@ -45,7 +45,11 @@ public class load_ftdna_enhancements {
         
         neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///x_gen_dist.csv' as line FIELDTERMINATOR '|' MATCH p=()-[r:match_by_segment]-() where id(r)=toInteger(line.r) set r.x_gen_dist=toInteger(line.x_gen_dist)");  
  }
+ 
  catch(Exception e){}
-        return "completed";
+ 
+    gen.neo4jlib.neo4j_qry.qry_write("MATCH p=()-[r:match_segment]->(s) where r.p_rn is not null and r.m_rn is not null and s.chr='0X' with p,r, gen.dna.x_chr_min_genetic_distance(r.p_rn,r.m_rn) as x_gen_dist set r.x_gen_dist=x_gen_dist");
+ 
+ return "completed";
     }
 }

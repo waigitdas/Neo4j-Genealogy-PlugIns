@@ -14,11 +14,7 @@ package gen.dna;
     import java.io.FileWriter;
     import java.io.IOException;
     import java.util.Arrays;
-    //import java.util.logging.Level;
-    //import java.util.logging.Logger;
-    import java.util.regex.Pattern;
-    //import jxl.common.Logger;
-    //import org.apache.log4j.Level;
+     import java.util.regex.Pattern;
     import org.neo4j.procedure.UserFunction;
     import org.neo4j.procedure.Description;
 
@@ -45,9 +41,9 @@ public  String load_ftdna_csv_files(
     }
     
     public  String load_ftdna_files() {
+        gen.neo4jlib.neo4j_info.neo4j_var();
         neo4j_info.neo4j_var_reload(); //initialize user information
-        gen.conn.connTest.cstatus();
-
+        
         String root_dir= gen.neo4jlib.neo4j_info.root_directory;
         String curated_file = gen.neo4jlib.neo4j_info.Curated_rn_gedcom_file;
         
@@ -100,7 +96,7 @@ public  String load_ftdna_csv_files(
         catch (Exception e){};        //neo4j_qry.CreateIndex();
         
         //load curation file
-       file_lib.get_file_transform_put_in_import_dir(root_dir + curated_file, "RN_for_Matches.csv");
+       file_lib.get_file_transform_put_in_import_dir(curated_file, "RN_for_Matches.csv");
         String  lc = "LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' as line FIELDTERMINATOR '|' return line ";
         String cq = "merge (l:Lookup{fullname:toString(line.Match_Name),RN:toInteger(case when line.Curated_RN is null then 0 else line.Curated_RN end),Upload:toString(case when line.File_Upload is null then 'N' else line.File_Upload end),kit:toString(case when line.Kit is null then '' else line.Kit end),HG:toString(case when line.HG is null then '' else line.HG end)})";
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);

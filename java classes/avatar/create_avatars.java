@@ -279,10 +279,6 @@ public class create_avatars {
 
        gen.neo4jlib.neo4j_qry.qry_write("MATCH (d:Avatar)-[r:avatar_segment]-(s:Segment) where d.RN=r.m_rn with d,r, case when r.m_side='maternal' then 'maternal' else case when r.m_side='paternal' then 'paternal' else case when replace(r.m_side,'maternal','')<> r.m_side and replace(r.m_side,'paternal','')<> r.m_side then 'both' else case when r.m_side is null then 'unknown' else '' end end end end as vnode_side set r.avatar_side=vnode_side,r.side_method='direct'");
 
-//       gen.neo4jlib.neo4j_qry.qry_write("MATCH (d:Avatar)-[r:avatar_segment]-(s:Segment) where d.RN=r.p_rn with d,r, case when r.p_side='maternal' then 'maternal' else case when r.p_side='paternal' then 'paternal' else 'unknown' end end as vnode_side set r.avatar_side=vnode_side,r.side_method='direct'");
-//
-//       gen.neo4jlib.neo4j_qry.qry_write("MATCH (d:Avatar)-[r:avatar_segment]-(s:Segment) where d.RN=r.m_rn with d,r, case when r.m_side='maternal' then 'maternal' else case when r.m_side='paternal' then 'paternal' else 'unknown' end end as vnode_side set r.avatar_side=vnode_side,r.side_method='direct'");
-
        //set avatar side using collateral match pairs
        String fncoll = "avatar_collateral_attribution.txt";
        cq ="MATCH p=(d:Avatar)-[r:avatar_segment]->(s:Segment) where r.avatar_side is null and r.cor<0.25 with distinct d.fullname as fn,d.RN as rn, r.p_rn as prn, r.m_rn as mrn,r.p as p,r.m as m return rn,prn,mrn,gen.rel.mrca_side_attribution(rn,prn,mrn,5) as side,fn,p,m";
@@ -359,7 +355,8 @@ public class create_avatars {
 
        //gen.genlib.java_wait.wait(1000);
        
-       cq = "MATCH p=(d:DNA_Match)-[[r:match_segment]]->(s:Segment)<-[[rv:avatar_segment]]-(v:Avatar) where d.RN is null RETURN d.fullname as Discovered_DNA_Tester,case when d.RN is null then 0 else d.RN end as RN,collect(distinct v.fullname) as matching_avatars,collect(distinct s.Indx) as segs";
+       cq = "MATCH p=(d:DNA_Match)-[r:match_segment]->(s:Segment)<-[rv:avatar_segment]-(v:Avatar) where d.RN is null with d.fullname as Discovered_DNA_Tester,case when d.RN is null then 0 else d.RN end as RN,collect(distinct v.fullname + ' [' + v.RN + ']') as matching_avatars,collect(distinct s.Indx) as segs match (k:Kit)-[km:KitMatch]-(d2:DNA_Match) where d2.fullname=Discovered_DNA_Tester return Discovered_DNA_Tester, apoc.coll.sort(collect(distinct k.fullname + case when k.RN is not null then ' [' + k.RN + ']' else '' end)) as source_kits ,matching_avatars, segs";
+               //"MATCH p=(d:DNA_Match)-[[r:match_segment]]->(s:Segment)<-[[rv:avatar_segment]]-(v:Avatar) where d.RN is null RETURN d.fullname as Discovered_DNA_Tester,case when d.RN is null then 0 else d.RN end as RN,collect(distinct v.fullname) as matching_avatars,collect(distinct s.Indx) as segs";
        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Avatar_discovery", "discovered_matches", ct, "", "1:######;2:###,###", excelFile, true, "UDF:\n" + UDF_query + "\n\ncypher query:\n" + cq + "\n\nAvatar segments shared with actual DNA testers who do not have a record number in the curated file and/or family tree.", false);
        ct = ct+1;
        

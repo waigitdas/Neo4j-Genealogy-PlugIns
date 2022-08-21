@@ -120,14 +120,14 @@ public class avatar_all {
         cq = "match (d:Avatar{gen:" + g + "}) with d match (p:Person{RN:d.mother}) merge (d2:Avatar{RN:d.mother,fullname:p.fullname})";
         gen.neo4jlib.neo4j_qry.qry_write(cq);
  
-        cq = "MATCH p=(d:Avatar{gen:" + g + "})-[r:avatar_segment{side:'maternal'}]->(s) with d,s,r match (dn:Avatar{RN:d.mother}) with d,s,r,dn merge (dn)-[rn:avatar_segment{RN:dn.RN,child:d.RN,p:r.p,m:r.m,p_rn:r.p_rn,m_rn:r.m_rn, cm:r.cm, snp_ct:r.snp_ct, pair_mrca:replace(replace(r.pair_mrca,'â¦','⦋'),'â¦','⦌')mrca_rn:r.mrca_rn}]-(s)";
+        cq = "MATCH p=(d:Avatar{gen:" + g + "})-[r:avatar_segment{side:'maternal'}]->(s) with d,s,r match (dn:Avatar{RN:d.mother}) with d,s,r,dn merge (dn)-[rn:avatar_segment{RN:dn.RN,child:d.RN,p:r.p,m:r.m,p_rn:r.p_rn,m_rn:r.m_rn, cm:r.cm, snp_ct:r.snp_ct, pair_mrca:replace(replace(r.pair_mrca,'â¦','⦋'),'â¦','⦌')mrca_rn:r.mrca_rn}, side_method:'direct']-(s)";
         gen.neo4jlib.neo4j_qry.qry_write(cq);
 
         
         cq = "match (d:Avatar{gen:" + g + "}) with d match (p:Person{RN:d.father}) merge (d2:Avatar{RN:d.father,fullname:p.fullname})";
         gen.neo4jlib.neo4j_qry.qry_write(cq);
        
-        cq = "MATCH p=(d:Avatar{gen:" + g + "})-[r:avatar_segment{side:'paternal'}]->(s) with d,s,r match (dn:Avatar{RN:d.father}) with d,s,r,dn merge (dn)-[rn:avatar_segment{RN:dn.RN,child:d.RN,p:r.p,m:r.m,p_rn:r.p_rn,m_rn:r.m_rn, cm:r.cm, snp_ct:r.snp_ct, pair_mrca:replace(replace(r.pair_mrca,'â¦','⦋'),'â¦','⦌'),mrca_rn:r.mrca_rn}]-(s)";
+        cq = "MATCH p=(d:Avatar{gen:" + g + "})-[r:avatar_segment{side:'paternal'}]->(s) with d,s,r match (dn:Avatar{RN:d.father}) with d,s,r,dn merge (dn)-[rn:avatar_segment{RN:dn.RN,child:d.RN,p:r.p,m:r.m,p_rn:r.p_rn,m_rn:r.m_rn, cm:r.cm, snp_ct:r.snp_ct, pair_mrca:replace(replace(r.pair_mrca,'â¦','⦋'),'â¦','⦌'),mrca_rn:r.mrca_rn, side_method:'direct'}]-(s)";
         gen.neo4jlib.neo4j_qry.qry_write(cq);
 
         //////////////////////////////////////////////////////////////////////
