@@ -96,6 +96,10 @@ gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited(cq,"rel_property.csv" );
         cq = "MATCH p=()-[r:match_segment]->() where r.pair_mrca is not null with r,r.mrca_rn as mrca with r,[i IN SPLIT(mrca, ',') | TOINTEGER(i)] as mrca match (u:Union) where u.U1 in mrca and u.U2 in mrca with r, collect(u.uid) as uid set r.mrca_uid = uid";
         gen.neo4jlib.neo4j_qry.qry_write(cq);
         
+        //fix aunt/uncle/nibling
+       gen.neo4jlib.neo4j_qry.qry_write("MATCH p=()-[r:match_segment]->() where r.rel<>replace(r.rel,'Aunt','') set r.rel = case when gen.rel.nibling(r.p_rn,r.m_rn)='true' then 'Nibling' else 'Aunt-Uncle' end");
+       gen.neo4jlib.neo4j_qry.qry_write("MATCH p=()-[r:match_by_segment]->() where r.rel<>replace(r.rel,'Aunt','') set r.rel = case when gen.rel.nibling(r.p_rn,r.m_rn)='true' then 'Nibling' else 'Aunt-Uncle' end");
+        
         try 
         {
             gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("match_segment", "p_side");

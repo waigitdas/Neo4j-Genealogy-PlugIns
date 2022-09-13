@@ -30,7 +30,7 @@ public class avatar_report {
     
     
     public static void main(String args[]) {
-        get_report(27L);
+        get_report(3L);
     }
     
      public static String get_report(Long rn) 
@@ -64,7 +64,7 @@ public class avatar_report {
 
         //DNA Painter file
         String pf ="avatar_" + rn + "_dna_painter" + "_" + gen.genlib.current_date_time.getDateTime()  + ".csv";
-        cq = "with " + rn + " as rn MATCH p=(d:Avatar{RN:rn})-[r:avatar_segment]->(s:Segment) RETURN distinct toInteger(case when s.chr='0X' then 23 else s.chr end) as chr,s.strt_pos as start,s.end_pos as end,r.cm as cM,r.snp_ct as snps, case when r.p<r.m then r.p + ':' + r.m else r.m + ':' + r.p end as match,'good' as confidence,d.fullname as group, r.avatar_side as side,'' as notes,'' as color";
+        cq = "with " + rn + " as rn MATCH p=(d:Avatar{RN:rn})-[r:avatar_segment]->(s:Segment) RETURN distinct toInteger(case when s.chr='0X' then 23 else s.chr end) as chr,s.strt_pos as start,s.end_pos as end,r.cm as cM,r.snp_ct as snps, case when r.p<r.m then r.p + ':' + r.m else r.m + ':' + r.p end + case when r.compare_match is not null then ':' + r.compare_match else '' end  as match,'good' as confidence,r.pair_mrca as group, r.avatar_side as side,'' as notes,'' as color";
         gen.neo4jlib.neo4j_qry.qry_to_csv(cq,pf);       
         
         gen.svg.chromosome_painter cpa = new gen.svg.chromosome_painter();

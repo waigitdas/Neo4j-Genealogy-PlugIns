@@ -766,6 +766,8 @@ neo4j_qry.qry_write("CREATE FULLTEXT INDEX ancestor_surnames_names FOR (n:ancest
 
 
 //chr_cm node
+
+
 try{
         cq="MATCH (s:Segment) with s.chr as c,min(s.strt_pos) as s,max(s.end_pos) as e with c,s,e, gen.dna.hapmap_cm(case when c='0X' then 'X' else c end,s,e) as cm return c,s,e,apoc.math.round(cm,1) as cm";
         //cq="MATCH (s:Segment) with s.chr as c,min(s.strt_pos) as s,max(s.end_pos) as e with c,s,e, 0 as cm return c,s,e,apoc.math.round(cm,1) as cm";

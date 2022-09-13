@@ -46,8 +46,8 @@ public class handy_Functions {
     }
        
        public static String lpad(String s,int PadLen, String padding){
-           String n = s;
-           for (int i=1;i<PadLen-s.length(); i++){
+           String n = s.strip();
+           for (int i=1;i<PadLen-s.length()+1; i++){
                n = padding + n;
            }
            return n;
@@ -58,7 +58,7 @@ public class handy_Functions {
            String sn ="";
            for (int i=0;i<ss.length; i++){
                sn = sn + "'" + ss[i].strip() + "'";
-               if (i<ss.length-1){sn = sn + ",";
+               if (i<ss.length){sn = sn + ",";
            }
        }
            return sn;

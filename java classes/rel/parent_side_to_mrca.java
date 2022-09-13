@@ -33,10 +33,10 @@ public class parent_side_to_mrca {
     
     
     public static void main(String args[]) {
-        get_sides(216L,209L);
+        //get_sides(216L,209L);
     }
     
-     public static String get_sides(Long rn1,Long rn2) 
+     public  String get_sides(Long rn1,Long rn2) 
     {   
         //sort and r1<r2 in query speeds up query time
         Long rnmin;

@@ -31,44 +31,23 @@ public class upload_gedcom {
 
        )
       {
-        //double tm = System.currentTimeMillis();
          String sss = load_gedcom();
-        //double tmelapsed= System.currentTimeMillis() - tm;
         return sss;
       }
+    
   public  void main(String args[]){
     load_gedcom();
 }
 
-    public  String getIndvStr(String[] s) {
-        String indv="";
-        for (String i : s){
-                if (i.substring(0, 1).equals("I") || i.substring(0, 1).equals("P")) {
-                    indv = i.substring(0, 1);
-                    break;
-                }
-                }
-        return indv;
-    }
+ 
   
-//    public String getFamStr(String[] s) {
-//        String fam="";
-//        for (String i : s){
-//                if (i.substring(0, 1).equals("F") ) {
-//                    fam = i.substring(0, 1);
-//                    break;
-//                }
-//                }
-//        return fam;
-//    }
-  
-    public  String load_gedcom () 
+    public static String load_gedcom () 
    
     {
         gen.neo4jlib.neo4j_info.neo4j_var_reload();  //initialize variables
         //gen.conn.connTest.cstatus();
         String filePath =  gen.neo4jlib.neo4j_info.gedcom_file;
- 
+
         //create indices to speed upload using merge
         neo4j_qry.CreateIndex("Person", "RN");
         neo4j_qry.CreateIndex("Person", "fullname");
@@ -294,6 +273,17 @@ public class upload_gedcom {
         return sout;
         }
 
+      public static  String getIndvStr(String[] s) {
+        String indv="";
+        for (String i : s){
+                if (i.substring(0, 1).equals("I") || i.substring(0, 1).equals("P")) {
+                    indv = i.substring(0, 1);
+                    break;
+                }
+                }
+        return indv;
+    }
+  
    private static String EventDate(String ged,String event_type) {
         //parses date of event from @INDV@ or @FAM@ tags in GEDCOM    
         String s = " ";

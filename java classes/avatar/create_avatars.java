@@ -48,12 +48,21 @@ public class create_avatars {
         gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("avatar_segment", "source");
         gen.neo4jlib.neo4j_qry.CreateIndex("Avatar", "fullname");
         gen.neo4jlib.neo4j_qry.CreateIndex("Avatar", "RN");
-        } 
+        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("avatar_segment", "p");
+        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("avatar_segment", "m");
+        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("avatar_segment", "p_rn");
+        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("avatar_segment", "m_rn");
+       gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("avatar_segment", "avatar_rn");
+        //gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("avatar_segment", "m_rn");
+           } 
         catch(Exception e){}
         
         gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:avatar_segment]-() delete r");
         gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:avatar_avsegment]-() delete r");
         gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:avseg_seg]-() delete r");
+        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:person_avatar]-() delete r");
+        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:avfather]-() delete r");
+        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:avmother]-() delete r");
         gen.neo4jlib.neo4j_qry.qry_write("match (d:Avatar) delete d");
    
         //get all descendants who are DNA testers
@@ -238,31 +247,7 @@ public class create_avatars {
              }
          }
        
-         
-       //cq ="MATCH p=(d)-[r:avatar_segment]->() RETURN d.RN as RN,d.fullname as Profile_Name, count(*) as Monophyletic_segments order by d.RN";
-       
-       ////////////////////////////////////////////////////////////////////////
-       //////////////////   QUERIES    ////////////////////////////////////////
-       ////////////////////////////////////////////////////////////////////////
-       ////////////////////////////////////////////////////////////////////////
-       //no duplicate Avatar nodes
-       //MATCH (n:Avatar) RETURN n.fullname,n.RN,count(*) as ct order by ct desc
-
-       
-       
-       //MATCH p=(d:Avatar)-[r:avatar_segment]->(s:Segment) RETURN  d.fullname as fullname,d.RN as RN,s.Indx as seg,count(*) as ct  order by seg
-       
-//       MATCH p=(d:Avatar)-[r:avatar_segment]->(s:Segment) with  d,s,r
-//return d.fullname,s.Indx,count(*),sum(r.cm)/count(*) as ave_cm
-//order by s.Indx
-       
-//MATCH p=()-[r:avatar_segment]->() RETURN r.p,r.m,sum(r.cm) as cm order by cm desc
-
-       ////////////////////////////////////////////////////////////////////////
-       ////////////////////////////////////////////////////////////////////////
-       ////////////////////////////////////////////////////////////////////////
-       ////////////////////////////////////////////////////////////////////////
-
+        
        try{
         fw.flush();
         fw.close();
@@ -288,6 +273,10 @@ public class create_avatars {
         cq = "match (a:Avatar{RN:toInteger(line.rn)})-[r:avatar_segment{p_rn:toInteger(line.prn),m_rn:toInteger(line.mrn)}]-(s:Segment) where line.side<>'-' set r.avatar_side=line.side, r.side_method='collateral'";
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 1000);
 
+        //infere method
+        gen.avatar.inferred_segments_overlap ios = new gen.avatar.inferred_segments_overlap();
+        ios.infer_segments();
+        
         //add c_gen_dist property; delete relationship where 0
        gen.neo4jlib.neo4j_qry.qry_write("MATCH p=()-[r:avatar_segment]->(s:Segment{chr:'0X'}) with r, gen.dna.x_chr_min_genetic_distance(r.avatar_rn,r.source) as xgd set r.x_gen_dist=xgd");
        gen.neo4jlib.neo4j_qry.qry_write("MATCH p=()-[r:avatar_segment{x_gen_dist:0}]->(s:Segment{chr:'0X'})   delete r");
@@ -295,6 +284,14 @@ public class create_avatars {
        gen.avatar.avatar_parental_cm  gap = new gen.avatar.avatar_parental_cm() ;
        gap.parental_cm();
 
+       //create person_avatar relationship
+       gen.neo4jlib.neo4j_qry.qry_write("match (a:Avatar) with a match(p:Person) where p.RN=a.RN merge (p)-[r:person_avatar]->(a) set a.sex=p.sex");
+       
+       gen.neo4jlib.neo4j_qry.qry_write("match (a:Avatar) with a match(p:Person)-[r:father]->(anc:Person) where p.RN=a.RN with a,p,anc,r with a.fullname as fn,a.RN as rn,anc.RN as arn match (a1:Avatar{RN:rn}) match(a2:Avatar{RN:arn}) merge (a1)-[rp:avfather]->(a2)");
+       
+       gen.neo4jlib.neo4j_qry.qry_write("match (a:Avatar) with a match(p:Person)-[r:mother]->(anc:Person) where p.RN=a.RN with a,p,anc,r with a.fullname as fn,a.RN as rn,anc.RN as arn match (a1:Avatar{RN:rn}) match(a2:Avatar{RN:arn}) merge (a1)-[rp:avmother]->(a2)");
+       
+       
        
        ////////////////////////////////////////////////////////////////////////
        /////////////////////  REPORTS//////////////////////////////////////////
