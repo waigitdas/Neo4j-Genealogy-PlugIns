@@ -9,21 +9,15 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 <b>History</b>
 
 <ol>
-<!--
-<li><b>v 1.1.1</b> Sept 2022
+
+<li><b>v 1.1.3</b> Sept 2022
     <ul>
         <li>added inferred segments for avatars</li>
         <li>added function to distinguish aunt/uncles from nibling. Used in inferred segments; aunt/uncles cannot be used.</li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
+        <li>added function to get the full path to the Neo4j dbms folder</li>
     </ul>
 </li>
--->
+
 <li><b>v 1.1.0</b>  August 20, 2022</li>
     <ul>
         <li>reorganized file structure to improve usability</li> 
