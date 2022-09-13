@@ -10,7 +10,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 
 <ol>
 
-<li><b>v 1.1.3</b> Sept 2022
+<li><b>v 1.1.3</b> Sept 13, 2022
     <ul>
         <li>added inferred segments for avatars</li>
         <li>added function to distinguish aunt/uncles from nibling. Used in inferred segments; aunt/uncles cannot be used.</li>
