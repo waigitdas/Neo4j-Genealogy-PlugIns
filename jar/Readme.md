@@ -10,20 +10,33 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 
 <ol>
 <!--
-<li><b>v 1.1.1</b> Sept 2022
+<li><b>v 1.1.5</b> Sept 2022</li>
+ <ul>
+    <li>Y-DNA enhancements</li>
+        <ul>
+            <li>function to upload FTDNA STR and SNP data</li>
+            <li>function to computer Y-haplogroups of patrilineal paths in a family tree</li>
+            <li>Function to list all Y-haplogroups in a project</li>
+            <li>improved report on haplogroups and matches on a clade and its branches. Includes visualization query for Neo4j Browser</li>
+        </ul>
+    <li></li>
+    <li></li>
+ </ul>
+-->
+<li><b>v 1.1.4</b> Sept 14, 2022
+<ul>
+    <li>adjustments to accomodate new menu items in GFG software v 1.2.4</li>
+</ul>
+</li>
+
+<li><b>v 1.1.3</b> Sept 13, 2022
     <ul>
         <li>added inferred segments for avatars</li>
         <li>added function to distinguish aunt/uncles from nibling. Used in inferred segments; aunt/uncles cannot be used.</li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
+        <li>added function to get the full path to the Neo4j dbms folder</li>
     </ul>
 </li>
--->
+
 <li><b>v 1.1.0</b>  August 20, 2022</li>
     <ul>
         <li>reorganized file structure to improve usability</li> 
