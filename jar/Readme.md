@@ -16,8 +16,8 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
         <ul>
             <li>function to upload FTDNA STR and SNP data</li>
             <li>function to computer Y-haplogroups of patrilineal paths in a family tree</li>
+            <li>Function to list all Y-haplogroups in a project</li>
             <li>improved report on haplogroups and matches on a clade and its branches. Includes visualization query for Neo4j Browser</li>
-            <li></li>
         </ul>
     <li></li>
     <li></li>
