@@ -25,7 +25,7 @@ public class load_ftdna_files {
 public  String load_ftdna_csv_files(
 
   )
-    {
+    
         
         { 
         double tm = System.currentTimeMillis();
@@ -33,14 +33,14 @@ public  String load_ftdna_csv_files(
         double tmelapsed = System.currentTimeMillis() - tm;
         return s +" in " + tmelapsed + " msec";
             }
-     }
+     
    
     
-    public void main(String args[]) {
+    public static void main(String args[]) {
         load_ftdna_files();
     }
     
-    public  String load_ftdna_files() {
+    public static String load_ftdna_files() {
         gen.neo4jlib.neo4j_info.neo4j_var();
         neo4j_info.neo4j_var_reload(); //initialize user information
         
@@ -59,14 +59,10 @@ public  String load_ftdna_csv_files(
         neo4j_qry.CreateIndex("DNA_Match","mtHG");
         neo4j_qry.CreateIndex("DNA_YMatch","YHG");
         neo4j_qry.CreateIndex("Segment","Indx");
-//        neo4j_qry.CreateIndex("tg","tgid");
-//        neo4j_qry.CreateIndex("tg","strt_pos");
-//        neo4j_qry.CreateIndex("tg","end_pos");
         neo4j_qry.CreateIndex("Continent","name");
         neo4j_qry.CreateIndex("pop_group","name");
        neo4j_qry.CreateIndex("ancestor_surnames","p");
        neo4j_qry.CreateIndex("ancestor_surnames","m");
-        //neo4j_qry.CreateIndex("email","fullname");
         neo4j_qry.CreateRelationshipIndex("match_segment","cm");
         neo4j_qry.CreateRelationshipIndex("match_segment","snp_ct");
         neo4j_qry.CreateRelationshipIndex("match_segment","m");
@@ -129,6 +125,8 @@ public  String load_ftdna_csv_files(
         String YMatch = "";
         String mtMatch = "";
         String chrPainter ="";
+        String Y_derived ="";
+        String Y_STR = "";
         
         String kit_fullname="";
        
@@ -378,7 +376,7 @@ public  String load_ftdna_csv_files(
 
                     fw.flush();    
                     fw.close();
-}
+
  
                 //Load unique chromosome segments shared by matches and currently iterated kit
                 //Segment nodes use only chr, strt and end pos. Variation in other properties will be incorporated into edges because they are variations from match pairs
@@ -387,7 +385,7 @@ public  String load_ftdna_csv_files(
                     lc = "LOAD CSV WITH HEADERS FROM 'file:///" + FileSegs + "' as line FIELDTERMINATOR '|' return line ";
                     cq = "merge (l:Segment{Indx:ltrim(toString(case when line.Chromosome is null then '' else line.Chromosome end)) + ':' + toInteger(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toInteger(case when line.End_Location is null then 0 else line.End_Location end)  ,chr:toString(case when line.Chromosome is null then '' else line.Chromosome end), strt_pos:toInteger(case when line.Start_Location is null then 0 else line.Start_Location end), end_pos:toInteger(case when line.End_Location is null then 0 else line.End_Location end)}) ";
                     neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
-
+}
 
 
 //                 cq = "LOAD CSV WITH HEADERS FROM 'file:///" + FileSegs + "' AS line FIELDTERMINATOR '|' merge (l:Segment{Indx:ltrim(toString(case when line.Chromosome is null then '' else line.Chromosome end)) + ':' + toInteger(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toInteger(case when line.End_Location is null then 0 else line.End_Location end)  ,chr:toString(case when line.Chromosome is null then '' else line.Chromosome end), strt_pos:toInteger(case when line.Start_Location is null then 0 else line.Start_Location end), end_pos:toInteger(case when line.End_Location is null then 0 else line.End_Location end)})";
@@ -435,10 +433,51 @@ public  String load_ftdna_csv_files(
                     cq = "match (f:DNA_YMatch{fullname:trim(toString(case when line.First_Name is null then '' else line.First_Name end + case when line.Middle_Name is null then '' else ' ' + line.Middle_Name end + case when line.Last_Name is null then '' else ' ' + line.Last_Name end))}) match (k:Kit{kit:'" + kit + "'})  merge (k)-[r:KitYMatch{gd:toString(case when line.Genetic_Distance is null then '' else line.Genetic_Distance end),YHG:toString(case when line.Y_DNA_Haplogroup is null then '' else line.Y_DNA_Haplogroup end),match_date:toString(case when line.Match_Date is null then '' else line.Match_Date end),str_diff:toString(case when line.Big_Y_STR_Differences is null then '' else line.Big_Y_STR_Differences end),str_compare:toString(case when line.Big_Y_STRs_Compared is null then '' else line.Big_Y_STRs_Compared end)}]->(f)";
                     neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
                     
+                    cq="LOAD CSV WITH HEADERS FROM 'file:///" + YMatch + "' as line FIELDTERMINATOR '|' match ";
                     
 //                    neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///" + YMatch + "' AS line FIELDTERMINATOR '|' match (f:DNA_YMatch{fullname:toString(trim(line.Full_Name))}) match (k:Kit{kit:'" + kit + "'})  merge (k)-[r:DNA_YKitMatch{gd:toInteger(line.Genetic_Distance),YHG:toString(case when line.Y_DNA_Haplogroup is null then '' else line.Y_DNA_Haplogroup end),terminal_SNP:toString(case when line.Terminal_SNP is null then '' else line.Terminal_SNP end),match_date:toString(case when line.Match_Date is null then '' else line.Match_Date end),str_diff:toString(case when line.Big_Y_STR_Differences is null then '' else line.Big_Y_STR_Differences end),str_compare:toString(case when line.Big_Y_STRs_Compared is null then '' else line.Big_Y_STRs_Compared end)}]->(f)");
 
                } // end Y DNA
+ 
+                //******************************************************************************
+                //************  Y-SNPS / STR *****************************************
+                //******************************************************************************
+                if (pathitem.contains("BigY_Data_Derived")){
+                    
+                    Y_derived = pathitem;
+                    //save file but process after Y-haplotree loaded'
+                    file_lib.get_file_transform_selected_put_in_import_dir(root_dir + KitDir + "\\" + pathitem, pathitem,"Known SNP",kit);
+                }
+ 
+                //transform the STR file into format that can be imported into Neo4j
+                if (pathitem.contains("YDNA_DYS_Results")){
+                    Y_STR = pathitem;
+                    File fnder = new File(neo4j_info.Import_Dir + pathitem);
+                    FileWriter fwder = new FileWriter(fnder);
+                    
+                    try{fwder.write("kit|str|value\n"); }
+                    catch(Exception e){}
+                    
+                    //save file but process after Y-haplotree loaded'
+                    String ds[] = gen.neo4jlib.file_lib.readFileByLine(root_dir + KitDir + "\\" + pathitem).split("\n");
+                    String dsh[] = ds[0].split(",");
+                    String dsr[] = ds[1].split(",");
+                    for (int rw=0; rw<dsh.length; rw++) {
+                        try
+                        {
+                            fwder.write(kit + "|" + dsh[rw] + "|" + dsr[rw].replace("\"","").strip() + "\n");
+                          }
+                        catch(Exception e){}
+                    }
+                    
+                    try{
+                        fwder.flush();
+                      fwder.close();
+
+                    }
+                        catch(Exception e){}
+                    
+                              }
  
     
                   //******************************************************************************
@@ -795,6 +834,9 @@ catch(Exception e){}
     gen.ref.upload_mt_haplotree mht = new gen.ref.upload_mt_haplotree();
     mht.upload_FTDNA_mt_haplotree();
     
+    
+       neo4j_qry.qry_write("match (d:DNA_Match) with d MATCH (y:DNA_YMatch) where d.fullname=y.fullname and d.RN is not null set y.RN=d.RN");
+       neo4j_qry.qry_write("match (d:DNA_Match) with d MATCH (y:DNA_YMatch) where d.fullname=y.fullname and d.kit is not null set y.kit=d.kit");
      return  "completed";
 
     }

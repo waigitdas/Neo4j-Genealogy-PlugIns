@@ -14,7 +14,7 @@ import org.neo4j.procedure.UserFunction;
 
 public class project_surnames_Y_haplogroups {
     @UserFunction
-    @Description("Template used in creating new functions.")
+    @Description("Y-HG for a surname.")
 
     public String surname_Y_haplogroups(
         @Name("search_term") 
@@ -43,8 +43,10 @@ public class project_surnames_Y_haplogroups {
             if (i<ss.length-1){s = s + ",";}
         }
 
-        String cq ="MATCH p=(m:DNA_Match)-[[r:match_block]]->(b:block) where m.surname in [[" + s + "]] with m,b match bp=(b)<-[[rb:block_child*0..99]]-() with m,b,count(length(bp)) as hops_to_adam match (b)-[[:block_snp]]->(v:variant) with m,b,hops_to_adam,v order by v.name with m,m.fullname as match,b.name as block,hops_to_adam,collect(v.name) as variants return match, block, hops_to_adam, size(variants) as variant_ct, variants order by m.surname, block,hops_to_adam desc";
+        String cq ="MATCH p=(m:DNA_Match)-[[r:match_block]]->(b:block) where toUpper(m.surname) in [[" + s.toUpperCase() + "]] with m,b match bp=(b)<-[[rb:block_child*0..99]]-() with m,b,count(length(bp)) as hops_to_adam match (b)-[[:block_snp]]->(v:variant) with m,b,hops_to_adam,v order by v.name with m,m.fullname as match,b.name as block,hops_to_adam,collect(v.name) as variants return match, block, hops_to_adam, size(variants) as variant_ct, variants order by m.surname, block,hops_to_adam desc";
         gen.excelLib.queries_to_excel.qry_to_excel(cq, "y_hg_desc", "Y-HG", 1, "", "2:###;3:###", "", true,"UDF:\nreturn gen.dna.project_y_hgs()\n\ncypher query:\n" + cq, true);
+        
+        
         return "completed";
     }
 }

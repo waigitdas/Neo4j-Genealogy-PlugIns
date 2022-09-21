@@ -135,6 +135,44 @@ try{
      catch (Exception e) {System.out.println(e.getMessage());};
     }
    
+public static void get_file_transform_selected_put_in_import_dir(String filePathRead, String filePathSave, String selectText, String kit){
+
+try{        
+   Reader fileReader = new FileReader(filePathRead);
+   //Iterable<CSVRecord> records = CSVFormat.RFC4180.parse(fileReader);
+   Iterable<CSVRecord> records = CSVFormat.RFC4180.parse(fileReader);
+   File fn = new File(neo4j_info.Import_Dir +  filePathSave);
+   FileWriter fw = new FileWriter(fn);
+            
+        
+   int ct = 0;
+   for (CSVRecord record : records) {
+          if(ct>0 && record.get(0).contentEquals("Known SNP")==false){break;}
+          String s="";
+          if (ct==0) {s = "kit" + "|";}
+          else{s = kit + "|";}
+       for (int i=0; i < record.size(); i++) {
+
+        if (ct==0) {s = s + record.get(i).replace(" ","_").replace("-","_") + "|";}
+        else {
+            
+            s = s + record.get(i).replace("\"","")  + "|";
+        }
+    
+   } //end record
+       
+   fw.write(s + "\n");
+   ct = ct +1;
+
+   } //end all records
+
+       fw.flush();    
+       fw.close();
+       fileReader.close();
+}
+     catch (Exception e) {System.out.println(e.getMessage());};
+    }
+   
 public static String getFileNameFromPath(String FileName) {
     String[] s = FileName.split("/");
     return s[s.length-1];

@@ -291,6 +291,7 @@ public class create_avatars {
        
        gen.neo4jlib.neo4j_qry.qry_write("match (a:Avatar) with a match(p:Person)-[r:mother]->(anc:Person) where p.RN=a.RN with a,p,anc,r with a.fullname as fn,a.RN as rn,anc.RN as arn match (a1:Avatar{RN:rn}) match(a2:Avatar{RN:arn}) merge (a1)-[rp:avmother]->(a2)");
        
+       gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(a1:Avatar)-[r1:avatar_avsegment]->(s:avSegment)<-[r2:avatar_avsegment]-(a2:Avatar) with a1,a2,sum(s.cm) as cm merge (a1)-[r3:av_shared_avsegments{cm:cm}]->(a2)");
        
        
        ////////////////////////////////////////////////////////////////////////
