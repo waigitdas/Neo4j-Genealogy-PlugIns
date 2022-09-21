@@ -9,7 +9,10 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 <b>History</b>
 
 <ol>
+<!--
+<li><b>v 1.1.4</b></li>
 
+-->
 <li><b>v 1.1.3</b> Sept 13, 2022
     <ul>
         <li>added inferred segments for avatars</li>
