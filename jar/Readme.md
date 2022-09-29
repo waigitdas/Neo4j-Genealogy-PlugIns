@@ -21,8 +21,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
             <li>Function to list all Y-haplogroups in a project</li>
             <li>improved report on haplogroups and matches on a clade and its branches. Includes visualization query for Neo4j Browser</li>
         </ul>
-    <li></li>
-    <li></li>
+ 
  </ul>
 
 <li><b>v 1.1.4</b> Sept 14, 2022
