@@ -10,9 +10,9 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 
 <ol>
 <!--
-<li><b>v 1.1.6</b> Sept 29, 2022</li>
+<li><b>v 1.1.6</b> SOct 2022</li>
 -->
-<li><b>v 1.1.5</b> Oct 2022</li>
+<li><b>v 1.1.5</b> Sept 29, 2022</li>
  <ul>
     <li>Y-DNA enhancements</li>
         <ul>
