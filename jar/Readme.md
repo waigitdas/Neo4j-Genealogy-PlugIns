@@ -10,7 +10,9 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 
 <ol>
 <!--
-<li><b>v 1.1.5</b> Sept 2022</li>
+<li><b>v 1.1.6</b> SOct 2022</li>
+-->
+<li><b>v 1.1.5</b> Sept 29, 2022</li>
  <ul>
     <li>Y-DNA enhancements</li>
         <ul>
@@ -19,10 +21,9 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
             <li>Function to list all Y-haplogroups in a project</li>
             <li>improved report on haplogroups and matches on a clade and its branches. Includes visualization query for Neo4j Browser</li>
         </ul>
-    <li></li>
-    <li></li>
+ 
  </ul>
--->
+
 <li><b>v 1.1.4</b> Sept 14, 2022
 <ul>
     <li>adjustments to accomodate new menu items in GFG software v 1.2.4</li>
