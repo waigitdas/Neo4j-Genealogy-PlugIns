@@ -13,6 +13,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 <li><b>v 1.1.8</b> Oct , 2022</li>
     <ul>
     <li>add comments to explain coding</li>
+    <li>function to upload FTDNA STR and SNP data</li>
     <li></li>
     </uL>
 -->
