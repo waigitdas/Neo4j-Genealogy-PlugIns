@@ -274,8 +274,11 @@ public class create_avatars {
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 1000);
 
         //infere method
+        try{  //may be insufficient data for infer method
         gen.avatar.inferred_segments_overlap ios = new gen.avatar.inferred_segments_overlap();
         ios.infer_segments();
+        }
+        catch(Exception e){}
         
         //add c_gen_dist property; delete relationship where 0
        gen.neo4jlib.neo4j_qry.qry_write("MATCH p=()-[r:avatar_segment]->(s:Segment{chr:'0X'}) with r, gen.dna.x_chr_min_genetic_distance(r.avatar_rn,r.source) as xgd set r.x_gen_dist=xgd");

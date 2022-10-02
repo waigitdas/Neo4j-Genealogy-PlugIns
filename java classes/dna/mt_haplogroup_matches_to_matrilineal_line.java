@@ -40,7 +40,7 @@ public class mt_haplogroup_matches_to_matrilineal_line
     {
         gen.neo4jlib.neo4j_info.neo4j_var();
         String anc_name =  gen.gedcom.get_family_tree_data.getPersonFromRN(rn, true) ;
-        String cq = "with '" + hg + "' as hg MATCH p=(m1:DNA_Match{mtHG:hg})-[[r:match_by_segment]]->(m2:DNA_Match) with m1,m2,r match(p1:Person{RN:m2.RN})-[[rf:father|mother*0..99]]->(p2:Person{RN:" + rn + "}) with m1.fullname as match1,collect(distinct m2.fullname) as match2,m1.mtHG as mt_haplogroup return match1 as mtHG_match,mt_haplogroup,match2 as autosomal_known_matches_descended from_matriarch";
+        String cq = "with '" + hg + "' as hg MATCH p=(m1:DNA_Match{mtHG:hg})-[[r:match_by_segment]]->(m2:DNA_Match) with m1,m2,r match(p1:Person{RN:m2.RN})-[[rf:father|mother*0..99]]->(p2:Person{RN:" + rn + "}) with m1.fullname as match1,collect(distinct m2.fullname) as match2,m1.mtHG as mt_haplogroup return match1 as mtHG_match,mt_haplogroup,match2 as autosomal_known_matches_descended_from_matriarch";
         
        gen.excelLib.queries_to_excel.qry_to_excel(cq,gen.neo4jlib.neo4j_info.project +  "_mt_matrilineal_line_matches", "matrilineal_matches", 1, "","1:####;3:####;4:#####", "", true,"udf\nreturn gen.dna.mt_haplogroup_matrilineal_Descendant_matches(" + rn + ", '" + hg + "')\n\ncyspher query\n" + cq + "\n\nThis report links all matches with the specified mt-haplogroup to descendants of a specified direct female ancestor known to have this haplogroup.\nThe known match need not be a matrilineal descendant of the matriarch.\n\nreference:\nmt_haplogroup_matrilineal_Descendant_matches.\n\nTarget matilineal ancestor: " + anc_name + ".", false);
         

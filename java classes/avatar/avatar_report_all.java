@@ -63,7 +63,18 @@ public class avatar_report_all {
 
        //avatar list by names 
        cq = "MATCH p=(d:DNA_Match)-[[r:match_segment]]->(s:Segment)<-[[rv:avatar_segment]]-(v:Avatar) where d.RN is not null with v.fullname as v,v.RN as RN,collect(distinct d.fullname) as dc,count(*) as source_segment_ct,sum(case when rv.avatar_side='maternal' then 1 else 0 end) as maternal ,sum(case when rv.avatar_side='paternal' then 1 else 0 end) as paternal return v as Avatar,RN as RN, size(dc) as match_ct,source_segment_ct,maternal,paternal,source_segment_ct/size(dc) as aver_ct_per_match,dc as DNA_Matches order by match_ct desc";
-       excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Arvatar_names", "avatar_by_name", ct, "", "1:######;2:###,###;3:###,###;4:###,###;5:###,###;6:###,###", excelFile, false, "UDF:\n" + UDF_query + "\n\ncypher query:\n" + cq + "\n\nSegments counts for maternal or paternaln atributions are in columns E and F\n\nList of avatars with their shared matches. Segments will be double counted because of the aggregation; they do not reconcile to other sheets.", false);
+       excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Arvatar_names", "direct_method_segs", ct, "", "1:######;2:###,###;3:###,###;4:###,###;5:###,###;6:###,###", excelFile, false, "UDF:\n" + UDF_query + "\n\ncypher query:\n" + cq + "\n\nSegments counts for maternal or paternaln atributions are in columns E and F\n\nList of avatars with their shared matches. Segments will be double counted because of the aggregation; they do not reconcile to other sheets.", false);
+       ct = ct+1;
+       
+       //total CSegs
+       cq = "MATCH (a:Avatar) where a.total_cm is not null with a, a.fullname as avatar, a.RN as RN, a.paternal_cm as CSeg_paternal_cm, a.maternal_cm as CSeg_maternal_cm, a.total_cm as CSeg_total_cm, apoc.math.round(a.dna_coverage,3) as ancestor_coverage RETURN avatar,RN, ancestor_coverage, CSeg_paternal_cm,CSeg_maternal_cm,CSeg_total_cm order by CSeg_total_cm desc";
+       excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Arvatar_names", "CSeg_cm", ct, "", "1:######;2:0.####;3:###,###;4:###,###;5:###,###;6:###,###", excelFile, false, "UDF:\n" + UDF_query + "\n\ncypher query:\n" + cq + "\n\nAvatar CSeg cM, which avoids double counting of segments attributed to the avatar by parental side. \nThe coverage reported here will agree with that when uploading an individual avataar report DNA Painter file to DNA Painter", false);
+       ct = ct+1;
+       
+       
+       //attribution methods
+       cq = "MATCH p=(a:Avatar)-[r:avatar_segment]->(s:Segment) with a.fullname as avatar,count(*) as seg_ct,toInteger(sum(case when r.side_method='direct' then r.cm else 0 end)) as direct_cm,toInteger(sum(case when r.side_method='collateral' then r.cm else 0 end)) as collateral_cm,toInteger(sum(case when r.side_method='infer' then r.cm else 0 end)) as infer_cm with avatar, seg_ct, direct_cm, collateral_cm,infer_cm,direct_cm+collateral_cm+infer_cm as total_cm with avatar, seg_ct, direct_cm, collateral_cm,infer_cm, total_cm where total_cm>0 return avatar, seg_ct, direct_cm, collateral_cm,infer_cm, total_cm";
+       excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Arvatar_names", "attribution_method", ct, "", "1:######;2:0.####;3:###,###;4:###,###;5:###,###;6:###,###", excelFile, false, "UDF:\n" + UDF_query + "\n\ncypher query:\n" + cq + "\n\nAvatar cM assigned to a parental side by each method. The cM are for MSegs and the totals are thus double counted because the overlap. \nThis report help us understand the relative contribution of the different methods to te cM.", false);
        ct = ct+1;
        
        //avatar side categorization
