@@ -9,16 +9,24 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 <b>History</b>
 
 <ol>
+<!--
+<li><b>v 1.1.8</b> Oct , 2022</li>
+    <ul>
+    <li>add comments to explain coding</li>
+    <li></li>
+    </uL>
+-->
+    
 <li><b>v 1.1.7</b> Oct 1, 2022</li>
-<ul>
-<li>fix bugs in setup workflows
-</uL>
+    <ul>
+    <li>fix bugs in setup workflows
+     <li>function to upload FTDNA STR and SNP data</li>
+   </uL>
 <li><b>v 1.1.5</b> Sept 29, 2022</li>
  <ul>
     <li>Y-DNA enhancements</li>
         <ul>
-            <li>function to upload FTDNA STR and SNP data</li>
-            <li>function to computer Y-haplogroups of patrilineal paths in a family tree</li>
+             <li>function to computer Y-haplogroups of patrilineal paths in a family tree</li>
             <li>Function to list all Y-haplogroups in a project</li>
             <li>improved report on haplogroups and matches on a clade and its branches. Includes visualization query for Neo4j Browser</li>
         </ul>
