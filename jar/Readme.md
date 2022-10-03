@@ -14,6 +14,11 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
     <ul>
     <li>add comments to explain coding</li>
     <li>function to upload FTDNA STR and SNP data</li>
+    <li>add sort property to mt_SNPs, enabling sorts by position</li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
     <li></li>
     </uL>
 -->
