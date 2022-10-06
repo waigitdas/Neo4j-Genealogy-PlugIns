@@ -17,7 +17,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
     <li>add sort property to mt_SNPs, enabling sorts by position</li>
     <li>added counts of Y and BigY testers to Y haplottree nodes</li>
     <li>fixed bug in function to recreate avatars</li>
-    <li></li>
+    <li>fix parental allocation for avatar DNA Painter renderings</li>
     <li></li>
     <li></li>
     </uL>
