@@ -10,7 +10,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 
 <ol>
 <!--
-<li><b>v 1.1.9</b> Oct , 2022</li>
+<li><b>v 1.1.10</b> Oct , 2022</li>
     <ul>
         <li>fix DNA coverage calculationcalculation for propositus</li>
         <li>add DNA coverage observed and expected to Avatar report</li>
@@ -22,7 +22,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
      </ul>   
 
 -->
-<li><b>v 1.1.9</b> Oct , 2022</li>
+<li><b>v 1.1.9</b> Oct 14, 2022</li>
     <ul>
     <li>add comments to explain coding</li>
     <li>function to upload FTDNA STR and SNP data</li>
