@@ -31,7 +31,6 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
     <li>fixed bug in function to recreate avatars</li>
     <li>fix parental allocation for avatar DNA Painter renderings</li>
     <li>added ht- and Y-haplogroups (actual and inferred) to Person nodes when available; used in family tree reports.</li>
-    <li></li>
     </uL>
     
 <li><b>v 1.1.7</b> Oct 1, 2022</li>
