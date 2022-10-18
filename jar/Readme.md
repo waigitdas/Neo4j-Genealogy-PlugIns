@@ -10,7 +10,19 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 
 <ol>
 <!--
-<li><b>v 1.1.8</b> Oct , 2022</li>
+<li><b>v 1.1.10</b> Oct , 2022</li>
+    <ul>
+        <li>fix DNA coverage calculationcalculation for propositus</li>
+        <li>add DNA coverage observed and expected to Avatar report</li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+     </ul>   
+-->
+
+<li><b>v 1.1.9</b> Oct 14, 2022</li>
     <ul>
     <li>add comments to explain coding</li>
     <li>function to upload FTDNA STR and SNP data</li>
@@ -19,9 +31,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
     <li>fixed bug in function to recreate avatars</li>
     <li>fix parental allocation for avatar DNA Painter renderings</li>
     <li>added ht- and Y-haplogroups (actual and inferred) to Person nodes when available; used in family tree reports.</li>
-    <li></li>
     </uL>
--->
     
 <li><b>v 1.1.7</b> Oct 1, 2022</li>
     <ul>
