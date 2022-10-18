@@ -10,17 +10,20 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 
 <ol>
 <!--
-<li><b>v 1.1.10</b> Oct , 2022</li>
+<li><b>v 1.1.11</b> Oct , 2022</li>
     <ul>
-        <li>fix DNA coverage calculationcalculation for propositus</li>
-        <li>add DNA coverage observed and expected to Avatar report</li>
-        <li></li>
         <li></li>
         <li></li>
         <li></li>
         <li></li>
      </ul>   
 -->
+<li><b>v 1.1.10</b> Oct 18, 2022</li>
+    <ul>
+        <li>fix DNA coverage calculationcalculation for propositus</li>
+        <li>add DNA coverage observed and expected to Avatar report</li>
+        <li>fixed GEDCOM import to ignore dates not comlying with GEDCOM 5.5 standard</li>
+     </ul>   
 
 <li><b>v 1.1.9</b> Oct 14, 2022</li>
     <ul>
