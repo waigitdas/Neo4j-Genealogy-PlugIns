@@ -63,7 +63,7 @@ public static Boolean neo4j_var() {
             break;
             case "curated_rn_gedcom_file": Curated_rn_gedcom_file = ss[1].strip();    
             break;
-            case "tg_file": tg_file = ss[1].strip();    
+            case "tg_file": try{tg_file = ss[1].strip();    } catch(Exception e){tg_file ="";}
        }
         ct = ct + 1;
     }
@@ -109,7 +109,7 @@ public static Boolean neo4j_var_reload() {
             break;
             case "curated_rn_gedcom_file": Curated_rn_gedcom_file = ss[1].strip();    
             break;
-            case "tg_file": tg_file = ss[1].strip();    
+            case "tg_file": try{tg_file = ss[1].strip();}catch(Exception e){tg_file ="";}    
        }
         ct = ct + 1;
     }

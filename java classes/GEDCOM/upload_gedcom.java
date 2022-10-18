@@ -46,7 +46,7 @@ public class upload_gedcom {
     {
         gen.neo4jlib.neo4j_info.neo4j_var_reload();  //initialize variables
         //gen.conn.connTest.cstatus();
-        String filePath =  gen.neo4jlib.neo4j_info.gedcom_file;
+        String filePath =  gen.neo4jlib.neo4j_info.gedcom_file;  //"C:/Genealogy/gfg/gedcom/josie_gedcom.ged";//
 
         //create indices to speed upload using merge
         neo4j_qry.CreateIndex("Person", "RN");

@@ -29,7 +29,7 @@ public class load_all_files {
         }
         
         public static void main(String args[]) {
-            load_files(75L);
+            load_files(1L);
     }
         
     public static String load_files(Long anc_rn) {
@@ -53,11 +53,14 @@ public class load_all_files {
         load_ftdna_enhancements fe = new load_ftdna_enhancements();
         fe.add_match_segment_properties();
         
+        try{
         gen.avatar.targeted_anc_enhance tge = new gen.avatar.targeted_anc_enhance();
         tge.add_enhancements(anc_rn);
             
         gen.avatar.create_avatars cav = new gen.avatar.create_avatars();
         cav.create_avatar_relatives(anc_rn);
+        }
+        catch(Exception e){}
         
         return "Completed";
     }

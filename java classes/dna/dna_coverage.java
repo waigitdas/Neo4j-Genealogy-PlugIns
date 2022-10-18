@@ -40,7 +40,7 @@ public class dna_coverage {
             }
    
     public static void main(String args[]) {
-        get_coverage(41L, 1L);
+        get_coverage(4441L, 2L);
     }
     
      public  static String get_coverage(Long anc_rn, Long method) 
@@ -82,10 +82,10 @@ public class dna_coverage {
         
             //get descendants who are DNA testers
             if (method==1L){
-          cq= "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y'] with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in  " + paths + "  RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person{RN:x}) with x,ct as children_descendants_who_tested, nodes(path2) as p2, length(path2) as gen,gen.graph.get_ordpath([y in nodes(path2) | y.RN]) as op, q.at_DNA_tester as test_type return x,children_descendants_who_tested,p2[gen-1].RN as parent, gen, op order by op";}
+          cq= "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y'] with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in  " + paths + "  RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person{RN:x}) with x,case when x=" + anc_rn + " then ct-1 else ct end  as children_descendants_who_tested, nodes(path2) as p2, length(path2) as gen,gen.graph.get_ordpath([y in nodes(path2) | y.RN]) as op, q.at_DNA_tester as test_type return x,children_descendants_who_tested,case when p2[gen-1].RN=x then 0 else p2[gen-1].RN end as parent, gen, op order by op";}
             
             if (method==2L){
-          cq= "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y', 'A'] with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in  " + paths + "  RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person{RN:x}) with x,ct as children_descendants_who_tested, nodes(path2) as p2, length(path2) as gen,gen.graph.get_ordpath([y in nodes(path2) | y.RN]) as op, q.at_DNA_tester as test_type return x,children_descendants_who_tested,p2[gen-1].RN as parent, gen, op order by op";}
+          cq= "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y', 'A'] with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in  " + paths + "  RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person{RN:x}) with x,case when x=" + anc_rn + " then ct-1 else ct end  as children_descendants_who_tested, nodes(path2) as p2, length(path2) as gen,gen.graph.get_ordpath([y in nodes(path2) | y.RN]) as op, q.at_DNA_tester as test_type return x,children_descendants_who_tested,case when p2[gen-1].RN=x then 0 else p2[gen-1].RN end as parent, gen, op order by op";}
           
         String[] kids = gen.neo4jlib.neo4j_qry.qry_to_csv(cq).split("\n");
     
@@ -115,7 +115,6 @@ public class dna_coverage {
             String[] sKids = kids[i].split(",");
             persons[i][0] = Integer.valueOf(sKids[0].strip());  //record number
             persons[i][2] =  Integer.valueOf(sKids[2].strip());  ;   //parent
-            //persons[i][2] = 0;   //iterating below will add person themself
             persons[i][4] = i;  //index to facilitate lookups with ordering is filtered
         }
         catch(Exception e){
@@ -127,7 +126,7 @@ public class dna_coverage {
         for (int i=0;i<c.length; i++ ){
             String cs[]=c[i].replace("[","").replace("]","").split(",");
             for (int j=0;j<cs.length; j++)
-            {
+            { //start at 1; propositus cannot be own 
                 for (int k=0;k< persons.length; k++) 
                 {
                     if (Integer.valueOf(cs[j].strip()).equals(persons[k][0]) && Integer.valueOf(persons[k][3])!=null)

@@ -98,7 +98,7 @@ public class upload_Y_DNA_Haplotree {
        try{
 
         FileWriter fwy = new FileWriter(fy);
-        fwy.write("haplogroupId|name|parentId|IsRoot\n");
+        fwy.write("haplogroupId|name|parentId|IsRoot|ct|bigyct\n");
         FileWriter fwv = new FileWriter(fv);
         fwv.write("variant_name|haplogroupId|pos|anc|der|region\n");
  
@@ -115,7 +115,7 @@ public class upload_Y_DNA_Haplotree {
             String key = keys.getString (i); 
             JSONObject jo2 = jo.getJSONObject(key);
             try{
-                fwy.write(jo2.get("haplogroupId") + "|" + jo2.get("name") + "|" + jo2.get("parentId") + "|" + jo2.get("isRoot") + "\n");
+                fwy.write(jo2.get("haplogroupId") + "|" + jo2.get("name") + "|" + jo2.get("parentId") + "|" + jo2.get("isRoot")  + "|" + jo2.get("kitsCount")  + "|" + jo2.get("bigYCount") + "\n");
              }
             catch (Exception e)  //no parentId
             {
@@ -159,7 +159,7 @@ public class upload_Y_DNA_Haplotree {
        //Load csv to Neo4j
        String lc = "LOAD CSV WITH HEADERS FROM 'file:///Y_HT.csv' as line FIELDTERMINATOR '|' return line ";
  
-       String cq = "merge (b:block{haplogroupId:toInteger(line.haplogroupId),name:toString(line.name),parentId:toInteger(line.parentId),IsRoot:toBoolean(line.IsRoot)})";
+       String cq = "merge (b:block{haplogroupId:toInteger(line.haplogroupId),name:toString(line.name),parentId:toInteger(line.parentId),IsRoot:toBoolean(line.IsRoot),kitCt:toInteger(line.ct),bigYCt:toInteger(line.bigyct)})";
        neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 200000);
        
        lc = "LOAD CSV WITH HEADERS FROM 'file:///Y_HT_variants.csv' as line FIELDTERMINATOR '|' return line ";

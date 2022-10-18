@@ -21,8 +21,7 @@ public class Y_DNA_FTDNA {
     @Description("Load Y STRs and SNPs")
 
     public String load_derived_file(
-        @Name("derived_file") 
-            String derived_file
+    
   )
    
          { 
@@ -34,10 +33,10 @@ public class Y_DNA_FTDNA {
     
     
     public static void main(String args[]) {
-        load_file() ;   //"B51965_BigY_Data_Derived_20220916.csv");
+        load_file() ;  ;
     }
     
-     public static String load_file()  //String file) 
+     public static String load_file()  
     {   
 
          try

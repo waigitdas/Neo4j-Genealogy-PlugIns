@@ -46,10 +46,12 @@ public class create_tg_curation_file {
         }
 
         //rename tg_name
+        if(gen.neo4jlib.neo4j_info.tg_file!=""){
            gen.neo4jlib.neo4j_qry.qry_write("match (t:tg) set t.tg_name = t.chr + '-' + apoc.text.lpad(toString(t.strt_pos/1000000),3,'0') + '-' + apoc.text.lpad(toString(t.end_pos/1000000),3,'0')");
         
         gen.neo4jlib.neo4j_qry.qry_to_csv("match (t:tg) return t.tgid as tgid,t.tg_name as tg_name,t.chr as chr,t.strt_pos as strt_pos,t.end_pos as end_pos,t.project as project,t.cm as cm order by chr,strt_pos,end_pos", gen.neo4jlib.neo4j_info.tg_file);
-           
+        }
+        
         return "The updated file is in the import directory. Move it to the directory specified for your project. We didnot overwritte the current file.";
     }
 }

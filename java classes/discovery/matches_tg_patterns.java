@@ -35,6 +35,7 @@ public class matches_tg_patterns {
     
      public String get_matches(Long min_tg_cluster_size) 
     {
+        if(gen.neo4jlib.neo4j_info.tg_file.equals("")){return "";}
         String cq = "match (m:DNA_Match)-[[r:match_tg]]-(t:tg) with m,t order by t.tgid with m,collect(distinct t.tgid) as tc with m, tc where size(tc)>" + min_tg_cluster_size + "-1 return case when m.RN is null then m.fullname else m.fullname + ' ⦋' + m.RN + '⦌' end as fullname,size(tc) as ct,tc order by ct desc";
         gen.excelLib.queries_to_excel.qry_to_excel(cq,"matches from tg clusters", "matches", 1, "", "1:######", "", true, "UDF: return matches_by_tg_patterns(" + min_tg_cluster_size + ")\n\nquery:\n" + cq,true);
         return "completed";

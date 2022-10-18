@@ -57,8 +57,8 @@ public class avatar_parental_cm {
         //gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(a)-[r:avatar_avsegment]->(s) where r.side='total' with a,sum(s.cm) as cm set a.total_cm = cm");
   
         
-        String cq = "MATCH (a:Avatar) where a.dna_coverage is not null RETURN a.fullname as Avatar, a.RN as RN, toInteger(case when a.paternal_cm is null then 0 else a.paternal_cm end) as paternal_cm, toInteger(case when a.maternal_cm is null then 0 else a.maternal_cm end) as maternal_cm,a.total_cm as total_cm order by a.total_cm desc";
-         gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(a)-[r:avatar_avsegment]->(s:avSegment)  with distinct a,a.fullname as fn,s with a,fn,sum(s.cm) as cm set a.dna_coverage=cm/" + total_expected_cm + ",a.total_cm=cm");
+        String cq = "MATCH (a:Avatar) where a.segment_coverage is not null RETURN a.fullname as Avatar, a.RN as RN, toInteger(case when a.paternal_cm is null then 0 else a.paternal_cm end) as paternal_cm, toInteger(case when a.maternal_cm is null then 0 else a.maternal_cm end) as maternal_cm,a.total_cm as total_cm order by a.total_cm desc";
+         gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(a)-[r:avatar_avsegment]->(s:avSegment)  with distinct a,a.fullname as fn,s with a,fn,sum(s.cm) as cm set a.segment_coverage=cm/" + total_expected_cm + ",a.total_cm=cm");
 
          gen.excelLib.queries_to_excel.qry_to_excel(cq, gen.neo4jlib.neo4j_info.project + "Avatar_cm", "cm", 1, "", "1:#####;2:####;3:####;4:####", "", true, cq, true);
         

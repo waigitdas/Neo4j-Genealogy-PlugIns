@@ -33,15 +33,18 @@ public String ged_to_gen_date(
     
     public static void main(String args[]) {
         convert_date("BET JUL 1945 and 10 May 1946");
+         convert_date("JAN-FEB-MAR 1970");  //RootsMagic date
     }
     
     public static String convert_date(String gedcom_date) {
-        String d = fix_date(gedcom_date).strip();
+        String d ="";
         String y ="0000";
         String dy = "00";
         String mostr = "00";
         String newDate = "" ;
+        int rtnDate=0; 
         try{ 
+        d = fix_date(gedcom_date).strip();
         if (d.length() > 9)  { //full date
                 y = d.substring(d.length()-4).strip();
                 dy = d.substring(0,d.indexOf(" "));
@@ -61,8 +64,12 @@ public String ged_to_gen_date(
     //        System.out.println(mostr);
     //        System.out.println(dy);
     //        System.out.println(y);
-        }
-        catch (Exception e) {newDate="broken";}
+        
+        rtnDate=Integer.parseInt(newDate);
+        if(rtnDate==0){newDate="";}
+}
+        
+        catch (Exception e) {newDate="";}
         
                return newDate;
     }

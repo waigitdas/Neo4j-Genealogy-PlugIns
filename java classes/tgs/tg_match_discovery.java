@@ -39,6 +39,8 @@ public class tg_match_discovery {
     
      public String get_matches(Long tg_min_ct, Long match_min_ct, Boolean include_mrca)
     {
+       if(gen.neo4jlib.neo4j_info.tg_file.equals("")){return "";}
+ 
         gen.neo4jlib.neo4j_info.neo4j_var_reload();
         gen.neo4jlib.neo4j_info.neo4j_var();
         

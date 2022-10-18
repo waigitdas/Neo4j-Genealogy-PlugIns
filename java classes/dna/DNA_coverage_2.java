@@ -40,7 +40,8 @@ public class DNA_coverage_2 {
             }
    
     public static void main(String args[]) {
-        get_coverage(33454L, 2L);
+        //get_coverage(33454L, 2L);
+        get_coverage(4441L, 1L);
     }
     
      public static String get_coverage(Long anc_rn, Long method) 
@@ -62,7 +63,8 @@ public class DNA_coverage_2 {
         int DescList[][] = null ;
         Double coverage[][] = null;  
         int tester_ct=0;
-               //get descendants
+
+        //get descendants who have at-DNA test; return paths
         if (method==1L){
         cq = "match path=(p:Person{RN:" +  anc_rn + "})<-[:father|mother*0..15]-(q:Person{at_DNA_tester:'Y'})  with q, [x in nodes(path)|x.RN] as rns return rns";
         }
@@ -80,23 +82,15 @@ public class DNA_coverage_2 {
             if (cb.length>maxLen) { maxLen = cb.length;}
             }
         
-            //get descendants who are DNA testers
+            //for each path, get details of descendants who are in the path to DNA testers
             if (method==1L){
-          cq= "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y'] with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in  " + paths + "  RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person{RN:x}) with x,ct as children_descendants_who_tested, nodes(path2) as p2, length(path2) as gen,gen.graph.get_ordpath([y in nodes(path2) | y.RN]) as op, q.at_DNA_tester as test_type return x,children_descendants_who_tested,p2[gen-1].RN as parent, gen, op order by op";}
+          cq= "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y'] with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in  " + paths + "  RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person{RN:x}) with x,case when x=" + anc_rn + " then ct-1 else ct end  as children_descendants_who_tested, nodes(path2) as p2, length(path2) as gen,gen.graph.get_ordpath([y in nodes(path2) | y.RN]) as op, q.at_DNA_tester as test_type return x,children_descendants_who_tested,p2[gen-1].RN as parent, gen, op order by op";}
             
             if (method==2L){
-          cq= "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y', 'A'] with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in  " + paths + "  RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person{RN:x}) with x,ct as children_descendants_who_tested, nodes(path2) as p2, length(path2) as gen,gen.graph.get_ordpath([y in nodes(path2) | y.RN]) as op, q.at_DNA_tester as test_type return x,children_descendants_who_tested,p2[gen-1].RN as parent, gen, op order by op";}
-                  //"match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y', 'A'] with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in " + paths + " RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person{RN:x}) return x,ct as children_descendants_who_tested,length(path2) as gen,gen.graph.get_ordpath([y in nodes(path2) | y.RN]) as op, q.at_DNA_tester as test_type order by  op";}
-          
+          cq= "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y', 'A'] with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in  " + paths + "  RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person{RN:x}) with x,case when x=" + anc_rn + " then ct-1 else ct end  as children_descendants_who_tested, nodes(path2) as p2, length(path2) as gen,gen.graph.get_ordpath([y in nodes(path2) | y.RN]) as op, q.at_DNA_tester as test_type return x,children_descendants_who_tested,p2[gen-1].RN as parent, gen, op order by op";}
+        
         String[] kids = gen.neo4jlib.neo4j_qry.qry_to_csv(cq).split("\n");
     
-//        //get rns with multiple path = pedigree collapse or endogamy
-//        if (method==1){
-//        cq ="match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y', 'A'] with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in  " + paths + " RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[rp:father|mother*0..15]-(q:Person{RN:x}) with count(path2) as path_ct,x with x,path_ct where path_ct>1 return x,path_ct, 0 as added order by x";}
-//        if (method==2){
-//        cq ="match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y', 'A'] with q, [x in nodes(path)|x.RN] as rns unwind rns as x call { with x MATCH (p:Person)-[r:child]->(u:Union) where (u.U1=x or u.U2=x) and p.RN in  " + paths + " RETURN count(*) as ct } with distinct x,ct match path2=(p:Person{RN:" + anc_rn + "})<-[rp:father|mother*0..15]-(q:Person{RN:x}) with count(path2) as path_ct,x with x,path_ct where path_ct>1 return x,path_ct, 0 as added order by x";}
-//        String[] dups = gen.neo4jlib.neo4j_qry.qry_to_csv(cq).split("\n");
-
         //instantiate variable to hold descendant data and calculations
        
         int persons[][] = new int[kids.length][7];
@@ -124,7 +118,6 @@ public class DNA_coverage_2 {
             String[] sKids = kids[i].split(",");
             persons[i][0] = Integer.valueOf(sKids[0].strip());  //record number
             persons[i][2] =  Integer.valueOf(sKids[2].strip());  ;   //parent
-            //persons[i][2] = 0;   //iterating below will add person themself
             persons[i][4] = i;  //index to facilitate lookups with ordering is filtered
         }
         catch(Exception e){
@@ -279,7 +272,7 @@ public class DNA_coverage_2 {
         
           try{
           print_summary(persons,kids, coverage, ordpath, method,tester_ct, fw);
-          //fw.write("<br><br>Methods developed by Wesley Johnston<br>&copy; 2022 <a href='http://wai.md/gfg' target='new'>Graphs for Genealogists</a><br><a href='https://www.facebook.com/groups/gfgforum' target='new'>Facebook Forum</a>\n </body>\n</html>\n");
+          fw.write("<br><br>Methods developed by Wesley Johnston<br>&copy; 2022 <a href='http://wai.md/gfg' target='new'>Graphs for Genealogists</a><br><a href='https://www.facebook.com/groups/gfgforum' target='new'>Facebook Forum</a>\n </body>\n</html>\n");
          fw.flush();
           fw.close();}
           catch(Exception e){}

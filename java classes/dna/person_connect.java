@@ -64,14 +64,15 @@ public class person_connect {
         gen.excelLib.queries_to_excel.qry_to_excel(cq, "anc_surname", "ancestral_surnames", ct, "", "1:#####;3:####.#;4:####;6:###.###", excelFile,false, cq, false);
         ct = ct + 1;
  
+        if(gen.neo4jlib.neo4j_info.tg_file!=""){
+        cq = "match (m:DNA_Match{fullname:'" + fullname + "'})-[rs:match_tg]-(t:tg) with t,m.fullname as propositus,rs.p as match_propositus, rs.m as match,rs.seg_ct as seg_ct,count(*) as ct order by t.name with propositus,match_propositus,match,seg_ct,ct,collect(distinct t.name) as tg,collect(distinct t.Indx) as segs return propositus,match_propositus,match,size(tg) as tg_ct, tg as tgs,size(segs) as seg_ct,segs";
+        gen.excelLib.queries_to_excel.qry_to_excel(cq, "tgs", "tgs", ct, "", "3:###.#;3:###.#", excelFile,false,cq,false);
+        ct = ct + 1;
+    }
        cq = "MATCH p=(m1:DNA_Match)-[[r:match_by_segment]]-(m2:DNA_Match) where m1.RN is not null and m2.surname='" + surname + "' and m1<>m2 RETURN m1.fullname as propositus, m2.fullname as source_match,r.cm as shared_cm,r.rel as rel  order by shared_cm desc ";
-        gen.excelLib.queries_to_excel.qry_to_excel(cq, "surname_matches", "surname_matches", ct, "", "2:####.#;2:###.#", excelFile,false, cq, false);
+        gen.excelLib.queries_to_excel.qry_to_excel(cq, "surname_matches", "surname_matches", ct, "", "2:####.#;2:###.#", excelFile,true, cq, false);
         ct = ct + 1;
  
-        cq = "match (m:DNA_Match{fullname:'" + fullname + "'})-[rs:match_tg]-(t:tg) with t,m.fullname as propositus,rs.p as match_propositus, rs.m as match,rs.seg_ct as seg_ct,count(*) as ct order by t.name with propositus,match_propositus,match,seg_ct,ct,collect(distinct t.name) as tg,collect(distinct t.Indx) as segs return propositus,match_propositus,match,size(tg) as tg_ct, tg as tgs,size(segs) as seg_ct,segs";
-        gen.excelLib.queries_to_excel.qry_to_excel(cq, "tgs", "tgs", ct, "", "3:###.#;3:###.#", excelFile,true, cq, false);
-        ct = ct + 1;
-            
         
         return "person report completed";
     }

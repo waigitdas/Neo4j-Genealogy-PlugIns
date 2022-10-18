@@ -38,8 +38,10 @@ public class mrca_set_link_property {
         gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("match_segment", "m_anc_rn");
         
         try{
+        if(gen.neo4jlib.neo4j_info.tg_file!=""){
         gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("match_tg", "p_anc_rn");
         gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("match_tg", "m_anc_rn");
+        }
         }
         catch (Exception e){}
 //re-set existing property
@@ -68,8 +70,10 @@ public class mrca_set_link_property {
         gen.neo4jlib.neo4j_qry.qry_write("MATCH (m1:DNA_Match)-[r:match_segment]->() where r.cm>=7 and r.snp_ct>=500 and r.m is not null  match (m2:DNA_Match) where m2.fullname=r.m and m2.ancestor_rn is not null set r.m_anc_rn=m2.ancestor_rn");
         
         try{
+    if(gen.neo4jlib.neo4j_info.tg_file!=""){            
         gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(m:DNA_Match)-[r:match_tg]->() where  r.p=m.fullname and m.ancestor_rn is not null set r.p_anc_rn = m.ancestor_rn");
         gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(m:DNA_Match)-[r:match_tg]->() where  r.p=m.fullname with r match (m2:DNA_Match) where m2.fullname=r.m and m2.ancestor_rn is not null set r.m_anc_rn=m2.ancestor_rn");
+        }
         }
         catch(Exception e){}
         

@@ -41,9 +41,9 @@ public class queries_to_excel {
     
     //main is for testing only. Must comment out database calls and use a properly formated file in the Import Neo4j folder
     public static void main(String args[]) {
-        String cq = "MATCH p=(m:DNA_Match)-[r:match_tg]->(t:tg) where m.RN is not null with t,m,  trim(m.fullname)  as mm with t,m,mm order by mm with t,collect(mm + ';') as matches,collect(m.RN) as rns \n with t,matches   RETURN t.tgid as tg,t.chr as chr, t.strt_pos as strt_pos,t.end_pos as end_pos,t.cm as cm,size(matches) as ct,matches order by chr,strt_pos,end_pos";
-        String e =qry_to_excel(cq,"tg_report","match_ahnentafel_" , 1, "2:13;3:13", "1:##;2:#,###,###;3:#,###,###;6:###;7:###;8:###.0;9:###.0", "",true,"",true);
-        //qry_to_excel(cq,"tg_report","Item 25",2,"","0:##,###",e, true);
+//        String cq = "MATCH p=(m:DNA_Match)-[r:match_tg]->(t:tg) where m.RN is not null with t,m,  trim(m.fullname)  as mm with t,m,mm order by mm with t,collect(mm + ';') as matches,collect(m.RN) as rns \n with t,matches   RETURN t.tgid as tg,t.chr as chr, t.strt_pos as strt_pos,t.end_pos as end_pos,t.cm as cm,size(matches) as ct,matches order by chr,strt_pos,end_pos";
+//        String e =qry_to_excel(cq,"tg_report","match_ahnentafel_" , 1, "2:13;3:13", "1:##;2:#,###,###;3:#,###,###;6:###;7:###;8:###.0;9:###.0", "",true,"",true);
+//        //qry_to_excel(cq,"tg_report","Item 25",2,"","0:##,###",e, true);
     }
     
 //public static newWorkbook()    

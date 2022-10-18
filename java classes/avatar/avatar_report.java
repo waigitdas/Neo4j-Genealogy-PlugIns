@@ -47,7 +47,7 @@ public class avatar_report {
         excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Avatar_Reoprt_" + rn , "CSegs", ct, "","1:#####;4:####.#;5:###", excelFile, false,"cypher query:\n" +  cq + "\n\nThis report shows how the CSegs are merged from MSegs.", false);
         
         ct = ct +1;
-        cq = "with " + rn + " as rn  MATCH p=(a:Avatar{RN:rn})-[[r:avatar_segment]]->(s:Segment)<-[[rm:match_segment]]-(d:DNA_Match) where (rm.p_rn=d.RN or rm.m_rn=d.RN) with a.fullname as Avatar,r.avatar_side as avatar_side,a.RN as RN,d.fullname as match,d.RN as dRN,sum(r.cm) as a_cm,sum(rm.cm) as match_cm,apoc.coll.sort(collect(distinct s.Indx)) as segs return Avatar,RN as aRN,avatar_side,match as DNA_Match,dRN,a_cm,match_cm,size(segs), segs";
+        cq = "with " + rn + " as rn  MATCH p=(a:Avatar{RN:rn})-[r:avatar_segment]->(s:Segment)<-[rm:match_segment]-(d:DNA_Match) where (rm.p_rn=d.RN or rm.m_rn=d.RN) with a.fullname as Avatar,case when r.avatar_side is null then '~' else r.avatar_side end  as avatar_side,a.RN as RN,d.fullname as match,d.RN as dRN,sum(r.cm) as a_cm,sum(rm.cm) as match_cm,apoc.coll.sort(collect(distinct s.Indx)) as segs return Avatar,RN as aRN,avatar_side,match as DNA_Match,dRN,a_cm,match_cm,size(segs), segs";
         excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Avatar_Reoprt_" + rn , "MSegs_matches", ct, "", "1:#####;3:#####;4:####.#;5:####.#;6:#####", excelFile, false,"cypher query:\n" +  cq, false);
 
         ct = ct +1;
@@ -56,15 +56,15 @@ public class avatar_report {
 
         ct = ct +1;
         cq = "with "+ rn + " as rn MATCH p=(a:Avatar{RN:rn})-[[r:avatar_segment]]->(s:Segment) match (s2:Segment)<-[[rm:match_segment]]-(d:DNA_Match) where s.chr=s2.chr and s.strt_pos=s2.strt_pos with a.fullname as Avatar,a.RN as RN,d.fullname as match,d.RN as dRN,sum(r.cm) as a_cm,sum(rm.cm) as match_cm,apoc.coll.sort(collect(distinct s.Indx)) as segs,rm.p + ':' + rm.m as match_pair,r.avatar_side as side where dRN is null return Avatar,RN as aRN,match as DNA_Match,a_cm,match_cm,size(segs), segs, match_pair,side as avatar_side order by segs";
-        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Avatar_Reoprt_" + rn , "MSegs_start_discovery", ct, "", "1:#####;3:#####;4:####.#;5:####.#;6:#####", excelFile, false,"cypher query:\n" +  cq + "\n\nThe new matches match only as the MSeg start position, which is a  crossover point.\nThey are not as likely to be in the targeted  family tree branch.", false);
+        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Avatar_Reoprt_" + rn , "MSegs_start_crossover", ct, "", "1:#####;3:#####;4:####.#;5:####.#;6:#####", excelFile, false,"cypher query:\n" +  cq + "\n\nThe new matches match only as the MSeg start position, which is a  crossover point.\nThey are not as likely to be in the targeted  family tree branch.", false);
 
         ct = ct +1;
         cq = "with "+ rn + " as rn MATCH p=(a:Avatar{RN:rn})-[[r:avatar_segment]]->(s:Segment) match (s2:Segment)<-[[rm:match_segment]]-(d:DNA_Match) where s.chr=s2.chr and s.end_pos=s2.end_pos with a.fullname as Avatar,a.RN as RN,d.fullname as match,d.RN as dRN,sum(r.cm) as a_cm,sum(rm.cm) as match_cm,apoc.coll.sort(collect(distinct s.Indx)) as segs,rm.p + ':' + rm.m as match_pair,r.avatar_side as side where dRN is null return Avatar,RN as aRN,match as DNA_Match,a_cm,match_cm,size(segs), segs, match_pair,side as avatar_side order by segs";
-        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Avatar_Reoprt_" + rn , "MSegs_end_discovery", ct, "", "1:#####;3:#####;4:####.#;5:####.#;6:#####", excelFile, true,"cypher query:\n" +  cq + "\n\nThe new matches match only as the MSeg end position, which is a  crossover point.\nThey are not as likely to be in the targeted  family tree branch.", false);
+        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Avatar_Reoprt_" + rn , "MSegs_end_crossover", ct, "", "1:#####;3:#####;4:####.#;5:####.#;6:#####", excelFile, true,"cypher query:\n" +  cq + "\n\nThe new matches match only as the MSeg end position, which is a  crossover point.\nThey are not as likely to be in the targeted  family tree branch.", false);
 
         //DNA Painter file
         String pf ="avatar_" + rn + "_dna_painter" + "_" + gen.genlib.current_date_time.getDateTime()  + ".csv";
-        cq = "with " + rn + " as rn MATCH p=(d:Avatar{RN:rn})-[r:avatar_segment]->(s:Segment) RETURN distinct toInteger(case when s.chr='0X' then 23 else s.chr end) as chr,s.strt_pos as start,s.end_pos as end,r.cm as cM,r.snp_ct as snps, case when r.p<r.m then r.p + ':' + r.m else r.m + ':' + r.p end + case when r.compare_match is not null then ':' + r.compare_match else '' end  as match,'good' as confidence,r.pair_mrca as group, r.avatar_side as side,'' as notes,'' as color";
+        cq = "with " + rn + " as rn MATCH p=(d:Avatar{RN:rn})-[r:avatar_segment]->(s:Segment) RETURN distinct toInteger(case when s.chr='0X' then 23 else s.chr end) as chr,s.strt_pos as start,s.end_pos as end,r.cm as cM,r.snp_ct as snps, case when r.p<r.m then r.p + ':' + r.m else r.m + ':' + r.p end + case when r.compare_match is not null then ':' + r.compare_match else '' end  as match,'good' as confidence,r.pair_mrca as group, case when r.avatar_side<>'paternal' and r.avatar_side<>'maternal' then 'both' else r.avatar_side end  as side,'' as notes,'' as color";
         gen.neo4jlib.neo4j_qry.qry_to_csv(cq,pf);       
         
         gen.svg.chromosome_painter cpa = new gen.svg.chromosome_painter();
