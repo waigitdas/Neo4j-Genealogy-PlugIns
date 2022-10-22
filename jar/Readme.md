@@ -12,7 +12,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 <!--
 <li><b>v 1.1.11</b> Oct , 2022</li>
     <ul>
-        <li></li>
+        <li>mt-DNA haplotree cumulative SNPs giving complete picture of all SNP at a branch.</li>
         <li></li>
         <li></li>
         <li></li>
