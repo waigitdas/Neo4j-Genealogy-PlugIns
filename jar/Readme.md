@@ -12,9 +12,9 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 <!--
 <li><b>v 1.1.11</b> Oct , 2022</li>
     <ul>
-        <li></li>
-        <li></li>
-        <li></li>
+        <li>mt-DNA haplotree cumulative SNPs giving complete picture of all SNP at a branch.</li>
+        <li>fixed triangulation method to accomodate change is Neo4j's Graph Data Science triangle algorithm which now rquires undirected graph projection.</li>
+        <li>added endogamy package</li>
         <li></li>
      </ul>   
 -->
