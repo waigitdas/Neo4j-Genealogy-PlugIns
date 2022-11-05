@@ -32,12 +32,15 @@ public class ahnentafel_for_two_rns {
     
     
     public static void main(String args[]) {
-        // TODO code application logic here
+        get_ahn(1796L,1099L);
     }
     
-     public String get_ahn(Long rn1, Long rn2) 
+     public static String get_ahn(Long rn1, Long rn2) 
     {
-                Long rnmin;
+        gen.neo4jlib.neo4j_info.neo4j_var();
+        gen.neo4jlib.neo4j_info.neo4j_var_reload();
+        
+        Long rnmin;
         Long rnmax;
         if (rn1<rn2){
             rnmin=rn1;
@@ -50,11 +53,15 @@ public class ahnentafel_for_two_rns {
                     
        
 
-        String cq = "match path=(p1:Person)-[rp1:father|mother*1..25]->(p2:Person) where p1.RN=" + rn1 + " and p2.RN=" + rn2  + " and p1.RN<p2.RN with rp1, reduce(srt2 ='', q IN nodes(path)|srt2 + case when q.sex='M' then 0 else 1 end ) as SO with '1' + substring(SO,1,size(rp1)) as SO with gen.rel.ahn_path(SO) as SO with SO[size(SO)-1] as Ahnentafel return Ahnentafel";
+        String cq = "match path=(p1:Person)-[rp1:father|mother*1..25]->(p2:Person) where p1.RN=" + rnmin + " and p2.RN=" + rnmax  + " and p1.RN<p2.RN with rp1, reduce(srt2 ='', q IN nodes(path)|srt2 + case when q.sex='M' then 0 else 1 end ) as SO with '1' + substring(SO,1,size(rp1)) as SO with gen.rel.ahn_path(SO) as SO with SO[size(SO)-1] as Ahnentafel return Ahnentafel union match path=(p1:Person)<-[rp1:father|mother*1..25]-(p2:Person) where p1.RN=" + rnmin + " and p2.RN=" + rnmax  + " and p1.RN<p2.RN with rp1, reduce(srt2 ='', q IN nodes(path)|srt2 + case when q.sex='M' then 0 else 1 end ) as SO with '1' + substring(SO,1,size(rp1)) as SO with gen.rel.ahn_path(SO) as SO with SO[size(SO)-1] as Ahnentafel return Ahnentafel order by Ahnentafel";
         try{
         String ahn = gen.neo4jlib.neo4j_qry.qry_str(cq).replace("\"","").replace("[","").replace("]","").replace(":","");
-        return ahn;}
+        //System.out.println(ahn);
+        return ahn;
+       
+        }
         catch (Exception e) {
+           // System.out.println("Error");
             return "not an ancestor or too remote";
                 }
        

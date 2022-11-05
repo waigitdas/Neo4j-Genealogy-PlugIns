@@ -75,7 +75,8 @@ public class handy_Functions {
        }
            return sn;
        }
-       
+     
+       //public static Boolean item_in_string(String)
 }   
         
     

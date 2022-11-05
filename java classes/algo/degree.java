@@ -34,7 +34,7 @@ public class degree {
     
     
     public static void main(String args[]) {
-        get_degree(2L,7L,3600L,false);
+        get_degree(1L,7L,3600L,false);
     }
     
      public static String get_degree(Long relationship_type,Long min_cm, Long max_cm,Boolean known_matches_only) 

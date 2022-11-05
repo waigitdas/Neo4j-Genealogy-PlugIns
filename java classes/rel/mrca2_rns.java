@@ -49,7 +49,7 @@ package gen.rel;
             rnmin=rn2;
             rnmax=rn1;
     }
-           String cq = "match (p1:Person{RN:" + rnmin + "})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(p2:Person{RN:" + rnmax + "}) where p1.RN<p2.RN with mrca order by mrca.sex desc return collect(mrca.RN) as rn" ;    
+           String cq = "match (p1:Person{RN:" + rnmin + "})-[r1:father|mother*0..20]->(mrca:Person)<-[r2:father|mother*0..20]-(p2:Person{RN:" + rnmax + "}) where p1.RN<p2.RN with mrca order by mrca.sex desc return collect(mrca.RN) as rn" ;    
                 
         String s =gen.neo4jlib.neo4j_qry.qry_str(cq).replace("[","").replace("]","").replace(";",";");
         return s;

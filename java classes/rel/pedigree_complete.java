@@ -36,7 +36,7 @@ public class pedigree_complete {
      public String create_report(Long rn) 
     {
         String cq = "match p=(n:Person{RN:" + rn + "})-[[:father|mother*..99]]->(x) with reduce(n=0,q in nodes(p)|n+1) as gen RETURN gen, count(*) as Observed,2^(gen-1) as Expected,count(*)/(2^(gen-1)) as Ratio order by gen";
-        gen.excelLib.queries_to_excel.qry_to_excel(cq, "pedigree_completeness", "data", 1, "", "0:##;1:###,###,###;2:###,###,###;3:#.#######;", "", true, cq, false);
+        gen.excelLib.queries_to_excel.qry_to_excel(cq, "pedigree_completeness", "pedigree_completeness", 1, "", "0:##;1:###,###,###;2:###,###,###;3:#.#######;", "", true, cq, false);
         return "pedigree completeness report done";
     }
 }

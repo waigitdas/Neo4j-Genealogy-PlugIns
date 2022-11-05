@@ -16,8 +16,8 @@ public class coi {
     @UserFunction
     @Description("Template used in creating new functions.")
 
-    public Double coeffiecient_of_inbreeding(
-        @Name("rn") 
+    public Double coefficient_of_inbredding(
+        @Name("rn1") 
             Long rn
   )
    
@@ -31,44 +31,29 @@ public class coi {
     
     public static void main(String args[]) {
         get_coi(1L);
+        get_coi(4L);
+        get_coi(5L);
+        get_coi(12L);
+        get_coi(13L);
+        get_coi(18L);
+        get_coi(19L);
+        get_coi(42L);
+        get_coi(1050L);
+        get_coi(1058L);
+        get_coi(1047L);
+        get_coi(1051L);
     }
     
      public static Double get_coi(Long rn) 
     {
-       //http://www.genetic-genealogy.co.uk/genetics/Toc115570144.html
-        //comput coi for propositus using rn
-        //if parents are unrelated, then coi will be 0.0; in this case one parent may have coi>0, so this must be evaluated
-        String cq="match (p0:Person{RN:" + rn + "})-[r1:father|mother]->(a1:Person) with collect(a1.RN) as parentRNs match path1= (p1:Person{RN:parentRNs[0]})-[r1:father|mother*0..25]->(mrca1:Person) match path2=(mrca2)<-[r2:father|mother*0..25]-(p2:Person{RN:parentRNs[1]}) where mrca1=mrca2 with parentRNs[0] as rn1, parentRNs[1] as rn2,collect(distinct mrca1.RN) as rns unwind rns as m call { with m,rn1,rn2 match path3= (p3:Person{RN:rn1})-[r1:father|mother*0..25]->(mrca3:Person{RN:m}) match path4=(mrca4{RN:m})<-[r2:father|mother*0..25]-(p4:Person{RN:rn2}) where mrca3=mrca4 return m as rn,((0.5^length(path3)) + (0.5^length(path4))) as fn } return sum(fn) as coi";
+        try{
+            String cq = "match p=(n:Person{RN:" + rn + "})-[r:father|mother*0..99]->(x) with x,x.fullname + ' [' + x.RN + '] (' + left(x.BD,4) + '-' + left(x.DD,4) + ')' as Name, length(p) as gen, [z in nodes(p)|z.RN] as op, '1' + reduce(srt ='', q IN nodes(p)|srt + case when q.sex='M' then '0' else '1' end ) AS Anh with x,Name,gen,'1' + right(Anh,size(Anh)-2) as Ahnen, gen.graph.get_ordpath(op) as op optional match (d:Person{RN:x.RN}) with Name as Person,collect(distinct gen) as gen,collect(,gen.rel.ahnentafel(Ahnen)) as Ahnentafel,x with Person,x,apoc.coll.sort(Ahnentafel) as Ahnentafel,apoc.coll.sort(gen) as gen where size(Ahnentafel)>1 with Person,Ahnentafel,gen,gen.rel.compute_cor(" + rn + ",x.RN) as cor return  sum(cor) as coi ";
         
-        Double coi = Double.parseDouble(gen.neo4jlib.neo4j_qry.qry_str(cq).replace("[","").replace("]",""));
-        if(coi.equals(0.0)){ //must compute and find parent with coi>0
-            Long mother = Long.parseLong(gen.neo4jlib.neo4j_qry.qry_str("match(p:Person{RN:"+ rn + "})-[r:mother]->(a:Person) return a.RN as rn").replace("[","").replace("]",""));
-            Long father = Long.parseLong(gen.neo4jlib.neo4j_qry.qry_str("match(p:Person{RN:"+ rn + "})-[r:father]->(a:Person) return a.RN as rn").replace("[","").replace("]",""));
+        Double coi1 = Double.parseDouble(gen.neo4jlib.neo4j_qry.qry_str(cq).replace("[","").replace("]",""));
+        System.out.println(gen.gedcom.get_family_tree_data.getPersonFromRN(rn,false) + "\t\t\t" + coi1);
+        return coi1;
+        }
+        catch(Exception e){return 0.0;}
 
-            Long parent = 0L;
-            
-            Double coi_mother = Double.parseDouble(gen.neo4jlib.neo4j_qry.qry_str("match (p0:Person{RN:" + mother + "})-[r1:father|mother]->(a1:Person) with collect(a1.RN) as parentRNs match path1= (p1:Person{RN:parentRNs[0]})-[r1:father|mother*0..25]->(mrca1:Person) match path2=(mrca2)<-[r2:father|mother*0..25]-(p2:Person{RN:parentRNs[1]}) where mrca1=mrca2 with parentRNs[0] as rn1, parentRNs[1] as rn2,collect(distinct mrca1.RN) as rns unwind rns as m call { with m,rn1,rn2 match path3= (p3:Person{RN:rn1})-[r1:father|mother*0..25]->(mrca3:Person{RN:m}) match path4=(mrca4{RN:m})<-[r2:father|mother*0..25]-(p4:Person{RN:rn2}) where mrca3=mrca4 return m as rn,((0.5^length(path3)) + (0.5^length(path4))) as fn } return sum(fn) as coi").replace("[","").replace("]",""));;
-            
-            Double coi_father = Double.parseDouble(gen.neo4jlib.neo4j_qry.qry_str("match (p0:Person{RN:" + father + "})-[r1:father|mother]->(a1:Person) with collect(a1.RN) as parentRNs match path1= (p1:Person{RN:parentRNs[0]})-[r1:father|mother*0..25]->(mrca1:Person) match path2=(mrca2)<-[r2:father|mother*0..25]-(p2:Person{RN:parentRNs[1]}) where mrca1=mrca2 with parentRNs[0] as rn1, parentRNs[1] as rn2,collect(distinct mrca1.RN) as rns unwind rns as m call { with m,rn1,rn2 match path3= (p3:Person{RN:rn1})-[r1:father|mother*0..25]->(mrca3:Person{RN:m}) match path4=(mrca4{RN:m})<-[r2:father|mother*0..25]-(p4:Person{RN:rn2}) where mrca3=mrca4 return m as rn,((0.5^length(path3)) + (0.5^length(path4))) as fn } return sum(fn) as coi").replace("[","").replace("]",""));;
-            
-            //parent coi of the parent with coi>0
-            Double coi_parent = Math.max(coi_mother,coi_father);
-            
-            if(coi_mother>coi_father){
-                parent = mother;
-            }
-            else{parent=father;}
-            
-            if (coi_parent.equals(0.0)){return 0.0;}
-            
-            cq = "match (p0:Person{RN:" + parent +"})-[r1:father|mother]->(a1:Person) with collect(a1.RN) as parentRNs match path1= (p1:Person{RN:parentRNs[0]})-[r1:father|mother*0..25]->(mrca1:Person) match path2=(mrca2)<-[r2:father|mother*0..25]-(p2:Person{RN:parentRNs[1]}) where mrca1=mrca2 with parentRNs[0] as rn1, parentRNs[1] as rn2,collect(distinct mrca1.RN) as rns unwind rns as m call { with m,rn1,rn2 match path3= (p3:Person{RN:rn1})-[r1:father|mother*0..25]->(mrca3:Person{RN:m}) match path4=(mrca4{RN:m})<-[r2:father|mother*0..25]-(p4:Person{RN:rn2}) where mrca3=mrca4 return m as rn,((0.5^length(path3)*" + coi_parent + ") + (0.5^length(path4)*" + coi_parent + ")) as fn } return sum(fn) as coi";
-            Double coi2 = Double.parseDouble(gen.neo4jlib.neo4j_qry.qry_str(cq).replace("[","").replace("]",""));
-            System.out.println(coi2);
-            return coi2;
-        }
-        else {  //coi > 0; report result directly
-            System.out.println(coi);
-            return coi;
-        }
     }
 }

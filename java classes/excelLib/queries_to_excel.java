@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 
+ * Copyright 2021-2022 
  * David A Stumpf, MD, PhD
  * Who Am I -- Graphs for Genealogists
  * Woodstock, IL 60098 USA
@@ -38,6 +38,7 @@ public class queries_to_excel {
     public static WritableCellFormat timesBoldUnderline;
     public static WritableCellFormat times;
     public static String excelFile;
+    public static int rwCt;
     
     //main is for testing only. Must comment out database calls and use a properly formated file in the Import Neo4j folder
     public static void main(String args[]) {
@@ -108,7 +109,7 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
     String[] rws = c.split("\n");
     int rows = rws.length;
     int colct = rws[0].split(Pattern.quote("|")).length;
-  
+    rwCt = rows-1;
     //************************************************************************
     //instantiate the formating from the function call variables
     //initialize column numeric formats

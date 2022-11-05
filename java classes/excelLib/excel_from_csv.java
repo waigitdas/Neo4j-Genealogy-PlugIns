@@ -58,11 +58,11 @@ public class excel_from_csv {
         gen.rel.anc_rn anc = new gen.rel.anc_rn();
         anc_name = gen.gedcom.get_family_tree_data.getPersonFromRN(anc.get_ancestor_rn(),true);
     }
- //System.out.println("#2"); 
+ System.out.println("#2"); 
      //set up excel. Create new or open prior if there are to be multiple worksheets
      try{
     if (ExistingExcelFile=="") {
-       // System.out.println("#3");
+        System.out.println("#3");
     excelFile = gen.neo4jlib.neo4j_info.Import_Dir + FileNm + "_" + gen.genlib.current_date_time.getDateTime() + ".xls";;
     excelFileNm=excelFile;
     file = new File(excelFileNm);
@@ -78,7 +78,7 @@ public class excel_from_csv {
         w = Workbook.createWorkbook(new File(excelFile), existingWorkbook);
      }
    
-//System.out.println("#4");
+System.out.println("#4");
     WritableSheet excelSheet = w.createSheet(SheetName, SheetNumber);
     createLabel(excelSheet);
     excelSheet.getSettings().setVerticalFreeze(1);
@@ -91,8 +91,9 @@ public class excel_from_csv {
   
      }
      catch (Exception e) {
+         System.out.println(e.getMessage());
      }
-     
+     System.out.println(c);
 //iterate through csv lines to create excel worksheets within the active workbook
     String[] rws = c.split("\n");
     int rows = rws.length;
@@ -206,7 +207,10 @@ public class excel_from_csv {
     w.close();
     Desktop.getDesktop().open(new File(excelFileNm));
     }
-    catch (Exception e) {return "Error in queries_to_excel\n\n" +  e.getMessage(); }
+    catch (Exception e) {
+        System.out.println(e.getMessage());
+        return "Error in queries_to_excel\n\n" +  e.getMessage(); 
+    }
      
     return "Completed";  // excelFile;
  }

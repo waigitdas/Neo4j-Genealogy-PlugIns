@@ -53,6 +53,10 @@ public class load_all_files {
         load_ftdna_enhancements fe = new load_ftdna_enhancements();
         fe.add_match_segment_properties();
         
+        //add cumulative snp to mt-haplotree
+        //gen.dna.process_mt_haplotree mt = new gen.dna.process_mt_haplotree();
+        //mt.mt_haplotree_cumulative_snps();
+                
         try{
         gen.avatar.targeted_anc_enhance tge = new gen.avatar.targeted_anc_enhance();
         tge.add_enhancements(anc_rn);
