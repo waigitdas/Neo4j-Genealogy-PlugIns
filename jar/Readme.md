@@ -15,7 +15,19 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
         <li>mt-DNA haplotree cumulative SNPs giving complete picture of all SNP at a branch.</li>
         <li>fixed triangulation method to accomodate change is Neo4j's Graph Data Science triangle algorithm which now rquires undirected graph projection.</li>
         <li>added endogamy package</li>
-        <li></li>
+        <ul>
+            <li>individual persons endogamy report</li>
+            <li>shared ancestors of two individuals</li>
+            <li>coefficient of inbreeding for an individual</li>
+        </ul>
+        <li>addedd union_parent relationship to support union trees</li>
+         <li></li>
+         <li></li>
+         <li></li>
+         <li></li>
+         <li></li>
+         <li></li>
+         <li></li>
      </ul>   
 -->
 <li><b>v 1.1.10</b> Oct 18, 2022</li>
