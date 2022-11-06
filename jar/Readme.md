@@ -21,7 +21,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
             <li>coefficient of inbreeding for an individual</li>
         </ul>
         <li>addedd union_parent relationship to support union trees</li>
-         <li></li>
+         <li>fixed shared DNA calculation (COI) to accomodate endogamous family trees (gen.rel.DNA_Shared)</li>
          <li></li>
          <li></li>
          <li></li>
