@@ -1,5 +1,5 @@
 /**
- * Copyright 2022
+ * Copyright 2022-2023
  * David A Stumpf, MD, PhD
  * Who Am I -- Graphs for Genealogists
  * Woodstock, IL 60098 USA
