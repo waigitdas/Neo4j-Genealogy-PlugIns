@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 
+ * Copyright 2021-2023 
  * David A Stumpf, MD, PhD
  * Who Am I -- Graphs for Genealogists
  * Woodstock, IL 60098 USA
@@ -819,8 +819,7 @@ try{
         cq = "create (cn:chr_cm{chr:toString(line.c),strt_pos:toInteger(line.s),end_pos:toInteger(line.e),cm:toFloat(line.cm)})";
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
 }catch(Exception e){}    
-        
-        //neo4j_qry.qry_write("MATCH (n:chr_cm) WITH n,gen.dna.hapmap_cm(case when n.chr='0X' then 'X' else n.chr end,n.str_pos,n.end_pos) as cm set n.cm=cm");     
+  
 try{
         gen.rel.add_rel_property arp = new gen.rel.add_rel_property();
         arp.add_relationship_property();
@@ -858,6 +857,10 @@ catch(Exception e){}
        gen.neo4jlib.neo4j_qry.qry_write("match path1=(p:Person)-[r:father|mother*0..10]->(a:Person) with a where a.sex='F' and a.surname<>'MRCA' with collect(a.RN) as rns match path2 =(p2:Person)-[r:mother*0..10]->(a2:Person) where a2.RN in rns with rns,p2,collect(p2.RN) as rns2 ,[x in nodes(path2)|x.RN] as path_rns match (d:DNA_Match) where d.RN in rns2 and d.mtHG is not null with rns, d.mtHG as mt_haplogroup, apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten(collect( distinct path_rns)))) as path_rns with mt_haplogroup,apoc.coll.intersection(path_rns,rns) as pedigree_rns unwind pedigree_rns as x call { with x return x as prn } match path4=(p4:Person{RN:prn})-[r4:mother*0..15]->(a4:Person) with distinct p4,gen.dna.mt_deepest_level(apoc.text.join(collect(distinct mt_haplogroup),',')) as mthg, prn set p4.imtHG=mthg");
        
        gen.neo4jlib.neo4j_qry.qry_write("match (p:Person{sex:'F'})-[r:mother*1..99]->(d:Person{sex:'F'}) where d.imtHG is not null with distinct p, d.imtHG as hg set p.imtHG=hg");
+       
+       //populate chr_cm cM
+        neo4j_qry.qry_write("MATCH (n:chr_cm) WITH n,n.chr as c,min(n.strt_pos) as s, max(n.end_pos) as e with n,c,s,e,gen.dna.hapmap_cm(case when c='0X' then 'X' else c end,s , e) as cm set n.cm=cm");   
+       
        return  "completed";
 
     }

@@ -42,7 +42,7 @@ public class shared_cm_dna {
         if (r =="") {r = "--";}
         return r;
         }
-        catch (Exception e) {return "error\n\n" + Indx  +"\n\n" + cq;}
+        catch (Exception e) {return "~";}
      }
    
     public String mrca_qry(String cq) 

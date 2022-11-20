@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 
+ * Copyright 2021-2023 
  * David A Stumpf, MD, PhD
  * Who Am I -- Graphs for Genealogists
  * Woodstock, IL 60098 USA
@@ -40,10 +40,10 @@ import static java.lang.Integer.min;
         
          try{
         String r = mrca_qry(cq);
-        if (r =="") {r = "--";}
+        if (r =="") {r = "~";}
         return r;
         }
-        catch (Exception e) {return "error\n\n" + Indx  +"\n\n" + cq;}
+        catch (Exception e) {return "~";}
      }
    
     public String mrca_qry(String cq) 

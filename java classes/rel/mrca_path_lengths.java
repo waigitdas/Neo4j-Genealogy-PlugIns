@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 
+ * Copyright 2021-2023 
  * David A Stumpf, MD, PhD
  * Who Am I -- Graphs for Genealogists
  * Woodstock, IL 60098 USA
@@ -45,7 +45,7 @@ public class mrca_path_lengths {
                 rnmax=rn1;
             }
                 String s =gen.neo4jlib.neo4j_qry.qry_to_csv("match path = (p:Person{RN:" + rnmin + "})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(b:Person{RN:" + rnmax + "}) where p.RN<b.RN return mrca.RN as mrca, size(r1) as path1,size(r2) as path2");
-            gen.neo4jlib.file_lib.writeFile(s, "c://temp/mrcatest.csv");
+            //gen.neo4jlib.file_lib.writeFile(s, "c://temp/mrcatest.csv");
            return s; 
         }
 }

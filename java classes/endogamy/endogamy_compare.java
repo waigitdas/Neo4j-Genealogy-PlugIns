@@ -33,7 +33,8 @@ public class endogamy_compare {
     
     
     public static void main(String args[]) {
-        endogamy_mrcas(4L,1796L);
+        //endogamy_mrcas(4L,1796L);
+        endogamy_mrcas(31L,32L);
     }
     
      public static String endogamy_mrcas(Long rn1,Long rn2) 
@@ -63,7 +64,7 @@ public class endogamy_compare {
           String rel_list = gen.neo4jlib.neo4j_qry.qry_str("LOAD CSV WITH HEADERS FROM 'file:///endogamy_package2.csv' as line FIELDTERMINATOR '|'  with apoc.coll.sort(apoc.coll.flatten(apoc.coll.flatten(collect(distinct line.rel))) ) as rels return  rels");
         
         //duplicate ancestors
-        cq = "match path=(p1:Person)-[[r1:father|mother*0..25]]->(mrca:Person)<-[[r2:father|mother*0..25]]-(p2:Person)  where p1.RN=" +  rn1 + " and p2.RN=" + rn2 + " and p2<>p1 with distinct r1,mrca with mrca, count(*) as ct with mrca,ct where ct>1 and mrca.uid=0 with mrca,gen.rel.ahnentafel_for_ancestor(" + rn1 + ",mrca.RN) as ahn, gen.rel.compute_cor(" + rn1 + ",mrca.RN) as cor   return mrca.fullname + ' [[' + mrca.RN + ']]'  as ancestor,size(ahn)-size(replace(ahn,';',''))+1 as ct,ahn as ahnentafel, cor";
+        cq = "match path=(p1:Person{RN:" + rn1 + "})-[r1:father|mother*0..25]->(mrca:Person) with path,p1,r1,mrca match(mrca)<-[r2:father|mother*0..25]-(p2:Person{RN:" + rn2 + "}) where p2<>p1 with distinct r1,mrca with mrca, count(*) as ct with mrca,ct where ct>1 and mrca.uid=0 with mrca,gen.rel.ahnentafel_for_ancestor(" + rn1 + ",mrca.RN) as ahn, gen.rel.compute_cor(" + rn1 + ",mrca.RN) as cor return mrca.fullname + ' [' + mrca.RN + ']' as ancestor,size(ahn)-size(replace(ahn,';',''))+1 as ct,ahn as ahnentafel, cor";
         excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "endogamy_package4", "duplicate_ancestors", ct, "", "1:#########;2:0.#######", excelFile, true,"cypher query:\n" +  cq + "\n\nRelationships identified in the paths worksheet: " + rel_list.replace("[","").replace("]","").replace("\\",""), false);
         ct = ct + 1;
      

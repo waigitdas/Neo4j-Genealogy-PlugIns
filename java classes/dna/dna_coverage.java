@@ -40,7 +40,13 @@ public class dna_coverage {
             }
    
     public static void main(String args[]) {
-        get_coverage(4441L, 2L);
+        //get_coverage(4441L, 2L);
+        //get_coverage(33454L,2L);
+        //get_coverage(26828L,1L);
+        //get_coverage(75L,2L);//
+        //get_coverage(1086L,1L);
+        //get_coverage(23446L,2L);
+        get_coverage(467L,1l);
     }
     
      public  static String get_coverage(Long anc_rn, Long method) 
@@ -199,7 +205,7 @@ public class dna_coverage {
                    Double P = Math.pow(2,nbr_kids) -1 ; //number of pieces of Venn diagram
                    int iP = (int) Math.pow(2,nbr_kids) -1 ; 
                    Tbl = new Double[iP][(nbr_kids) +3]; //column for each kid + M, W, R
-                    Double sumR = 0.0;
+                   Double sumR = 0.0;
                    int colM = nbr_kids; 
                    int kid_ct = 0;
                    for (int t=0; t<persons.length; t++)  //iterare entire list to find kids
@@ -214,6 +220,7 @@ public class dna_coverage {
                            
                              DescList[kid_ct][1] = t; 
                              //}
+                        
                      
                           kid_ct = kid_ct + 1;
                        }//end kid   
@@ -239,10 +246,11 @@ public class dna_coverage {
                   }
             
    
-            {   //rows
+            //{   //rows
     
            sumR = get_cov_rollup(persons, Tbl, indv_row, DescList, coverage);
-            }
+           System.out.println(persons[indv_row][0] + "\t" + sumR + "\t" + coverage[indv_row][0]);
+            //}
   
             /////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////
@@ -436,23 +444,25 @@ public class dna_coverage {
           fw.write("<th style=\"width:" + colWidth + "px; text-align:right\"x>M</th><th style=\"width:" + colWidth + "px; text-align:right\">W(p)</th><th style=\"width:" + colWidth + "px; text-align:right\">R(p)</th></tr>");
             if (Tbl.length>201){fl=200;}   
             else {fl = Tbl.length;}
-            for (int i=0; i<fl; i++)
-                {
-            int q = i+1;
-            fw.write("<tr> <td>" + q + ":\t<br></td>");
-            for (int j=0; j<ncol;j++){
-                    fw.write("<td>" + Tbl[i][j].intValue() + "</td>");
-            }
-            fw.write("<td style=\"width:" + colWidth + "px; text-align:right\">" + Tbl[i][ncol] + "</td>");
-            fw.write("<td style=\"width:" + colWidth + "px; text-align:right\">" + Tbl[i][ncol+1] + "</td>");
-            fw.write("<td style=\"width:" + colWidth + "px; text-align:right\">" + Tbl[i][ncol+2] + "</td>");
-            fw.write("</tr>\n");
+                for (int i=0; i<fl; i++)
+                        {
+                    int q = i+1;
+                    fw.write("<tr> <td>" + q + ":\t<br></td>");
+                    for (int j=0; j<ncol;j++){
+                            fw.write("<td>" + Tbl[i][j].intValue() + "</td>");
+                    }
+                    fw.write("<td style=\"width:" + colWidth + "px; text-align:right\">" + Tbl[i][ncol] + "</td>");
+                    fw.write("<td style=\"width:" + colWidth + "px; text-align:right\">" + Tbl[i][ncol+1] + "</td>");
+                    fw.write("<td style=\"width:" + colWidth + "px; text-align:right\">" + Tbl[i][ncol+2] + "</td>");
+                    fw.write("</tr>\n");
                 }
-            fw.write("<tr><td colspan='" + ncol+1 + "'></td><td>sum R: " + sumR  + "</td></tr>\n");
-        fw.write("</table>");
-        if (Tbl.length>201){fw.write("truncated output<br>");}   
-        fw.write("<br><hr style='height:5px;; color:#000; background-color:#000;'>\n\n\n");
-        fw.flush();
+                    fw.write("<tr><td colspan='" + ncol+1 + "'></td><td>sum R: " + sumR  + "</td></tr>\n");
+                fw.write("</table>");
+                if (Tbl.length>201){
+                    fw.write("truncated output<br>");
+                }   
+                fw.write("<br><hr style='height:5px;; color:#000; background-color:#000;'>\n\n\n");
+                fw.flush();
             }
               
          }
@@ -541,7 +551,7 @@ public static Double get_cov_rollup(int[][] persons, Double[][] Tbl, int indv_ro
         int childIndx =0;
 
         //if (Integer.valueOf(persons[indv_row][6])!=null)
-        if (persons[indv_row][0]==18381)
+        if (persons[indv_row][0]==483)
         {
             int edg=0;
         }

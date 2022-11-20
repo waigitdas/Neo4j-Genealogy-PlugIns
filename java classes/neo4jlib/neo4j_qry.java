@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 
+ * Copyright 2021-2023 
  * David A Stumpf, MD, PhD
  * Who Am I -- Graphs for Genealogists
  * Woodstock, IL 60098 USA
@@ -63,6 +63,10 @@ public class neo4j_qry {
                 } );
             } 
            }
+   
+    public static void qry_write_qry (String cq) {
+        gen.neo4jlib.neo4j_info.wrt = gen.neo4jlib.neo4j_info.wrt + cq + "\n" ;  //with xxx\n";
+    }
    
 
    

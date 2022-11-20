@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 
+ * Copyright 2021-2023 
  * David A Stumpf, MD, PhD
  * Who Am I -- Graphs for Genealogists
  * Woodstock, IL 60098 USA
@@ -36,6 +36,7 @@ public class neo4j_info {
     //public static String activeProjectData = "/Genealogy/Neo4j/active_neo4j.wai";
 
     public static String neo4j_home_dir;
+    public static String wrt;
 
 public static Boolean neo4j_var() {
     Boolean WasFilled =false;
