@@ -18,13 +18,13 @@ public class pedigree_collapse {
     @Description("Detects pedigree collapse and returns ancestors at the end of a duplicated branch.")
 
     public String discover_pedigree_collapse(
-        @Name("propositus_rn") 
-            Long propositus_rn
+        @Name("proband_rn") 
+            Long proband_rn
   )
    
          { 
              
-        String s = find_collapse(propositus_rn);
+        String s = find_collapse(proband_rn);
          return s;
             }
 
@@ -45,7 +45,7 @@ public class pedigree_collapse {
                 //"match path=([p1:Person)-[[r1:father|mother*0..25]]->(mrca:Person)<-[[r2:father|mother*0..25]]-(p2:Person)  where p1.RN=" + rn + " and p2<>p1 with distinct r1,mrca with mrca, count(*) as ct with mrca,ct where ct>1 and mrca.uid=0 with mrca,gen.rel.ahnentafel_for_ancestor(" + rn + ", mrca.RN) as ahn return mrca.fullname + ' ⦋' + mrca.RN + '⦌'  as ancestor,ahn as ahnentafel";
         //"match path=(p1:Person)-[r1:father|mother*0..25]->(mrca:Person)<-[r2:father|mother*0..25]-(p2:Person) where p1.RN=" + rn + " and p2<>p1 with mrca, count(path) as ct with mrca,ct where ct>1 and mrca.uid=0 with mrca,gen.rel.relationship_from_RNs(" + rn + ",mrca.RN) as rels return mrca.fullname + ' ⦋' + mrca.RN + '⦌'  as ancestor,rels";
         try{
-        gen.excelLib.queries_to_excel.qry_to_excel(cq, "Pedigree_collapse", "duplicate_ancestors", 1, "", "", "", true, "UDF:\nreturn gen.discovery.discover_pedigree_collapse(" + rn + ")\n\ncypher query:\n" +  cq + "\n\nThe ancesttors appear more than once in the propositus' family tree. \nThe Ahnentafel numbers indicate the duplicates position in the family tree.", false);
+        gen.excelLib.queries_to_excel.qry_to_excel(cq, "Pedigree_collapse", "duplicate_ancestors", 1, "", "", "", true, "UDF:\nreturn gen.discovery.discover_pedigree_collapse(" + rn + ")\n\ncypher query:\n" +  cq + "\n\nThe ancesttors appear more than once in the proband' family tree. \nThe Ahnentafel numbers indicate the duplicates position in the family tree.", false);
         return "completed";
         }
         catch (Exception e){

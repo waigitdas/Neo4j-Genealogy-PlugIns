@@ -17,12 +17,12 @@ public class endogamy_individual {
     @Description("Template used in creating new functions.")
 
     public String endogamy_panel(
-        @Name("propositus_rn") 
-            Long propositus_rn
+        @Name("proband_rn") 
+            Long proband_rn
   )
          { 
              
-        String s = create_panel(propositus_rn);
+        String s = create_panel(proband_rn);
          return s;
             }
     
@@ -52,7 +52,7 @@ public class endogamy_individual {
         ct = ct + 1;
  
          //duplicate unions
-         cq = "with " + rn + " as urn MATCH p=(u1:Union)-[r:union_parent*0..99]->(u2:Union) where u1.U1=urn or u1.U2= urn with u1,u2,u2.uid as uid, count(*) as ct with distinct u1,u2,uid,ct where ct>1 with distinct u1,u2,uid,ct,gen.gedcom.person_from_rn(case when u2.U1 is null then 0 else u2.U1 end,true) as u1p, gen.gedcom.person_from_rn(case when u2.U2 is null then 0 else u2.U2 end,true) as u2p RETURN u1.uid as propositus_uid, uid as parents_uid, u1p as father, u2p as mother, ct order by ct desc,propositus_uid,parents_uid";
+         cq = "with " + rn + " as urn MATCH p=(u1:Union)-[r:union_parent*0..99]->(u2:Union) where u1.U1=urn or u1.U2= urn with u1,u2,u2.uid as uid, count(*) as ct with distinct u1,u2,uid,ct where ct>1 with distinct u1,u2,uid,ct,gen.gedcom.person_from_rn(case when u2.U1 is null then 0 else u2.U1 end,true) as u1p, gen.gedcom.person_from_rn(case when u2.U2 is null then 0 else u2.U2 end,true) as u2p RETURN u1.uid as proband_uid, uid as parents_uid, u1p as father, u2p as mother, ct order by ct desc,proband_uid,parents_uid";
          excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "duplicate_unions", "duplicate_unions", ct, "", "0:#####;1:###,###,###;2:######;3:##.############",excelFile, false, "cypher query:\n" + cq + "\n\nUnions (marriages) that occur more thsn once in the family tree. \nComparing this with the next worksheet will distinguish duplicate ancestors with more than one union.\n\nThis report gives granular information so you can see it.\nThe may be redundancies in there are multiple marriages.", false);
         ct = ct + 1;
          
@@ -72,7 +72,7 @@ public class endogamy_individual {
         //duplicate ancestors
 //      Double coi = qcoi.coefficient_of_inbredding(rn);
 //        
-        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "endogamy_package", "duplicate_ancestors", ct, "", "1:#########;4:0.########;5:####", excelFile,false,"cypher query:\n" +  cq + "\n\nfam_member_positions in the family tree  \t" + fam_member_ct + "\nUnique family members in the family tree:\t" + unique_fam_mbrs.intValue() + "\nDuplicate ancestors:\t" + rws + "    percent of unique ancestors: " + uniq_mbr_ct_pc + "%\nTotal appearances in family tree:\t" + dup_ct + "     percent of positions in the family tree:\t" + dup_ct_pc + "%\n\n\nTo see the details of paths for a specific ancestor, use this query placing the record number of the ancestor in place of the **\nmatch path=(p1:Person)-[[rp1:father|mother*1..25]]->(p2:Person) where p1.RN=" + rn + "  and p2.RN=** and p1.RN<p2.RN with rp1,reduce(srt='', z in nodes(path)|srt+z.fullname + ', ') as fn, reduce(srt2 ='', q IN nodes(path)|srt2 + case when q.sex='M' then 0 else 1 end ) as SO with fn, '1' + substring(SO,1,size(rp1)) as SO with fn,gen.rel.ahn_path(SO) as SO with fn,SO[[size(SO)-1]] as Ahnentafel return fn,Ahnentafel order by Ahnentafel\n\nTo visualize th path between the propositus and any ancestor, using this query in the Neo4j browser, adding the ancestor RN in place of **\nmatch path=(n:Person{RN:" + rn + "})-[r:father|mother*0..99]->(x:Person{RN:**} return path", false);
+        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "endogamy_package", "duplicate_ancestors", ct, "", "1:#########;4:0.########;5:####", excelFile,false,"cypher query:\n" +  cq + "\n\nfam_member_positions in the family tree  \t" + fam_member_ct + "\nUnique family members in the family tree:\t" + unique_fam_mbrs.intValue() + "\nDuplicate ancestors:\t" + rws + "    percent of unique ancestors: " + uniq_mbr_ct_pc + "%\nTotal appearances in family tree:\t" + dup_ct + "     percent of positions in the family tree:\t" + dup_ct_pc + "%\n\n\nTo see the details of paths for a specific ancestor, use this query placing the record number of the ancestor in place of the **\nmatch path=(p1:Person)-[[rp1:father|mother*1..25]]->(p2:Person) where p1.RN=" + rn + "  and p2.RN=** and p1.RN<p2.RN with rp1,reduce(srt='', z in nodes(path)|srt+z.fullname + ', ') as fn, reduce(srt2 ='', q IN nodes(path)|srt2 + case when q.sex='M' then 0 else 1 end ) as SO with fn, '1' + substring(SO,1,size(rp1)) as SO with fn,gen.rel.ahn_path(SO) as SO with fn,SO[[size(SO)-1]] as Ahnentafel return fn,Ahnentafel order by Ahnentafel\n\nTo visualize th path between the proband and any ancestor, using this query in the Neo4j browser, adding the ancestor RN in place of **\nmatch path=(n:Person{RN:" + rn + "})-[r:father|mother*0..99]->(x:Person{RN:**} return path", false);
         
         cq = "match p= (p0:Person{RN:" + rn + "})-[[r1:father|mother*0..25]]->(a0:Person) with apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten(collect([[x in nodes(p)|x.RN]])))) as path_nodes match p= (p1:Person{RN:" + rn + "})-[[r1:father|mother*0..25]]->(a:Person) optional match(u:Union) where u.U1=a.RN or u.U2=a.RN with a,u,path_nodes optional match (p2:Person) where p2.uid=u.uid with a.fullname as fn,a.RN as RN,u.uid as uid ,collect(p2.RN) as cRNs,path_nodes with fn,RN,cRNs, uid,apoc.coll.intersection(path_nodes,cRNs) as in_analysis,path_nodes with fn,RN as mrn,uid,cRNs,size(in_analysis) as ct, in_analysis,path_nodes optional match (p4:Person{RN:mrn})-[[:father|mother]]->(a4:Person) with fn,mrn,uid,cRNs,size(in_analysis) as ct, in_analysis,collect(a4.RN) as a2rn,path_nodes where in_analysis>[[]] with fn,mrn as RN,uid,cRNs, ct, in_analysis,apoc.coll.intersection(path_nodes,a2rn) as parents_in_analysis with fn, RN,uid,cRNs, ct, in_analysis, parents_in_analysis where parents_in_analysis=[[]] with fn,RN,uid,cRNs, ct, in_analysis, parents_in_analysis,gen.rel.compute_cor(" + rn + ",RN) as cor return fn,RN,cor,uid as union,size(cRNs) as ctc,cRNs as eol_ancestor_children, ct, in_analysis as children_in_path_to_eol_ancestor, parents_in_analysis order by RN";
         cqq = cq.replace("[[","[").replace("]]","]");

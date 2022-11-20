@@ -38,17 +38,17 @@ public class person_connect {
         String surname = gen.neo4jlib.neo4j_qry.qry_to_csv("MATCH (n:DNA_Match{fullname:'" + fullname + "'}) RETURN n.surname as surname LIMIT 1").split("\n")[0];
         surname = surname.replace("\"", "");
       
-        String cq = "match (m:DNA_Match{fullname:'" + fullname + "'})-[[rs:match_segment]]-(s:Segment) with s,m.fullname as name,rs.p as propositus,rs.m as match order by s.Indx with name,propositus,match,collect(distinct s.Indx) as segs return name, propositus,match,size(segs) as shared_seg_ct,segs";
-                //"match (m:DNA_Match{fullname:'" + fullname + "'})-[[rs:match_segment]]-() with m.fullname as name,rs.p as propositus,rs.m as match return name,propositus,match";
+        String cq = "match (m:DNA_Match{fullname:'" + fullname + "'})-[[rs:match_segment]]-(s:Segment) with s,m.fullname as name,rs.p as proband,rs.m as match order by s.Indx with name,proband,match,collect(distinct s.Indx) as segs return name, proband,match,size(segs) as shared_seg_ct,segs";
+                //"match (m:DNA_Match{fullname:'" + fullname + "'})-[[rs:match_segment]]-() with m.fullname as name,rs.p as proband,rs.m as match return name,proband,match";
         int ct = 1;
         String excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, fullname + "_explorer", "matches at segments", ct, "", "", "",false, cq, false);
         ct= ct +1;
         
-        cq = "match (m:DNA_Match{fullname:'" + fullname + "'})-[[rs:match_by_segment]]-(mm:DNA_Match) with m.fullname as propositus, mm.fullname as match,rs.cm as shared_cm,rs.x_cm as x_cm,rs.rel as relationship return propositus,match,shared_cm,x_cm,relationship";
+        cq = "match (m:DNA_Match{fullname:'" + fullname + "'})-[[rs:match_by_segment]]-(mm:DNA_Match) with m.fullname as proband, mm.fullname as match,rs.cm as shared_cm,rs.x_cm as x_cm,rs.rel as relationship return proband,match,shared_cm,x_cm,relationship";
         gen.excelLib.queries_to_excel.qry_to_excel(cq, "mbs", "matches by segments", ct, "", "2:####.#;3:####.#", excelFile,false, cq, false);
         ct = ct + 1;
         
-        cq = "match (m:DNA_Match{fullname:'" + fullname + "'})-[[rs:shared_match]]-(mm:DNA_Match) with m.fullname as propositus, mm.fullname as match,rs.cm as shared_cm,rs.x_cm as x_cm,rs.rel as relationship return propositus,match,shared_cm,x_cm,relationship";
+        cq = "match (m:DNA_Match{fullname:'" + fullname + "'})-[[rs:shared_match]]-(mm:DNA_Match) with m.fullname as proband, mm.fullname as match,rs.cm as shared_cm,rs.x_cm as x_cm,rs.rel as relationship return proband,match,shared_cm,x_cm,relationship";
         gen.excelLib.queries_to_excel.qry_to_excel(cq, "shared_matches", "shared_matches", ct, "", "2:####.#;3:####.#", excelFile,false, cq, false);
         ct = ct + 1;
         
@@ -56,7 +56,7 @@ public class person_connect {
         gen.excelLib.queries_to_excel.qry_to_excel(cq, "sements", "segments", ct, "", "2:####.#;3:####.#", excelFile,false, cq, false);
         ct = ct + 1;
         
-       cq = "match (m:DNA_Match{fullname:'" + fullname + "'})-[[rs:match_segment]]-(s:Segment)-[[rm:ms_seg]]-(mss:MSS) with m,rs,s,mss order by s.Indx with m.fullname as name,rs.p as propositus,rs.m as match,mss.fullname as monophylytic_ancestor,collect(distinct s.Indx) as segs return monophylytic_ancestor,name,propositus,match,segs";
+       cq = "match (m:DNA_Match{fullname:'" + fullname + "'})-[[rs:match_segment]]-(s:Segment)-[[rm:ms_seg]]-(mss:MSS) with m,rs,s,mss order by s.Indx with m.fullname as name,rs.p as proband,rs.m as match,mss.fullname as monophylytic_ancestor,collect(distinct s.Indx) as segs return monophylytic_ancestor,name,proband,match,segs";
         gen.excelLib.queries_to_excel.qry_to_excel(cq, "person_explorer", "monophyletic group", ct, "", "", excelFile,false, cq, false);
         ct = ct + 1;
         
@@ -65,11 +65,11 @@ public class person_connect {
         ct = ct + 1;
  
         if(gen.neo4jlib.neo4j_info.tg_file!=""){
-        cq = "match (m:DNA_Match{fullname:'" + fullname + "'})-[rs:match_tg]-(t:tg) with t,m.fullname as propositus,rs.p as match_propositus, rs.m as match,rs.seg_ct as seg_ct,count(*) as ct order by t.name with propositus,match_propositus,match,seg_ct,ct,collect(distinct t.name) as tg,collect(distinct t.Indx) as segs return propositus,match_propositus,match,size(tg) as tg_ct, tg as tgs,size(segs) as seg_ct,segs";
+        cq = "match (m:DNA_Match{fullname:'" + fullname + "'})-[rs:match_tg]-(t:tg) with t,m.fullname as proband,rs.p as match_proband, rs.m as match,rs.seg_ct as seg_ct,count(*) as ct order by t.name with proband,match_proband,match,seg_ct,ct,collect(distinct t.name) as tg,collect(distinct t.Indx) as segs return proband,match_proband,match,size(tg) as tg_ct, tg as tgs,size(segs) as seg_ct,segs";
         gen.excelLib.queries_to_excel.qry_to_excel(cq, "tgs", "tgs", ct, "", "3:###.#;3:###.#", excelFile,false,cq,false);
         ct = ct + 1;
     }
-       cq = "MATCH p=(m1:DNA_Match)-[[r:match_by_segment]]-(m2:DNA_Match) where m1.RN is not null and m2.surname='" + surname + "' and m1<>m2 RETURN m1.fullname as propositus, m2.fullname as source_match,r.cm as shared_cm,r.rel as rel  order by shared_cm desc ";
+       cq = "MATCH p=(m1:DNA_Match)-[[r:match_by_segment]]-(m2:DNA_Match) where m1.RN is not null and m2.surname='" + surname + "' and m1<>m2 RETURN m1.fullname as proband, m2.fullname as source_match,r.cm as shared_cm,r.rel as rel  order by shared_cm desc ";
         gen.excelLib.queries_to_excel.qry_to_excel(cq, "surname_matches", "surname_matches", ct, "", "2:####.#;2:###.#", excelFile,true, cq, false);
         ct = ct + 1;
  

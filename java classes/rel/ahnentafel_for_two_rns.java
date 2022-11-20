@@ -14,18 +14,18 @@ import org.neo4j.procedure.UserFunction;
 
 public class ahnentafel_for_two_rns {
     @UserFunction
-    @Description("Calculates the ahnentafel for the ancestor of a specified person, the propositus.")
+    @Description("Calculates the ahnentafel for the ancestor of a specified person, the proband.")
 
     public String ahnentafel_for_ancestor(
-        @Name("propositus_rn") 
-            Long propositus_rn,
+        @Name("proband_rn") 
+            Long proband_rn,
         @Name("ancestor_rn") 
             Long ancestor_rn
   )
    
          { 
              
-        String ahn = get_ahn(propositus_rn,ancestor_rn);
+        String ahn = get_ahn(proband_rn,ancestor_rn);
          return ahn;
             }
 

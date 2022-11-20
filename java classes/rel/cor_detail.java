@@ -41,7 +41,8 @@ public class cor_detail{
  
     
         public static void main(String args[]) {
-        calc_shared_DNA(19L, 2100L);
+        //calc_shared_DNA(19L, 2100L);
+        calc_shared_DNA(9L,12L);
     }
              
         public static String calc_shared_DNA(Long rn1, Long rn2){
@@ -54,7 +55,7 @@ public class cor_detail{
         try{
         Writer fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn), "UTF-8"));
         //FileWriter fw = new FileWriter(fn);
-        fw.write("propositi, relationship, ancestors,path1, path2, genetic_distance, COR, observed_cm, expected_cm\n") ;
+        fw.write("probands, relationship, ancestors,path1, path2, genetic_distance, COR, observed_cm, expected_cm\n") ;
         mrca_path_lengths mm = new mrca_path_lengths();
         String[] mrca =  mm.get_mrca_path_len(rn1,rn2).split("\n");
         for (int i=0; i<mrca.length; i++){
@@ -68,7 +69,7 @@ public class cor_detail{
             double shared_dna = 0.0;
             //String Indx = String.valueOf(mrca.length) + ":" + String.valueOf(max(path1.intValue(),path2.intValue())) + ":" + String.valueOf(min(path1.intValue(), path2.intValue())) ;
             
-            String propositi = gen.gedcom.get_family_tree_data.getPersonFromRN(rn1, false) + " ; " + gen.gedcom.get_family_tree_data.getPersonFromRN(rn2, false);
+            String probands = gen.gedcom.get_family_tree_data.getPersonFromRN(rn1, false) + " ; " + gen.gedcom.get_family_tree_data.getPersonFromRN(rn2, false);
             String anc = gen.gedcom.get_family_tree_data.getPersonFromRN(anc_rn, false);
           
             gen.rel.relationship rr = new gen.rel.relationship();
@@ -79,7 +80,7 @@ public class cor_detail{
             gen.dna.shared_cm_dna scm = new gen.dna.shared_cm_dna();
             String exp_sharedCM =  scm.expected_cm(Long.valueOf(1),path1,path2);
             
-            fw.write(propositi + ", " + gen.genlib.handy_Functions.fix_str(relationship) + ", " + anc + "," + mmm[1] + ", " + mmm[2] + ", " +  madd +", " + String.valueOf(cor_i) + ", , " + gen.genlib.handy_Functions.fix_str(exp_sharedCM) +  "\n");
+            fw.write(probands + ", " + gen.genlib.handy_Functions.fix_str(relationship) + ", " + anc + "," + mmm[1] + ", " + mmm[2] + ", " +  madd +", " + String.valueOf(cor_i) + ", , " + gen.genlib.handy_Functions.fix_str(exp_sharedCM) +  "\n");
         }
         
             //String exp_sharedCM2 =  scm.expected_cm(Long.valueOf(1),path1,path2);
@@ -103,7 +104,7 @@ public class cor_detail{
             gen.excelLib.excel_from_csv.load_csv(fname, "shared_dna","cor",1, "","3:###;4:###;5:###;6:#.#######","",true,"The total COR is " + cor + "\nFrom the shared centimorgan project the expected value and range is " + scm + " cm.\nThe observed shared DNA is " + cm + ".\nThe predicted DNA is " + cor + " x " + total_cm +" = " + cor*total_cm + " cm\n\nUDF:\nreturn gen.rel.shared_DNA(" + rn1 + "," + rn2 +")\n\nThe pedigree coefficient of relationship (COR) is a measure of pedigree collapse resulting from ancstors appearing more that one in the family tree.\nThe paths are the generations to the common ancestor for each person in the analysis.\n\nreferences:\nhttps://www.yourdnaguide.com/ydgblog/2019/7/26/pedigree-collapse-and-genetic-relationships\nhttp://www.genetic-genealogy.co.uk/Toc115570135.html\nhttps://isogg.org/wiki/Coefficient_of_relationship\nhttps://en.wikipedia.org/wiki/Coefficient_of_relationship\n\n",false);
             //Desktop.getDesktop().open(fn);
         }
-        catch (Exception e) {}
+        catch (Exception e) {return " no results";}
         
       
  

@@ -621,7 +621,7 @@ public  String load_ftdna_csv_files(
      
 if (hasSegs==true){
         //line 391 in VB.NET
-        //match_segment edges with phasing paramenters m (match) and p (propositus) (for matches)
+        //match_segment edges with phasing paramenters m (match) and p (proband) (for matches)
         lc = "LOAD CSV WITH HEADERS FROM 'file:///" + FileSegs + "' as line FIELDTERMINATOR '|' return line ";
         cq = " match (s:Segment{Indx:toString(case when line.Chromosome is null then '' else line.Chromosome end) + ':' + toString(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toString(case when line.End_Location is null then 0 else line.End_Location end) }) match (m:DNA_Match{fullname:trim(toString(line.Match_Name))}) merge (m)-[r:match_segment{p:toString(line.Name),m:toString(line.Match_Name), p_rn:" + kit_rn + ", cm:toFloat(line.Centimorgans),snp_ct:toInteger(case when line.Matching_SNPs is null then 0 else line.Matching_SNPs end),cb_version:'" + cb_version + "'}]-(s)";
         neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);

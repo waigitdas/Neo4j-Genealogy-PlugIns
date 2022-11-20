@@ -132,7 +132,7 @@ public class dna_coverage {
         for (int i=0;i<c.length; i++ ){
             String cs[]=c[i].replace("[","").replace("]","").split(",");
             for (int j=0;j<cs.length; j++)
-            { //start at 1; propositus cannot be own 
+            { //start at 1; proband cannot be own 
                 for (int k=0;k< persons.length; k++) 
                 {
                     if (Integer.valueOf(cs[j].strip()).equals(persons[k][0]) && Integer.valueOf(persons[k][3])!=null)

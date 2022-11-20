@@ -54,7 +54,7 @@ public class coi_detail{
         try{
         Writer fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn), "UTF-8"));
         //FileWriter fw = new FileWriter(fn);
-        fw.write("propositi, relationship, ancestors,path1, path2, genetic_distance, COR, observed_cm, expected_cm\n") ;
+        fw.write("probands, relationship, ancestors,path1, path2, genetic_distance, COR, observed_cm, expected_cm\n") ;
         mrca_path_lengths mm = new mrca_path_lengths();
         String[] mrca =  mm.get_mrca_path_len(rn1,rn2).split("\n");
         for (int i=0; i<mrca.length; i++){
@@ -68,7 +68,7 @@ public class coi_detail{
             double shared_dna = 0.0;
             //String Indx = String.valueOf(mrca.length) + ":" + String.valueOf(max(path1.intValue(),path2.intValue())) + ":" + String.valueOf(min(path1.intValue(), path2.intValue())) ;
             
-            String propositi = gen.gedcom.get_family_tree_data.getPersonFromRN(rn1, false) + " ; " + gen.gedcom.get_family_tree_data.getPersonFromRN(rn2, false);
+            String probands = gen.gedcom.get_family_tree_data.getPersonFromRN(rn1, false) + " ; " + gen.gedcom.get_family_tree_data.getPersonFromRN(rn2, false);
             String anc = gen.gedcom.get_family_tree_data.getPersonFromRN(anc_rn, false);
           
             gen.rel.relationship rr = new gen.rel.relationship();
@@ -79,7 +79,7 @@ public class coi_detail{
             gen.dna.shared_cm_dna scm = new gen.dna.shared_cm_dna();
             String exp_sharedCM =  scm.expected_cm(Long.valueOf(1),path1,path2);
             
-            fw.write(propositi + ", " + gen.genlib.handy_Functions.fix_str(relationship) + ", " + anc + "," + mmm[1] + ", " + mmm[2] + ", " +  madd +", " + String.valueOf(cor_i) + ", , " + gen.genlib.handy_Functions.fix_str(exp_sharedCM) +  "\n");
+            fw.write(probands + ", " + gen.genlib.handy_Functions.fix_str(relationship) + ", " + anc + "," + mmm[1] + ", " + mmm[2] + ", " +  madd +", " + String.valueOf(cor_i) + ", , " + gen.genlib.handy_Functions.fix_str(exp_sharedCM) +  "\n");
         }
         
             //String exp_sharedCM2 =  scm.expected_cm(Long.valueOf(1),path1,path2);
