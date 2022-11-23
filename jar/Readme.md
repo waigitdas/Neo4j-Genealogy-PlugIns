@@ -9,27 +9,25 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 <b>History</b>
 
 <ol>
-<!--
-<li><b>v 1.1.11</b> Oct , 2022</li>
-    <ul>
-        <li>mt-DNA haplotree cumulative SNPs giving complete picture of all SNP at a branch.</li>
-        <li>fixed triangulation method to accomodate change is Neo4j's Graph Data Science triangle algorithm which now rquires undirected graph projection.</li>
-        <li>added endogamy package</li>
+    
+<li><b>v 1.1.12</b> Oct , 2022</li>
+    <li>added endogamy package</li>
         <ul>
             <li>individual persons endogamy report</li>
             <li>shared ancestors of two individuals</li>
             <li>coefficient of inbreeding for an individual</li>
         </ul>
+    </li>
+    -->
+
+<li><b>v 1.1.11</b> Nov 24, 2022</li>
+    <ul>
+        <li>mt-DNA haplotree cumulative SNPs giving complete picture of all SNP at a branch.</li>
+        <li>fixed triangulation method to accomodate change is Neo4j's Graph Data Science triangle algorithm which now rquires undirected graph projection.</li>
+        <li>fixed FTDNA file uploard; was previously missing some matches anf segments</li>
         <li>addedd union_parent relationship to support union trees</li>
          <li>fixed shared DNA calculation (COI) to accomodate endogamous family trees (gen.rel.DNA_Shared)</li>
-         <li></li>
-         <li></li>
-         <li></li>
-         <li></li>
-         <li></li>
-         <li></li>
      </ul>   
--->
 <li><b>v 1.1.10</b> Oct 18, 2022</li>
     <ul>
         <li>fix DNA coverage calculationcalculation for propositus</li>
