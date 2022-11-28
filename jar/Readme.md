@@ -12,7 +12,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 <ol>
 <!--    
 <li><b>v 1.1.12</b> Oct , 2022</li>
-    <li>added endogamy package</li>
+    <li>added endogamy package, described in detail <a href="" target="new">here</a>.
         <ul>
             <li>Endogamy knowlesge graph</li>
             <ul>
@@ -23,7 +23,10 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
             <li>individual persons endogamy report</li>
             <li>shared ancestors of two individuals</li>
             <li>coefficient of inbreeding for an individual</li>
+            <li>Endogamy summary report</li>
         </ul>
+        </li>
+        <li>Fixed error in calculating relationship whixh surfaced in endogamy package creation,</li>
     </li>
     -->
 
