@@ -11,9 +11,9 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 
 <ol>
  
-<li><b>v 1.1.12</b> Nov 29, 2022</li>
+    <li><b>v 1.1.12</b> Nov 29, 2022</li>
         <ul>
-            <li>added endogamy package, described in detail <a href="https://www.wai.md/post/endogamy-i-the-knowledge-graph" target="new">here</a></li>
+            <li>added endogamy package, described in detail <a href="https://www.wai.md/post/endogamy-i-the-knowledge-graph" target="new">here</a>
           <ul>
                 <li>Endogamy knowlesge graph</li>
                 <li>union_parent relationships</li>
@@ -24,8 +24,9 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
             <li>coefficient of inbreeding for an individual</li>
            
         </ul>
-        <li>Fixed error in calculating relationship whixh surfaced in endogamy package creation,</li>
-    </li>
+        <li>Fixed error in calculating relationship whixh surfaced in endogamy package creation</li>
+            </li>
+    </ul>
 <li><b>v 1.1.11</b> Nov 23, 2022</li>
     <ul>
         <li>mt-DNA haplotree cumulative SNPs giving complete picture of all SNP at a branch.</li>
