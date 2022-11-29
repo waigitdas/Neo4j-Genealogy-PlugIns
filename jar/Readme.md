@@ -10,7 +10,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 
 
 <ol>
-<!--    
+\  
 <li><b>v 1.1.12</b> Oct , 2022</li>
     <li>added endogamy package, described in detail <a href="" target="new">here</a>.
         <ul>
@@ -28,8 +28,6 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
         </li>
         <li>Fixed error in calculating relationship whixh surfaced in endogamy package creation,</li>
     </li>
-    -->
-
 <li><b>v 1.1.11</b> Nov 23, 2022</li>
     <ul>
         <li>mt-DNA haplotree cumulative SNPs giving complete picture of all SNP at a branch.</li>
