@@ -12,10 +12,11 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 <ol>
  
 <li><b>v 1.1.12</b> Nov 29, 2022</li>
-    <li>added endogamy package, described in detail <a href="" target="new">here</a>.
+    .
         <ul>
-            <li>Endogamy knowlesge graph</li>
-            <ul>
+            <li>added endogamy package, described in detail <a href="https://www.wai.md/post/endogamy-i-the-knowledge-graph" target="new">here</a></li>
+          <ul>
+                <li>Endogamy knowlesge graph</li>
                 <li>union_parent relationships</li>
                 <li>union cor if persons are related</li>
                 <li>union relationship if persons are related</li>
