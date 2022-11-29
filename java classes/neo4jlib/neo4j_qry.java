@@ -64,10 +64,10 @@ public class neo4j_qry {
             } 
            }
    
-    public static void qry_write_qry (String cq) {
-        gen.neo4jlib.neo4j_info.wrt = gen.neo4jlib.neo4j_info.wrt + cq + "\n" ;  //with xxx\n";
-    }
-   
+//    public static void qry_write_qry (String cq) {
+//        gen.neo4jlib.neo4j_info.wrt = gen.neo4jlib.neo4j_info.wrt + cq + "\n" ;  //with xxx\n";
+//    }
+//   
 
    
    //****************************************************

@@ -57,6 +57,14 @@ public class load_all_files {
         //gen.dna.process_mt_haplotree mt = new gen.dna.process_mt_haplotree();
         //mt.mt_haplotree_cumulative_snps();
                 
+        //endogamy knowledge graph
+        try{
+            gen.endogamy.endogamy_knowledge ek = new gen.endogamy.endogamy_knowledge();
+            ek.create_knowledge();
+        }
+        catch(Exception e1){}
+
+        //create avatars
         try{
         gen.avatar.targeted_anc_enhance tge = new gen.avatar.targeted_anc_enhance();
         tge.add_enhancements(anc_rn);
@@ -65,6 +73,7 @@ public class load_all_files {
         cav.create_avatar_relatives(anc_rn);
         }
         catch(Exception e){}
+        
         
         return "Completed";
     }

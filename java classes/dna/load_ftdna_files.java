@@ -111,14 +111,6 @@ public  String load_ftdna_csv_files(
                 //Logger.getLogger(load_ftdna_files.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-//        String[] directories = file.list(new FilenameFilter() {
-//        @Override
-//        public boolean accept(File current, String name) {
-//            return new File(current, name).isDirectory();
-//          }
-//        }
-//        );
-//        
        
         String FileDNA_Match = "";
         String FileSegs = "";
@@ -153,18 +145,14 @@ public  String load_ftdna_csv_files(
         //add pre-check info to the tracking file
             try {
                 fwtrack.write("Pre-Check of kit data: " + "\nKits to Import:" + NumberOfKits + "\nNumber of Kits in requested list: " + KitCt + "\n\n" + kit_data + "\n\n***************************\n\n");
-            } catch (IOException ex) {
-                //Logger.getLogger(load_ftdna_files.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            } catch (IOException ex) {}
         
         // iterating over subdirectories holding DNA data files
         for (int i = 0; i < kit_list.length; i++) {
             KitDir = gen.genlib.dir.getDirOfKit(root_dir, kit_list[i]) ;
             try {
                 fwtrack.write(i + 1 + " of " + NumberOfKits + " @ " + gen.genlib.current_date_time.getDateTime() + "\nKit directory: " + KitDir + "\n");
-            } catch (IOException ex) {
-                //Logger.getLogger(load_ftdna_files.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            } catch (IOException ex) {}
              
             String[] paths;
             File f = new File(root_dir + KitDir);
@@ -782,7 +770,7 @@ neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS 
 
     
         //union_parennt relationship
-        gen.neo4jlib.neo4j_qry.qry_write("MATCH (u:Union) with u,u.U1 as u1,u.U2 as u2 match (p:Person) where p.RN=u1 or p.RN =u2 with u,p match (u2:Union) where p.uid=u2.uid merge (u)-[r:union_parent]->(u2)");
+        gen.neo4jlib.neo4j_qry.qry_write("MATCH (u:Union) with u,u.U1 as u1,u.U2 as u2 match (p:Person) where p.RN=u1 or p.RN =u2 with u,p match (u2:Union) where p.uid=u2.uid merge (u)-[r:union_parent{side:case when u.U1=p.RN then 'P' else 'M' end}]->(u2)");
 
      
         

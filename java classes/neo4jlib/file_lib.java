@@ -13,6 +13,7 @@ import java.io.FileReader;
 import java.io.Reader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -110,7 +111,7 @@ try{
    //Iterable<CSVRecord> records = CSVFormat.RFC4180.parse(fileReader);
    Iterable<CSVRecord> records = CSVFormat.RFC4180.parse(fileReader);
    File fn = new File(neo4j_info.Import_Dir +  filePathSave);
-   FileWriter fw = new FileWriter(fn);
+   FileWriter fw = new FileWriter(fn, Charset.forName("UTF8"));
             
         
    int ct = 0;

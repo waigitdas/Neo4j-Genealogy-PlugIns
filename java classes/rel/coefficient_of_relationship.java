@@ -28,10 +28,18 @@ public class coefficient_of_relationship {
         return cr;
         
     }
-         
+        
+      public static void main(String args[]) {
+          cor_calc(1L,600L);
+          cor_calc(1L,4L);
+          cor_calc(1L,341L);
+      }
+    
              
         public static double cor_calc(Long rn1, Long rn2){
         double cor=0.0;
+        gen.neo4jlib.neo4j_info.neo4j_var();
+        gen.neo4jlib.neo4j_info.neo4j_var_reload();
         
         //get all MRCAs
         try{
@@ -46,7 +54,8 @@ public class coefficient_of_relationship {
                          
         }
         }
-        catch (Exception e){return 0;}
+        catch (Exception e){}
+        System.out.println(cor);
          return cor;
         }
 }

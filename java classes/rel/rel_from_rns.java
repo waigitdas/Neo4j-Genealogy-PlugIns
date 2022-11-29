@@ -32,7 +32,7 @@ public class rel_from_rns {
     
     
     public static void main(String args[]) {
-        //String r = get_rel(Long.valueOf(1),Long.valueOf(600));
+        get_rel(4L,1796L);
         
     }
     
@@ -52,7 +52,8 @@ public class rel_from_rns {
                 rnmax=rn1;
             }
             
-         String cq = "match path=(p1:Person)-[rp1:father|mother*0..20]->(mrca:Person)<-[rp2:father|mother*0..20]-(p2:Person) where p1.RN=" + rnmin + " and p2.RN=" + rnmax + " and p1.RN<p2.RN with count(mrca) as mc,size(rp1) as l1,size(rp2) as l2 with mc, case when l1<l2 then l1 else l2 end as path1, case when l1<l2 then l2 else l1 end as path2 with  path1 + ':' + path2 + ':' + mc as Indx  with collect(Indx) as Indx with Indx MATCH (n:fam_rel) where n.Indx in Indx return collect(n.relationship) as rel";
+         String cq ="match path=(p1:Person)-[rp1:father|mother*0..25]->(mrca:Person)<-[rp2:father|mother*0..25]-(p2:Person) where p1.RN=" + rnmin + " and p2.RN=" + rnmax + " and p1.RN<p2.RN with mrca, count(mrca) as mc,size(rp1) as l1,size(rp2) as l2 with mrca, mc, case when l1<l2 then l1 else l2 end as path1, case when l1<l2 then l2 else l1 end as path2 with distinct gen.gedcom.person_from_rn(mrca.RN, true) as fn,path1,path2,mc,path1 + ':' + path2 + ':' + mc as Indx order by path1,path2,mc desc MATCH (n:fam_rel) where n.Indx = Indx return collect(distinct n.relationship) as rel"; 
+                 //"match path=(p1:Person)-[rp1:father|mother*0..25]->(mrca:Person)<-[rp2:father|mother*0..25]-(p2:Person) where p1.RN=" + rnmin + " and p2.RN=" + rnmax + " and p1.RN<p2.RN with count(mrca) as mc,size(rp1) as l1,size(rp2) as l2 with mc, case when l1<l2 then l1 else l2 end as path1, case when l1<l2 then l2 else l1 end as path2 with  path1 + ':' + path2 + ':' + mc as Indx  with collect(Indx) as Indx with Indx MATCH (n:fam_rel) where n.Indx in Indx return collect(n.relationship) as rel";
          String r = gen.neo4jlib.neo4j_qry.qry_str(cq).replace("[[", "").replace("]]", ",").replace("\"", "").replace(",",";"); 
          r = r.substring(0,r.length()-1 );
          return r;
