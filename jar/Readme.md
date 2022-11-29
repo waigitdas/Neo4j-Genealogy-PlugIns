@@ -9,8 +9,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 <b>History</b>
 
 
-<ol>
- 
+<ol> 
     <li><b>v 1.1.12</b> Nov 29, 2022</li>
         <ul>
             <li>added endogamy package, described in detail <a href="https://www.wai.md/post/endogamy-i-the-knowledge-graph" target="new">here</a>
