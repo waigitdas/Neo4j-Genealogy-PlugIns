@@ -19,11 +19,10 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
                 <li>union_parent relationships</li>
                 <li>union cor if persons are related</li>
                 <li>union relationship if persons are related</li>
-            </ul>
             <li>individual persons endogamy report</li>
             <li>shared ancestors of two individuals</li>
             <li>coefficient of inbreeding for an individual</li>
-            <li>Endogamy summary report</li>
+           
         </ul>
         <li>Fixed error in calculating relationship whixh surfaced in endogamy package creation,</li>
     </li>
