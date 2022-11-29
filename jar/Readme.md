@@ -22,7 +22,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
            
         </ul>
         <li>Fixed error in calculating relationship whixh surfaced in endogamy package creation</li>
-            </li>
+          
     </ul>
 <li><b>v 1.1.11</b> Nov 23, 2022</li>
     <ul>
