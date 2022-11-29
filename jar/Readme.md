@@ -47,7 +47,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
     <li>fixed bug in function to recreate avatars</li>
     <li>fix parental allocation for avatar DNA Painter renderings</li>
     <li>added ht- and Y-haplogroups (actual and inferred) to Person nodes when available; used in family tree reports.</li>
-    </uL>
+    </ul>
     
 <li><b>v 1.1.7</b> Oct 1, 2022</li>
     <ul>
@@ -97,28 +97,28 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
          <li>simplified data loading into single functions that call specific loading functions in sequence</li> 
          <li>added half double cousin report to the double cousin report</li> 
       </ul>
-<li><b>v 1.0.17</b>. July 11, 2022
+<li><b>v 1.0.17</b>. July 11, 2022</li>
    <ul>
-   <li>Added monophyletic segment report, including their finding of new matches in a family line.
-   <li>Added Y-DNA descendancy haplotree with Y-matches.
-   <li>added capability to find matches to surnames in a person's direct family tree lines.
-   <li>added ancestor descendant monophyletic segment searches for new matches.
-   <li>fixed x_gen_dist which was missin a few relationships.
-   <li>added Y- and mt-HG to ancestral surname report
-   <li>new function to add parental side of p and m to match_segment relationship
-   <li>New function to report parental origin of segments: paternal, maternal or unknown; some generations done, but still in development.
+   <li>Added monophyletic segment report, including their finding of new matches in a family line.</li>
+   <li>Added Y-DNA descendancy haplotree with Y-matches.</li>
+   <li>added capability to find matches to surnames in a person's direct family tree lines.</li>
+   <li>added ancestor descendant monophyletic segment searches for new matches.</li>
+   <li>fixed x_gen_dist which was missin a few relationships.</li>
+   <li>added Y- and mt-HG to ancestral surname report</li>
+   <li>new function to add parental side of p and m to match_segment relationship</li>
+   <li>New function to report parental origin of segments: paternal, maternal or unknown; some generations done, but still in development.</li>
     </ul>
-  <li><b>v 1.0.16</b>. July 11, 2022
+  <li><b>v 1.0.16</b>. July 11, 2022</li>
    <ul>
-   <li>Added Leiden community detection algorithm, which is an improven on the Louvain algorithm. It provides reliable generation of intermediary communities.
-   <li>Enhance DNA coverage algorithm. 
-   <li>Fix to ancestor reconstruction algorithm's generation of a DNA Painter file.
-    <li>Update degree centrality to conform to Neo4j Graph Data Science updates
-   <li>Fix in surname search function.
+   <li>Added Leiden community detection algorithm, which is an improven on the Louvain algorithm. It provides reliable generation of intermediary communities.</li>
+   <li>Enhance DNA coverage algorithm. </li>
+   <li>Fix to ancestor reconstruction algorithm's generation of a DNA Painter file.</li>
+    <li>Update degree centrality to conform to Neo4j Graph Data Science updates</li>
+   <li>Fix in surname search function.</li>
 </ul>
-    <li><b>v 1.0.15</b>. Added function to add DNA testers whose DNA is not in the project. Supported by new Person property at_DNA_tester.
-   <li><b>v 1.0.14</b>. Added enforcing creation of the HapMap before loading other data. Added a new function for computing DNA coverage for any ancestor who has descendant DNA testers. 
-  <li><b>v 1.0.11</b>. New reports identifying dual matches for both autosomal and mitochondrial DNA. Robust triangulation report have been improved. Also upgrade to <a href="https://www.wai.md/product-page/gfg-software">GFG software v 1.0.2</a> to capitalize on its menu driven access to new reporting capabilities.
+    <li><b>v 1.0.15</b>. Added function to add DNA testers whose DNA is not in the project. Supported by new Person property at_DNA_tester.</li>
+   <li><b>v 1.0.14</b>. Added enforcing creation of the HapMap before loading other data. Added a new function for computing DNA coverage for any ancestor who has descendant DNA testers. </li>
+  <li><b>v 1.0.11</b>. New reports identifying dual matches for both autosomal and mitochondrial DNA. Robust triangulation report have been improved. Also upgrade to <a href="https://www.wai.md/product-page/gfg-software">GFG software v 1.0.2</a> to capitalize on its menu driven access to new reporting capabilities.</li>
 <li><b>v 1.0.10</b>. Restored match_segment relationship properties describing the relationship between the match-pair including their relationship (1C, H3C, etc), the correlation of relationship (cor), an the common ancestor. Added a new function -- gen.dna.shared_mt_haplogroup -- to find matches who are both at- and mt-DNA matches. </li>
   
 </ol> 
