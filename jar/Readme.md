@@ -22,7 +22,6 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
             </ul>
         <li>Fixed error in calculating relationship whixh surfaced in endogamy package creation</li>
     </ul>
-
     <li><b>v 1.1.11</b> Nov 23, 2022</li>
     <ul>
         <li>mt-DNA haplotree cumulative SNPs giving complete picture of all SNP at a branch.</li>
@@ -37,7 +36,6 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
         <li>add DNA coverage observed and expected to Avatar report</li>
         <li>fixed GEDCOM import to ignore dates not comlying with GEDCOM 5.5 standard</li>
      </ul>   
-
 <li><b>v 1.1.9</b> Oct 14, 2022</li>
     <ul>
     <li>add comments to explain coding</li>
