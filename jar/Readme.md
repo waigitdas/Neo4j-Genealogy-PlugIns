@@ -19,7 +19,13 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
                     <li>add path_intersect relationship</li>
                     <li>add path_person relationship</li>
             </ul>
-        <li></li>
+        <li>path segments</li>
+              <ul>
+                    <li>add mss property to Segment nodes some they an be identified directly</li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+            </ul>
     </ul>
     
 -->
