@@ -8,6 +8,22 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 
 <b>History</b>
 <ol> 
+
+<!--
+<li><b>v 1.1.13</b> Dec ##, 2022</li>
+        <ul>
+            <li>enhanced endogamy knowledge graph. Blog post is <a href="" target="new">here</a></li>
+              <ul>
+                    <li>add path nodes</li>
+                    <li>add intersect nodes</li>
+                    <li>add path_intersect relationship</li>
+                    <li>add path_person relationship</li>
+            </ul>
+        <li></li>
+    </ul>
+    
+-->
+
     <li><b>v 1.1.12</b> Nov 29, 2022</li>
         <ul>
             <li>added endogamy package, described in detail <a href="https://www.wai.md/post/endogamy-i-the-knowledge-graph" target="new">here</a></li>
