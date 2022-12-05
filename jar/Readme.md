@@ -7,7 +7,7 @@ Please use the most recently numbered file. This is placed in the Neo4j Import f
 The Neo4j configuration file does not need to be changed with updates <b>IF</b> you enabled it with gen.* white-listing. While white-listing can specify a specific version, you will find it easier to not specify this because you need not update the config file.<br><br>
 
 <b>History</b>
-<ol> 
+
 
 <!--
 <li><b>v 1.1.13</b> Dec ##, 2022</li>
@@ -23,7 +23,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
     </ul>
     
 -->
-
+<ol> 
     <li><b>v 1.1.12</b> Nov 29, 2022</li>
         <ul>
             <li>added endogamy package, described in detail <a href="https://www.wai.md/post/endogamy-i-the-knowledge-graph" target="new">here</a></li>
