@@ -18,6 +18,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
                     <li>add intersect nodes</li>
                     <li>add path_intersect relationship</li>
                     <li>add path_person relationship</li>
+                    <li>new function to sort intersect path persons exactly as in the root or parent path: gen.endogamy.sort_subpath()  </li>
             </ul>
         <li>path segments</li>
               <ul>
