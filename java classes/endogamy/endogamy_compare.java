@@ -14,7 +14,7 @@ import org.neo4j.procedure.UserFunction;
 
 public class endogamy_compare {
     @UserFunction
-    @Description("Template used in creating new functions.")
+    @Description("endogamous paths and mrcas.")
 
     public String endogamy_mrcas_from_rns(
         @Name("rn1") 
@@ -42,8 +42,8 @@ public class endogamy_compare {
     {
         int ct = 1;
 
-        String rel1 = gen.gedcom.get_family_tree_data.getPersonFromRN(rn1, true);
-        String rel2 = gen.gedcom.get_family_tree_data.getPersonFromRN(rn2, true);
+        String rel1 = gen.gedcom.get_person.getPersonFromRN(rn1, true);
+        String rel2 = gen.gedcom.get_person.getPersonFromRN(rn2, true);
         
         //common ancestors
         String cq ="match path1= (p1:Person{RN:" + rn1 + "})-[[r1:father|mother*0..15]]->(mrca:Person) match path2=(mrca)<-[[r2:father|mother*0..15]]-(p2:Person{RN:" + rn2 + "}) with mrca, [[x in relationships(path1)|id(x)]] as r1s, gen.rel.ahnentafel_for_ancestor(" + rn1 + ",mrca.RN) as ahn1, [[y in relationships(path2)|id(y)]] as r2s, gen.rel.ahnentafel_for_ancestor(" + rn2 + ",mrca.RN) as ahn2 with distinct mrca.fullname as mrca,mrca.RN as RN,ahn1 as ahnentafel1,ahn2 as ahnentafel2,size(r1s) as path1_length,size(r2s) as path2_length where ahnentafel1<>'not an ancestor or too remote' and ahnentafel2<>'not an ancestor or too remote' return mrca as ancestor,RN, ahnentafel1,ahnentafel2,path1_length,path2_length order by ancestor";

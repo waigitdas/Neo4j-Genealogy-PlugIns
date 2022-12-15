@@ -56,6 +56,12 @@ public class endogamy_individual {
          excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "duplicate_unions", "duplicate_unions", ct, "", "0:#####;1:###,###,###;2:######;3:##.############;4:#####",excelFile, false, "cypher query:\n" + cq + "\n\nUnions (marriages) that occur more thsn once in the family tree. \nComparing this with the next worksheet will distinguish duplicate ancestors with more than one union.\n\nThis report gives granular information so you can see it.\nThe may be redundancies in there are multiple marriages.", false);
         ct = ct + 1;
          
+        
+        //all union tree
+        cq = "with 5816 as urn MATCH p=(u1:Union)-[r:union_parent*0..99]->(u2:Union) where u1.U1=urn or u1.U2= urn with u1,u2,u2.uid as uid, count(*) as ct,u2.cor as cor,u2.rel as rel with distinct u1,u2,uid,ct,cor,rel with distinct u1,u2,uid,ct,cor,rel,gen.gedcom.person_from_rn(case when u2.U1 is null then 0 else u2.U1 end,true) as u1p, gen.gedcom.person_from_rn(case when u2.U2 is null then 0 else u2.U2 end,true) as u2p RETURN gen.gedcom.person_from_rn(5816,true) as proband, u1.uid as proband_uid, uid as parents_uid, u1p as father, u2p as mother, ct,cor,rel order by ct desc,proband_uid,parents_uid";
+        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "all_unions", "union_tree", ct, "", "0:#####;1:###,###,###;2:######;3:##.############;4:#####",excelFile, false, "cypher query:\n" + cq + "\n\n", false);
+        ct = ct + 1;
+           
         //duplicate ancestors
           cq = "match p=(n:Person{RN:" + rn + "})-[[r:father|mother*0..99]]->(x) with x,x.uid as uid,x.fullname + ' ⦋' + x.RN + '⦌ (' + left(x.BD,4) + '-' + left(x.DD,4) + ')' as Name, length(p) as gen, [[z in nodes(p)|z.RN]] as op, '1' + reduce(srt ='', q IN nodes(p)|srt + case when q.sex='M' then '0' else '1' end ) AS Anh with x,uid,Name,gen,'1' + right(Anh,size(Anh)-2) as Ahnen, gen.graph.get_ordpath(op) as op optional match (d:Person{RN:x.RN}) with Name as Person,uid,collect(distinct gen) as gen,collect(,gen.rel.ahnentafel(Ahnen)) as Ahnentafel,x with Person,uid,x,apoc.coll.sort(Ahnentafel) as Ahnentafel,apoc.coll.sort(gen) as gen where size(Ahnentafel)>1 with Person,uid,Ahnentafel,gen,gen.rel.compute_cor(" + rn + ",x.RN) as cor return Person,size(Ahnentafel) as ct,Ahnentafel, gen,cor,uid as union order by ct desc,Ahnentafel";
           cqq = cq.replace("[[","[").replace("]]","]");
@@ -72,7 +78,26 @@ public class endogamy_individual {
              
         //duplicate ancestors
         excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "endogamy_package", "duplicate_ancestors", ct, "", "1:#########;4:0.########;5:####", excelFile,false,"cypher query:\n" +  cq + "\n\nfam_member_positions in the family tree  \t" + fam_member_ct + "\nUnique family members in the family tree:\t" + unique_fam_mbrs.intValue() + "\nDuplicate ancestors:\t" + rws + "    percent of unique ancestors: " + uniq_mbr_ct_pc + "%\nTotal appearances in family tree:\t" + dup_ct + "     percent of positions in the family tree:\t" + dup_ct_pc + "%\n\n\nTo see the details of paths for a specific ancestor, use this query placing the record number of the ancestor in place of the **\nmatch path=(p1:Person)-[[rp1:father|mother*1..25]]->(p2:Person) where p1.RN=" + rn + "  and p2.RN=** and p1.RN<p2.RN with rp1,reduce(srt='', z in nodes(path)|srt+z.fullname + ', ') as fn, reduce(srt2 ='', q IN nodes(path)|srt2 + case when q.sex='M' then 0 else 1 end ) as SO with fn, '1' + substring(SO,1,size(rp1)) as SO with fn,gen.rel.ahn_path(SO) as SO with fn,SO[[size(SO)-1]] as Ahnentafel return fn,Ahnentafel order by Ahnentafel\n\nTo visualize th path between the proband and any ancestor, using this query in the Neo4j browser, adding the ancestor RN in place of **\nmatch path=(n:Person{RN:" + rn + "})-[r:father|mother*0..99]->(x:Person{RN:**} return path", false);
+        ct = ct + 1;
         
+        //path to individuals all ancestors
+        cq ="MATCH (p:fam_path) where apoc.coll.contains(p.persons," + rn + ")=true with p with apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten(collect(p.persons)))) as rns with size(rns) as ct,rns unwind rns as z call { with z,rns match (pp:Person{RN:z})-[[rp:father|mother]]->(ppa:Person) with z,rns,apoc.coll.intersection(rns,collect(ppa.RN)) as split with z,rns,case when size(split)=2 then true else false end as split with z,rns,split match (ppp:Person{RN:z})<-[[rp2:father|mother]]-(pppa:Person) with rns,split,apoc.coll.intersection(rns,collect(pppa.RN)) as merged with split,case when size(merged)>1 then true else false end as merged return split,merged } with z, split,merged  match (pz:Person{RN:z}) return gen.gedcom.person_from_rn(z,true) as Path_persons,case when split then 'Y' else '~' end as split,case when merged then 'Y' else '~' end as merge,pz.coi as COI, pz.coi_gen as coi_gen";
+           excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "endogamy_package", "paths_to_ancestors", ct, "", "1:#########;3:0.########;4:####", excelFile,false,"cypher query:\n" +  cq + "\n\nShown are persons who are in all the paths to the proband's ancestors.\n\nIf the person has endogamy, the COI is shown\nThe coi_gen is the genetic distance of the person to their most recent endogamous ancestor (MREA).\n\nThe paths to common ancestors may merge or split at the person's position in the paths.\nGFG determined this by seeing if the person has more than one parent (split) or child (merge) in the paths.", false);
+        ct = ct + 1;
+         
+        //paths
+        cq ="MATCH path=(i:intersect)-[[ri:path_intersect]]-(f:fam_path)-[[r:path_person]]->(p:Person{RN:" + rn + "}) with f.persons as fam_path,collect(distinct i.persons) as i order by gen.graph.get_ordpath(f.persons) return gen.gedcom.person_from_rn(last(fam_path),true) as last_in_path, fam_path,size(fam_path) as len, size(i) as intersections";
+            excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "endogamy_package", "paths", ct, "", "2:#########;3:0.########;4:####", excelFile,false,"cypher query:\n" +  cq + "\n\nAll of the unique paths of the proband and the number of intersections with other paths.", false);
+        ct = ct + 1;
+         
+        
+        
+        //intersections
+        cq = "MATCH path=(i:intersect)-[[ri:path_intersect]]-(f:fam_path)-[[r:path_person]]->(p:Person{RN:" + rn + "}) with i.persons as intersection,collect(distinct f.persons) as f order by gen.graph.get_ordpath(i.persons) return gen.gedcom.person_from_rn(last(intersection),true) as last_in_path, intersection,size(intersection) as len, size(f) as fam_paths";
+             excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "endogamy_package", "intersections", ct, "", "2:#########;3:0.########;4:####", excelFile,false,"cypher query:\n" +  cq + "\n\nSubpaths in the proband path that intersect with other paths.", false);
+        ct = ct + 1;
+         
+       
         //coi
         Double coi_proband = gen.endogamy.coi.get_coi(rn);
         
