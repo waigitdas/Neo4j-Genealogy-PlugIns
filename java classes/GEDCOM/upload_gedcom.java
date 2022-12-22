@@ -31,7 +31,7 @@ public class upload_gedcom {
 
        )
       {
-         String sss = load_gedcom();
+        String sss = load_gedcom();
         return sss;
       }
     

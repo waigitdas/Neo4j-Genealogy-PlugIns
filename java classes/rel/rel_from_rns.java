@@ -32,7 +32,7 @@ public class rel_from_rns {
     
     
     public static void main(String args[]) {
-        get_rel(4L,1796L);
+        get_rel(4L,12L);
         
     }
     

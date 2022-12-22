@@ -272,7 +272,7 @@ public class dna_coverage {
         
           try{
           print_summary(persons,kids, coverage, ordpath, method,tester_ct, fw);
-          fw.write("<br><br>Methods developed by Wesley Johnston<br>&copy; 2022 <a href='http://wai.md/gfg' target='new'>Graphs for Genealogists</a><br><a href='https://www.facebook.com/groups/gfgforum' target='new'>Facebook Forum</a>\n </body>\n</html>\n");
+          fw.write("<br><br>Methods developed by Wesley Johnston; https://jogg.info/article/101-004/<br>&copy; 2022 <a href='http://wai.md/gfg' target='new'>Graphs for Genealogists</a><br><a href='https://www.facebook.com/groups/gfgforum' target='new'>Facebook Forum</a>\n </body>\n</html>\n");
          fw.flush();
           fw.close();}
           catch(Exception e){}
@@ -287,7 +287,7 @@ public class dna_coverage {
      public static void print_summary(int[][] persons,String[] kids, Double[][] coverage,String[] ordpath, Long method,int tester_ct, FileWriter fw)
      {
          String summary = "" ; // new String[persons.length][2];
-         gen.gedcom.get_family_tree_data gp = new gen.gedcom.get_family_tree_data();
+         gen.gedcom.get_person gp = new gen.gedcom.get_person();
         try{
             fw.write("<h3>List of " + persons.length + " DNA testers in the paths to their ancestors of whom " + tester_ct + " have DNA results loaded to the database.</h3>");
             if (method==1L){
@@ -364,7 +364,7 @@ public class dna_coverage {
     public static void print_Tbl1(int indv, int gen, int nbr_kids,int[][] DescList,Double[][] Tbl,Double[][] coverage, FileWriter fw)
     {
                    try{
-              gen.gedcom.get_family_tree_data gp = new gen.gedcom.get_family_tree_data();
+              gen.gedcom.get_person gp = new gen.gedcom.get_person();
  
              if (nbr_kids>1)
              {
@@ -413,7 +413,7 @@ public class dna_coverage {
           try{
              if (ncol==1)
              {
-                gen.gedcom.get_family_tree_data gp = new gen.gedcom.get_family_tree_data();
+                gen.gedcom.get_person gp = new gen.gedcom.get_person();
                 String pp = gp.person_from_rn(Long.valueOf(indv),true).replace("⦋", "[").replace("⦌","]");
                 fw.write("<h3>" + pp + "&nbsp;&nbsp;&nbsp;generation:&nbsp;&nbsp;" + gen + "</h3>\n");
 

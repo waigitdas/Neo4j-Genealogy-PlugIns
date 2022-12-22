@@ -38,7 +38,7 @@ public class avatar_report {
         //excel output
         String excelFile = "";
         int ct = 1;
-        String anc_name = gen.gedcom.get_family_tree_data.getPersonFromRN(rn, true);
+        String anc_name = gen.gedcom.get_person.getPersonFromRN(rn, true);
         String cq  = "with " + rn + " as rn MATCH p=(d:Avatar{RN:rn})-[[r:avatar_segment]]->(s:Segment) with   d.fullname as Avatar,d.RN as RN,case when r.avatar_side is null then '~' else r.avatar_side end  as side, case when r.p<r.m then r.p + ' : ' + r.m else r.m + ' : ' + r.p end as match_pair,r.rel as rel,r.cor  as cor, case when r.p<r.m then r.p_side + ' : ' + r.m_side else r.m_side + ' : ' + r.p_side end as source_sides, s.Indx as seg,min(r.cm) as cm,replace(replace(r.pair_mrca,'â¦','['),'â¦',']')as mrca return RN,side,match_pair,rel,cor,case when source_sides is null then '~' else source_sides end as source_sides, seg, cm, mrca order by seg";
         excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Avatar_Reoprt_" + rn + "_" + gen.genlib.current_date_time.getDateTime() , "MSeg_detail", ct, "", "1:#####;4:0.######;7:###.##;8:####.#", "", false,"UDF:\nreturn gen.avatar.avatar_reports(" + rn + ")\n\ncypher query:\n" +  cq, false);
         

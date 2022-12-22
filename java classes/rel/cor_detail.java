@@ -69,8 +69,8 @@ public class cor_detail{
             double shared_dna = 0.0;
             //String Indx = String.valueOf(mrca.length) + ":" + String.valueOf(max(path1.intValue(),path2.intValue())) + ":" + String.valueOf(min(path1.intValue(), path2.intValue())) ;
             
-            String probands = gen.gedcom.get_family_tree_data.getPersonFromRN(rn1, true) + " ; " + gen.gedcom.get_family_tree_data.getPersonFromRN(rn2, true);
-            String anc = gen.gedcom.get_family_tree_data.getPersonFromRN(anc_rn, true);
+            String probands = gen.gedcom.get_person.getPersonFromRN(rn1, true) + " ; " + gen.gedcom.get_person.getPersonFromRN(rn2, true);
+            String anc = gen.gedcom.get_person.getPersonFromRN(anc_rn, true);
           
             gen.rel.relationship rr = new gen.rel.relationship();
             String relationship = rr.relationship_from_path(1L,path1,path2);

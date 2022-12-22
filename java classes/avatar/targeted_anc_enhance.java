@@ -61,7 +61,7 @@ public class targeted_anc_enhance {
            
         }
       
-      
+      //mss creation is not targetted to a specific ancestor
        try{
            
         gen.mss.create_mss_entities mss = new gen.mss.create_mss_entities();

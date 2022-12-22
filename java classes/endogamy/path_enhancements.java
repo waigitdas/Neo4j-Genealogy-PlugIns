@@ -74,7 +74,32 @@ public class path_enhancements {
         //create patn_intersect relationship
         gen.neo4jlib.neo4j_qry.qry_write("match (f:fam_path) with f match (i:intersect) where size(apoc.coll.intersection(f.persons,i.persons))=size(i.persons) merge (i)-[r:path_intersect]->(f)");
         
+        //add most recent endogamous union and generation to Person nodes
+        gen.neo4jlib.neo4j_qry.qry_write("Match (p:Person) where p.coi>0 with collect(p) as rns unwind rns as z call { with z MATCH path=(u1:Union{uid:z.uid})-[r:union_parent*0..25]->(ua:Union) with z,ua, reduce(s='',x in relationships(path)|s + x.side) as uid_path where ua.cor >0 with z, ua as ua,ua.cor as cor ,size(uid_path) + 1 as gen, uid_path order by gen with z, ua,cor,gen,uid_path, left(uid_path,1) as side with z.coi as zr,ua, cor,gen,uid_path,side limit 1 return ua.uid as uid, gen, zr,cor,cor * exp(log(0.5)*gen) as proband_coi } set z.coi_gen=gen,z.mreu_uid=uid");
+        
+        //add end of line ancestor cout if coi>0
+        gen.neo4jlib.neo4j_qry.qry_write("match path=(p:Person)-[r:father|mother*0..25]->(a:Person) where p.coi is not null and a.uid=0 with p,collect(distinct a.RN) as arn set p.eol_anc_ct= size(arn)");
+        
+        //add anc_path_ct 
+        gen.neo4jlib.neo4j_qry.qry_write("match path=(p:Person)-[r:father|mother*0..25]->(a:Person) where p.coi is not null and a.uid=0 with p, [x in nodes(path)|x.RN] as anc_path with p,collect(distinct anc_path) as paths set p.anc_path_ct= size(paths)");
+ 
+        
+        // create shared person relationship
+        gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(f1:fam_path)<-[r1:path_intersect]-(i1:intersect) with f1,i1 match (i2:intersect)-[r2:path_intersect]->(f2:fam_path) where i1=i2 and f1<>f2 with f1,f2,count(i1) as ct with f1,f2, size(f1.persons) as path1_len,size(f2.persons) as path2_len,ct merge (f1)-[r:shared_subpath{ct:ct,path1_len:path1_len,path2_len:path2_len}]->(f2)");
+        
+        //create person shared_paths relationship
+        gen.neo4jlib.neo4j_qry.qry_write("MATCH path=(p1:Person)<-[r1:path_person]-(fp:fam_path)-[r2:path_person]->(p2:Person) where p1.RN<p2.RN with p1,p2,count(*) as ct merge(p1)-[rsp:shared_paths{ct:ct}]->(p2)");
+        
 
+       //add anc_path_ct 
+        gen.neo4jlib.neo4j_qry.qry_write("match path=(p:Person)-[r:father|mother*0..25]->(a:Person) where p.coi is not null and a.uid=0 with p, [x in nodes(path)|x.RN] as anc_path with p,collect(distinct anc_path) as paths set p.anc_path_ct= size(paths)");
+        
+        // create shared person relationship
+        gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(f1:fam_path)<-[r1:path_intersect]-(i1:intersect) with f1,i1 match (i2:intersect)-[r2:path_intersect]->(f2:fam_path) where i1=i2 and f1<>f2 with f1,f2,count(i1) as ct with f1,f2, size(f1.persons) as path1_len,size(f2.persons) as path2_len,ct merge (f1)-[r:shared_subpath{ct:ct,path1_len:path1_len,path2_len:path2_len}]->(f2)");
+        
+        //create person shared_paths relationship
+        gen.neo4jlib.neo4j_qry.qry_write("MATCH path=(p1:Person)<-[r1:path_person]-(fp:fam_path)-[r2:path_person]->(p2:Person) where p1.RN<p2.RN with p1,p2,count(*) as ct merge(p1)-[rsp:shared_paths{ct:ct}]->(p2)");
+  
         return "completed";
     }
 }

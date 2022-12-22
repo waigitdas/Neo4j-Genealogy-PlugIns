@@ -57,7 +57,7 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
     String anc_name="";
     if (include_common_ancestor==true){
         gen.rel.anc_rn anc = new gen.rel.anc_rn();
-        anc_name = gen.gedcom.get_family_tree_data.getPersonFromRN(anc.get_ancestor_rn(),true);
+        anc_name = gen.gedcom.get_person.getPersonFromRN(anc.get_ancestor_rn(),true);
     }
     
     String csvFile = gen.neo4jlib.neo4j_info.Import_Dir + FileNm + ".csv";  // intermediate file to be saved

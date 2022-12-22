@@ -56,24 +56,29 @@ public class load_all_files {
         //add cumulative snp to mt-haplotree
         //gen.dna.process_mt_haplotree mt = new gen.dna.process_mt_haplotree();
         //mt.mt_haplotree_cumulative_snps();
-                
-        //endogamy knowledge graph
-        try{
-            gen.endogamy.endogamy_knowledge ek = new gen.endogamy.endogamy_knowledge();
-            ek.create_knowledge();
-        }
-        catch(Exception e1){}
-
-        //create avatars
+  
+        
+        //gen.endogamy.path_enhancements.add_enhancements(); from endogamy2
+         gen.endogamy.endogamy_knowledge eke = new gen.endogamy.endogamy_knowledge();
+        eke.endogamy_knowledge_graph();
+    
+  
+        
+        //create avatars requirements
         try{
         gen.avatar.targeted_anc_enhance tge = new gen.avatar.targeted_anc_enhance();
         tge.add_enhancements(anc_rn);
             
-        gen.avatar.create_avatars cav = new gen.avatar.create_avatars();
-        cav.create_avatar_relatives(anc_rn);
+//        gen.avatar.create_avatars cav = new gen.avatar.create_avatars();
+//        cav.create_avatar_relatives(anc_rn);
         }
         catch(Exception e){}
         
+  
+        gen.endogamy.path_enhancements penh = new gen.endogamy.path_enhancements();
+        penh.create_path_enhancements();
+        
+   
         
         return "Completed";
     }

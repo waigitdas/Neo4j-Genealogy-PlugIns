@@ -56,7 +56,7 @@ public class excel_from_csv {
     WritableWorkbook w;
         if (include_common_ancestor==true){
         gen.rel.anc_rn anc = new gen.rel.anc_rn();
-        anc_name = gen.gedcom.get_family_tree_data.getPersonFromRN(anc.get_ancestor_rn(),true);
+        anc_name = gen.gedcom.get_person.getPersonFromRN(anc.get_ancestor_rn(),true);
     }
 // System.out.println("#2"); 
      //set up excel. Create new or open prior if there are to be multiple worksheets

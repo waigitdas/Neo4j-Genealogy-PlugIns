@@ -37,23 +37,33 @@ public class endogamy_knowledge {
         gen.neo4jlib.neo4j_info.neo4j_var_reload();
         
         //remove any prior properties
-        gen.neo4jlib.neo4j_qry.qry_write("match (u:Union) remove u.cor");
-        gen.neo4jlib.neo4j_qry.qry_write("match (u:Union) remove u.rel");
-        gen.neo4jlib.neo4j_qry.qry_write("match (p:Person) remove p.coi");
-        
         try{
+            gen.neo4jlib.neo4j_qry.qry_write("match (u:Union) remove u.cor");
+            gen.neo4jlib.neo4j_qry.qry_write("match (u:Union) remove u.rel");
+            gen.neo4jlib.neo4j_qry.qry_write("match (p:Person) remove p.coi");
+
+
             gen.neo4jlib.neo4j_qry.CreateIndex("Person","coi");
-            gen.neo4jlib.neo4j_qry.CreateIndex("Uion","cor");
+            gen.neo4jlib.neo4j_qry.CreateIndex("Union","cor");
             gen.neo4jlib.neo4j_qry.CreateIndex("Union","rel");
         }
         catch(Exception e){}
         
+        
+        
         //create union cor property
-        gen.neo4jlib.neo4j_qry.qry_write("match (u:Union) with distinct u where gen.rel.compute_cor(u.U1,u.U2) >0 set u.cor=gen.rel.compute_cor(u.U1,u.U2)");
+        String uids[] = gen.neo4jlib.neo4j_qry.qry_to_csv("MATCH (u:Union) where u.U1>0 and u.U2>0  RETURN u.uid").split("\n");
+//        int increment = 1000;
+//        int curr_ct = 0;
+//        int endct = increment;
+//        
+//        for (int i = curr_ct; i < increment; i++)
+//        {
+        gen.neo4jlib.neo4j_qry.qry_write("match (u:Union) with distinct u where u.U1>0 and u.U2>0 and gen.rel.compute_cor(u.U1,u.U2) >0 set u.cor=gen.rel.compute_cor(u.U1,u.U2)");
         
         //add union rel property
         gen.neo4jlib.neo4j_qry.qry_write("match (u:Union) where u.cor is not null with u,gen.rel.relationship_from_RNs(u.U1,u.U2) as rel set u.rel=rel");
-        
+//        }
         //add coi property to Person nodes
         gen.neo4jlib.neo4j_qry.qry_write("match (p:Person) with distinct p where gen.endogamy.coefficient_of_inbreeding(p.RN) >0 set p.coi = gen.endogamy.coefficient_of_inbreeding(p.RN)");
 
@@ -63,8 +73,10 @@ public class endogamy_knowledge {
         //add most recent endogamous union and generation to Person nodes
         gen.neo4jlib.neo4j_qry.qry_write("Match (p:Person) where p.coi>0 with collect(p) as rns unwind rns as z call { with z MATCH path=(u1:Union{uid:z.uid})-[r:union_parent*0..25]->(ua:Union) with z,ua, reduce(s='',x in relationships(path)|s + x.side) as uid_path where ua.cor >0 with z, ua as ua,ua.cor as cor ,size(uid_path) + 1 as gen, uid_path order by gen with z, ua,cor,gen,uid_path, left(uid_path,1) as side with z.coi as zr,ua, cor,gen,uid_path,side limit 1 return ua.uid as uid, gen, zr,cor,cor * exp(log(0.5)*gen) as proband_coi } set z.coi_gen=gen,z.mreu_uid=uid");
         
+        //add end of line ancestor cout if coi>0
+        gen.neo4jlib.neo4j_qry.qry_write("match path=(p:Person)-[r:father|mother*0..25]->(a:Person) where p.coi is not null and a.uid=0 with p,collect(distinct a.RN) as arn set p.eol_anc_ct= size(arn)");
         
-        
+       
         return "completed";
     }
 }

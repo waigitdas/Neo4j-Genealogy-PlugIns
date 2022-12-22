@@ -39,7 +39,7 @@ public class mss_dna_painter {
         String[] rn = rns.split(",");
         String cq ="";
         String cq_all = "";
-        gen.gedcom.get_family_tree_data gp = new gen.gedcom.get_family_tree_data();
+        gen.gedcom.get_person gp = new gen.gedcom.get_person();
         
         for (int i=0; i<rn.length; i++)
         {

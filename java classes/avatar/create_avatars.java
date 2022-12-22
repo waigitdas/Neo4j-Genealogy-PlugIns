@@ -58,11 +58,11 @@ public class create_avatars {
         catch(Exception e){}
         
         gen.neo4jlib.neo4j_qry.qry_write("match (a:Avatar)-[r]-() delete r");
-//        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:avatar_avsegment]-() delete r");
-//        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:avseg_seg]-() delete r");
-//        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:person_avatar]-() delete r");
-//        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:avfather]-() delete r");
-//        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:avmother]-() delete r");
+        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:avatar_avsegment]-() delete r");
+        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:avseg_seg]-() delete r");
+        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:person_avatar]-() delete r");
+        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:avfather]-() delete r");
+        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:avmother]-() delete r");
         gen.neo4jlib.neo4j_qry.qry_write("match (d:Avatar) delete d");
    
         //get all descendants who are DNA testers
@@ -309,7 +309,7 @@ public class create_avatars {
        ////////////////////////////////////////////////////////////////////////
        ////////////////////////////////////////////////////////////////////////
        
-       String anc_name = gen.gedcom.get_family_tree_data.getPersonFromRN(anc_rn, true);
+       String anc_name = gen.gedcom.get_person.getPersonFromRN(anc_rn, true);
        int ct = 1;
       String UDF_query = "return gen.avatar.create_avatar_relatives(" + anc_rn + ")";
        
@@ -352,6 +352,7 @@ public class create_avatars {
        ct = ct+1;
        
        //avatar segments
+      // cq ="MATCH p=(v:Avatar)-[[r:avatar_segment]]->(s:Segment) with s.Indx as segment,apoc.coll.sort(collect(distinct v.fullname)) as avatar_relatives,apoc.coll.sort(collect(distinct r.source)) as sources RETURN segment, sources,size(avatar_relatives) as rel_ct, avatar_relatives order by segment";
        cq ="MATCH p=(v:Avatar)-[[r:avatar_segment]]->(s:Segment) with s.Indx as segment,apoc.coll.sort(collect(distinct v.fullname)) as avatar_relatives,replace(replace(r.pair_mrca,'â¦','⦋'),'â¦','⦌')  as mrca,apoc.coll.sort(collect(distinct r.source)) as sources RETURN segment, sources,size(avatar_relatives) as rel_ct, avatar_relatives, mrca order by segment";
        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Avatar_segs", "segments", ct, "", "1:######;2:###,###", excelFile, false, "UDF:\nr" + UDF_query + "\n\ncypher query:\n" + cq, false);
        ct = ct+1;
@@ -377,7 +378,8 @@ public class create_avatars {
      String fn = "avatar_" + rn + ".csv";
      
     //initial query
-     String cq = "with " + rn + " as source MATCH ()-[r:match_segment]->(s) where (r.p_rn=source or r.m_rn=source) and r.pair_mrca is not null with r,source,r.p_rn as prn,r.p_side as p_side,r.m_rn as mrn,r.m_side as m_side, s.Indx as seg,case when r.p_side='paternal' then 'father' else 'mother' end as p_rt,case when r.m_side='paternal' then 'father' else 'mother' end as m_rt where r.p_side in ['paternal','maternal'] match(p:Person{RN:prn})-[r2]->(a:Person) where type(r2)=p_rt with distinct m_rt,source,prn,p_side,mrn,m_side, seg,a.RN as p_parent_rn,r match(p2:Person{RN:mrn})-[r3]->(a2:Person) where type(r3)=m_rt with source,prn,p_side,mrn,m_side,seg,p_parent_rn,a2.RN as m_parent_rn,r with r,source,prn,p_side,p_parent_rn,mrn,m_side,m_parent_rn,gen.rel.mrca_path_attribution(prn,mrn) as path_without_anc,seg,r.cm as cm,r.snp_ct as snp_ct,r.cor as cor,case when r.rel is null then '~' else r.rel end as rel, r.mrca_rn as mrca_rn,replace(replace(r.pair_mrca,'â¦','⦋'),'â¦','⦌') as pair_mrca return distinct source,r.p as p,prn,p_side,p_parent_rn,r.m as m,mrn,m_side,m_parent_rn, size(path_without_anc)-size(replace (path_without_anc,',','')) + 1 as anc_ct, path_without_anc, seg,r.cm as cm,r.snp_ct as snp_ct,r.cor as cor,r.rel as rel, r.mrca_rn as mrca_rn,replace(replace(r.pair_mrca,'â¦','⦋'),'â¦','⦌') as pair_mrca";    
+//     String cq = "with " + rn + " as source MATCH ()-[r:match_segment]->(s) where (r.p_rn=source or r.m_rn=source) and r.pair_mrca is not null with r,source,r.p_rn as prn,r.p_side as p_side,r.m_rn as mrn,r.m_side as m_side, s.Indx as seg,case when r.p_side='paternal' then 'father' else 'mother' end as p_rt,case when r.m_side='paternal' then 'father' else 'mother' end as m_rt where r.p_side in ['paternal','maternal'] match(p:Person{RN:prn})-[r2]->(a:Person) where type(r2)=p_rt with distinct m_rt,source,prn,p_side,mrn,m_side, seg,a.RN as p_parent_rn,r match(p2:Person{RN:mrn})-[r3]->(a2:Person) where type(r3)=m_rt with source,prn,p_side,mrn,m_side,seg,p_parent_rn,a2.RN as m_parent_rn,r with r,source,prn,p_side,p_parent_rn,mrn,m_side,m_parent_rn,gen.rel.mrca_path_attribution(prn,mrn) as path_without_anc,seg,r.cm as cm,r.snp_ct as snp_ct,r.cor as cor,case when r.rel is null then '~' else r.rel end as rel, r.mrca_rn as mrca_rn return distinct source,r.p as p,prn,p_side,p_parent_rn,r.m as m,mrn,m_side,m_parent_rn, size(path_without_anc)-size(replace (path_without_anc,',','')) + 1 as anc_ct, path_without_anc, seg,r.cm as cm,r.snp_ct as snp_ct,r.cor as cor,r.rel as rel, r.mrca_rn as mrca_rn";    
+      String cq = "with " + rn + " as source MATCH ()-[r:match_segment]->(s) where (r.p_rn=source or r.m_rn=source) and r.pair_mrca is not null with r,source,r.p_rn as prn,r.p_side as p_side,r.m_rn as mrn,r.m_side as m_side, s.Indx as seg,case when r.p_side='paternal' then 'father' else 'mother' end as p_rt,case when r.m_side='paternal' then 'father' else 'mother' end as m_rt where r.p_side in ['paternal','maternal'] match(p:Person{RN:prn})-[r2]->(a:Person) where type(r2)=p_rt with distinct m_rt,source,prn,p_side,mrn,m_side, seg,a.RN as p_parent_rn,r match(p2:Person{RN:mrn})-[r3]->(a2:Person) where type(r3)=m_rt with source,prn,p_side,mrn,m_side,seg,p_parent_rn,a2.RN as m_parent_rn,r with r,source,prn,p_side,p_parent_rn,mrn,m_side,m_parent_rn,gen.rel.mrca_path_attribution(prn,mrn) as path_without_anc,seg,r.cm as cm,r.snp_ct as snp_ct,r.cor as cor,case when r.rel is null then '~' else r.rel end as rel, r.mrca_rn as mrca_rn,replace(replace(r.pair_mrca,'â¦','⦋'),'â¦','⦌') as pair_mrca return distinct source,r.p as p,prn,p_side,p_parent_rn,r.m as m,mrn,m_side,m_parent_rn, size(path_without_anc)-size(replace (path_without_anc,',','')) + 1 as anc_ct, path_without_anc, seg,r.cm as cm,r.snp_ct as snp_ct,r.cor as cor,r.rel as rel, r.mrca_rn as mrca_rn,replace(replace(r.pair_mrca,'â¦','⦋'),'â¦','⦌') as pair_mrca";    
     try{
      gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited(cq, fn);
     //gen.neo4jlib.neo4j_qry.qry_to_csv(cq,fn);
@@ -454,7 +456,9 @@ public class create_avatars {
          Long strt = gen.neo4jlib.neo4j_qry.qry_long_list("match ()-[r:avatar_segment]->() return count(*) as ct").get(0);
          
         //create avatar_segment relationships 
-        gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///" + fn2 + "' as line FIELDTERMINATOR '|'  match (d:Avatar{RN:toInteger(line.avatar_rn)}) match(s:Segment{Indx:toString(line.seg)})  merge (d)-[r:avatar_segment{avatar_rn:toInteger(line.avatar_rn),source:toInteger(line.source), p_side:toString(line.p_side),m_side:toString(line.m_side),p:toString(line.p),p_rn:toInteger(line.prn),m:toString(line.m),m_rn:toInteger(line.mrn),cm:toFloat(line.cm),snp_ct:toInteger(line.snp_ct),rel:toString(case when line.rel is null then '~' else line.rel end),cor:toFloat(line.cor), path_ct:toInteger(line.anc_ct),path_without_anc:toString(line.path_without_anc),pair_mrca:toString(replace(replace(line.pair_mrca,'â¦','⦋'),'â¦','⦌')),mrca_rn:toString(line.mrca_rn),p_parent_rn:toInteger(line.p_parent_rn),m_parent_rn:toInteger(line.m_parent_rn),method:'asc'}]->(s)");
+//        gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///" + fn2 + "' as line FIELDTERMINATOR '|'  match (d:Avatar{RN:toInteger(line.avatar_rn)}) match(s:Segment{Indx:toString(line.seg)})  merge (d)-[r:avatar_segment{avatar_rn:toInteger(line.avatar_rn),source:toInteger(line.source), p_side:toString(line.p_side),m_side:toString(line.m_side),p:toString(line.p),p_rn:toInteger(line.prn),m:toString(line.m),m_rn:toInteger(line.mrn),cm:toFloat(line.cm),snp_ct:toInteger(line.snp_ct),rel:toString(case when line.rel is null then '~' else line.rel end),cor:toFloat(line.cor), path_ct:toInteger(line.anc_ct),path_without_anc:toString(line.path_without_anc)),mrca_rn:toString(line.mrca_rn),p_parent_rn:toInteger(line.p_parent_rn),m_parent_rn:toInteger(line.m_parent_rn),method:'asc'}]->(s)");
+ gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///" + fn2 + "' as line FIELDTERMINATOR '|'  match (d:Avatar{RN:toInteger(line.avatar_rn)}) match(s:Segment{Indx:toString(line.seg)})  merge (d)-[r:avatar_segment{avatar_rn:toInteger(line.avatar_rn),source:toInteger(line.source), p_side:toString(line.p_side),m_side:toString(line.m_side),p:toString(line.p),p_rn:toInteger(line.prn),m:toString(line.m),m_rn:toInteger(line.mrn),cm:toFloat(line.cm),snp_ct:toInteger(line.snp_ct),rel:toString(case when line.rel is null then '~' else line.rel end),cor:toFloat(line.cor), path_ct:toInteger(line.anc_ct),path_without_anc:toString(line.path_without_anc),pair_mrca:toString(replace(replace(line.pair_mrca,'â¦','⦋'),'â¦','⦌')),mrca_rn:toString(line.mrca_rn),p_parent_rn:toInteger(line.p_parent_rn),m_parent_rn:toInteger(line.m_parent_rn),method:'asc'}]->(s)");
+ 
  
         //tracker iteration ending count
         Long newct = gen.neo4jlib.neo4j_qry.qry_long_list("match ()-[r:avatar_segment]->() return count(*) as ct").get(0) - strt;

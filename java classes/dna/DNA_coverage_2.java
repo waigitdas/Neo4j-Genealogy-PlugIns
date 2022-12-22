@@ -286,7 +286,7 @@ public class DNA_coverage_2 {
      public static void print_summary(int[][] persons,String[] kids, Double[][] coverage,String[] ordpath, Long method,int tester_ct, FileWriter fw)
      {
          String summary = "" ; // new String[persons.length][2];
-         gen.gedcom.get_family_tree_data gp = new gen.gedcom.get_family_tree_data();
+         gen.gedcom.get_person gp = new gen.gedcom.get_person();
         try{
 //            fw.write("<h3>List of " + tester_ct + " testers and " + persons.length + " persons in the paths to their ancestors.</h3>");
 //            if (method==1L){
@@ -351,7 +351,7 @@ public class DNA_coverage_2 {
     public static void print_Tbl1(int indv, int gen, int nbr_kids,int[][] DescList,Double[][] Tbl,Double[][] coverage, FileWriter fw)
     {
                    try{
-              gen.gedcom.get_family_tree_data gp = new gen.gedcom.get_family_tree_data();
+              gen.gedcom.get_person gp = new gen.gedcom.get_person();
  
              if (nbr_kids>1)
              {
@@ -400,7 +400,7 @@ public class DNA_coverage_2 {
           try{
              if (ncol==1)
              {
-                gen.gedcom.get_family_tree_data gp = new gen.gedcom.get_family_tree_data();
+                gen.gedcom.get_person gp = new gen.gedcom.get_person();
                 String pp = gp.person_from_rn(Long.valueOf(indv),true).replace("⦋", "[").replace("⦌","]");
                 fw.write("<h3>" + pp + "&nbsp;&nbsp;&nbsp;generation:&nbsp;&nbsp;" + gen + "</h3>\n");
 
