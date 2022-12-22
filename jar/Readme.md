@@ -9,27 +9,25 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 <b>History</b>
 
 
-<!--
-<li><b>v 1.1.13</b> Dec ##, 2022</li>
+
+<li><b>v 1.1.13</b> Dec 21, 2022</li>
         <ul>
-            <li>enhanced endogamy knowledge graph. Blog post is <a href="" target="new">here</a></li>
+            <li>enhanced endogamy knowledge graph. Blog post is <a href="https://www.wai.md/post/endogramy-ii-paths" target="new">here</a></li>
               <ul>
-                    <li>add path nodes</li>
-                    <li>add intersect nodes</li>
+                    <li>add fam_path nodes for paths in the family tree</li>
+                    <li>add intersect nodes for intersections between paths shared by two individuals.</li>
                     <li>add path_intersect relationship</li>
                     <li>add path_person relationship</li>
                     <li>new function to sort intersect path persons exactly as in the root or parent path: gen.endogamy.sort_subpath()  </li>
+                    <li>path segments</li>
+                    <li>new function to identify descendant who triangulate with family tree paths</li>
             </ul>
-        <li>path segments</li>
-              <ul>
-                    <li>add mss property to Segment nodes some they an be identified directly</li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-            </ul>
-    </ul>
+        
+            <li>removed avatar creation to optional, menu item. </li>
+            <li></li>
+            <li></li>
+        </ul>
     
--->
 <ol> 
     <li><b>v 1.1.12</b> Nov 29, 2022</li>
         <ul>
