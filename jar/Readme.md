@@ -23,9 +23,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
                     <li>new function to identify descendant who triangulate with family tree paths</li>
             </ul>
         
-            <li>removed avatar creation to optional, menu item. </li>
-            <li></li>
-            <li></li>
+            <li>moved avatar creation to optional, menu item. </li>
         </ul>
     
 <ol> 
