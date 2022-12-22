@@ -10,9 +10,14 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 
 
 
+<!--
+<li><b>v 1.1.14</b> Jan xx, 2023</li>
+
+-->
+
 <li><b>v 1.1.13</b> Dec 21, 2022</li>
         <ul>
-            <li>enhanced endogamy knowledge graph. Blog post is <a href="https://www.wai.md/post/endogramy-ii-paths" target="new">here</a></li>
+            <li>enhanced endogamy knowledge graph. Blog post is <a href="https://www.wai.md/post/endogramy-ii-paths" target="new">here</a>
               <ul>
                     <li>add fam_path nodes for paths in the family tree</li>
                     <li>add intersect nodes for intersections between paths shared by two individuals.</li>
@@ -22,10 +27,11 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
                     <li>path segments</li>
                     <li>new function to identify descendant who triangulate with family tree paths</li>
             </ul>
+                </li>
         
             <li>moved avatar creation to optional, menu item. </li>
-        </ul>
-    
+        </ul><br>
+ 
 <ol> 
     <li><b>v 1.1.12</b> Nov 29, 2022</li>
         <ul>
