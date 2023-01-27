@@ -10,10 +10,12 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 
 
 
-<!--
-<li><b>v 1.1.14</b> Jan xx, 2023</li>
 
--->
+<li><b>v 1.1.14</b> Jan 28, 2023</li>
+<ul>
+<li>Added mt-DNA function; still in development. The function load FTDNA, YFull reference data.</li>
+</ul>
+
 
 <li><b>v 1.1.13</b> Dec 21, 2022</li>
         <ul>
