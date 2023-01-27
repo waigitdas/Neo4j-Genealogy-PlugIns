@@ -13,7 +13,7 @@ The Neo4j configuration file does not need to be changed with updates <b>IF</b> 
 
 <li><b>v 1.1.14</b> Jan 28, 2023</li>
 <ul>
-<li>Added mt-DNA function; still in development. The function load FTDNA, YFull reference data.</li>
+<li>Added mt-DNA functions; still in development. The functions load FTDNA, YFull reference data.</li>
 </ul>
 
 
