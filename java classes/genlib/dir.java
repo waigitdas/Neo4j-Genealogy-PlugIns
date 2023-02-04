@@ -192,15 +192,6 @@ return "x";
     }
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
     public static void getFiles(){
         
         final List<Path> files = new ArrayList<>();

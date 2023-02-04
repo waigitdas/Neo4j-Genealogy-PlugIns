@@ -39,7 +39,7 @@ public class ordpath {
 //        System.out.println(op);
     }
     
-     public  String get_op(List<Long> dewey) 
+     public  static String get_op(List<Long> dewey) 
     {
         String op="";
         
@@ -50,7 +50,7 @@ public class ordpath {
         return op;
     }
      
-     public  String getLiOi(Long deweyItem){
+     public static String getLiOi(Long deweyItem){
          String LiOi = "01,3,0,7\n" +
 "001,3,-8,-1\n" +
 "00011,4,-24,-9\n" +

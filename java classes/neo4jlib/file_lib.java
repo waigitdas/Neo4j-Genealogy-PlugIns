@@ -31,11 +31,11 @@ public class file_lib {
     public static Boolean openExcelFile;
 
     public static String[] ReadGEDCOM(String filePath) {
-    String delimiter = "%^&*"; 
-    String c = gen.neo4jlib.file_lib.ReadFileByLineWithEncoding(filePath);
-    String[] s = c.replace("|","^").split("0 @");
-    String g = "";
-        
+        String delimiter = "%^&*"; 
+        String c = gen.neo4jlib.file_lib.ReadFileByLineWithEncoding(filePath);
+        String[] s = c.replace("|","^").split("0 @");
+        String g = "";
+
         //pull out only the desired elements
         for (int i=0; i<s.length; i++){
                 if (s[i].substring(0,1).equals("P") || s[i].substring(0,1).equals("F")) {
@@ -68,6 +68,38 @@ public class file_lib {
     
         return contentBuilder.toString();
  
+    }
+    
+    public static String copyFileToImportDirectory(String filePath)
+    {
+        StringBuilder contentBuilder = new StringBuilder();
+ 
+        try {
+            //read unicode
+          Stream<String> stream = Files.lines( Paths.get(filePath), StandardCharsets.UTF_8);
+                        
+        {
+            stream.forEach(s -> contentBuilder.append(s).append("\n"));
+        }
+        }
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
+ 
+        String s =  contentBuilder.toString();  
+        String fn = gen.neo4jlib.file_lib.getFileNameFromPath(filePath);
+        
+        File fni = new File(gen.neo4jlib.neo4j_info.Import_Dir + fn);
+        try{
+            FileWriter fw = new FileWriter(fni);
+            fw.write(s);
+            fw.flush();    
+            fw.close();
+    }
+        catch (IOException e){}
+        
+        return "";
     }
     
     public static String readFileByLine(String filePath) {
@@ -118,7 +150,9 @@ try{
    for (CSVRecord record : records) {
        String s = "";
        for (int i=0; i < record.size(); i++) {
-        if (ct==0) {s = s + record.get(i).replace(" ","_").replace("-","_") + "|";}
+        if (ct==0) {
+            s = s + record.get(i).replace(" ","_").replace("-","_") + "|";
+        }
         else {
             s = s + record.get(i).replace("\"","")  + "|";
         }

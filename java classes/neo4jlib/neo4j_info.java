@@ -36,7 +36,9 @@ public class neo4j_info {
     //public static String activeProjectData = "/Genealogy/Neo4j/active_neo4j.wai";
 
     public static String neo4j_home_dir;
-    public static String wrt;
+    public static String wrt;    
+    public static String cq;
+
 
 public static Boolean neo4j_var() {
     Boolean WasFilled =false;

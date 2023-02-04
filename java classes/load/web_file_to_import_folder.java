@@ -56,6 +56,43 @@ public class web_file_to_import_folder {
             }
            }
     }
+
+        public static void url_file_to_dir(String url,String FilePath) {
+        
+        InputStreamReader isr  = null;
+        BufferedReader buffRead = null;
+        try{
+           FileWriter fw= new FileWriter(FilePath);
+//FileWriter fw= new FileWriter("C:/Users/david/AppData/Local/Neo4j/Relate/Data/dbmss/dbms-defa19bd-d66f-4fdd-b9ee-d2fdb9a2256b/import/" + FileNm);
+
+           URL url_str  = new URL(url);
+           URLConnection conn  = url_str.openConnection();
+           isr   = new InputStreamReader(conn.getInputStream());
+           buffRead  = new BufferedReader(isr);
+           String str = "";
+           while ((str = buffRead.readLine()) != null) {
+            //System.out.println(str);
+            fw.write(str + "\n");    
+           }     
+            fw.flush();    
+            fw.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        } finally{
+            try{
+             if(buffRead != null) buffRead.close();
+             if(isr != null) isr.close();
+            }catch (IOException e) {
+             e.printStackTrace();
+            }
+           }
+    }
+
+
 }
 
 
