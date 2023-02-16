@@ -54,14 +54,14 @@ public class mt_seq_to_haplogroup {
 //        find_snps("425497","RSRS","yfull");                               
 //        find_snps("425497","RSRS","phylotree");                               
 //        find_snps("B51965","RSRS","ftdna");
-        find_snps("B51965","RSRS","yfull");
-        find_snps("B51965","RSRS","phylotree");
-        find_snps("330527","RSRS","ftdna");
-        find_snps("330527","RSRS","yfull");
-        find_snps("330527","RSRS","phylotree");
-        find_snps("446574","RSRS","ftdna");
-        find_snps("446574","RSRS","yfull");
-        find_snps("446574","RSRS","phylotree");
+//        find_snps("B51965","RSRS","yfull");
+//        find_snps("B51965","RSRS","phylotree");
+        find_snps("EU684000","RSRS","ftdna");
+//        find_snps("330527","RSRS","yfull");
+//        find_snps("330527","RSRS","phylotree");
+//        find_snps("446574","RSRS","ftdna");
+//        find_snps("446574","RSRS","yfull");
+//        find_snps("446574","RSRS","phylotree");
 //        find_snps("425497","rCRS","ftdna");                               
 //        find_snps("425497","rCRS","yfull");                               
 //        find_snps("425497","rCRS","phylotree");                               
@@ -195,6 +195,7 @@ public class mt_seq_to_haplogroup {
         
         if (vendor.compareTo("ftdna")==0){
         cq = "with " + snps + " as proband_snps MATCH path=(b1:mt_block{name:'RSRS'})-[r:mt_block_child*0..999]->(b2:mt_block{ftdna:1}) with proband_snps,b2, [x in nodes(path)|case when size(apoc.coll.intersection(x.snps, proband_snps))>0 then '*' else '' end + x.name] as blocks,[y in nodes(path)|id(y)] as op, apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten([z in nodes(path) where z.snps is not null|z.snps]))) as snps, [w in nodes(path)|case when size(apoc.coll.intersection(w.snps, proband_snps))>0 then '1' else '0' end] as lvl_ct with proband_snps,b2,blocks,snps,size(op) as lvl, lvl_ct,gen.graph.get_ordpath(op) as op with b2.name as block,lvl-1 as lvl, size(b2.snps) as ct, lvl_ct, b2.snps as block_snps, blocks,size(snps) as ct2, snps as cum_snps, op, apoc.coll.intersection(snps, proband_snps) as intersect,apoc.coll.subtract(proband_snps,snps ) as unused,apoc.coll.subtract(snps, proband_snps) as missing with block,lvl,apoc.coll.occurrences(lvl_ct,'1') as lvl_ok, blocks as path,ct2 as ref_snp_ct, size(intersect) as matching_snp_ct,size(missing) as missing_ct,size(unused) as unused_snp_ct, intersect,missing, unused, ct as block_snp_ct,block_snps,cum_snps with block, lvl, lvl_ok, path, ref_snp_ct, matching_snp_ct, missing_ct, unused_snp_ct, intersect, missing, unused, block_snp_ct, block_snps, cum_snps where lvl=lvl_ok return block, lvl, lvl_ok, path, ref_snp_ct, matching_snp_ct, missing_ct, unused_snp_ct, intersect, missing, unused, block_snp_ct, block_snps, cum_snps order by size(intersect) desc,lvl desc limit 1";
+       System.out.println(cq);
         }
   
         if (vendor.compareTo("phylotree")==0){
