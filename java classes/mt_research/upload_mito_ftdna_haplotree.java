@@ -23,7 +23,7 @@ import org.neo4j.procedure.UserFunction;
 
 public class upload_mito_ftdna_haplotree {
        @UserFunction
-       @Description("Loads the entire mt-haplotree directly from the current FTDNA mt-DNA json refernce file into Neo4j. This json is updated frequently as new snps and haplotree branches are discovered. Source: https://www.familytreedna.com/public/mt-dna-haplotree/get")
+       @Description("Loads the entire mt-haplotree directly from the current FTDNA mt-DNA json refernce file into Neo4j. This json is updated frequently as new variants and haplotree branches are discovered. Source: https://www.familytreedna.com/public/mt-dna-haplotree/get")
 
      public String upload_ftdna_mt_haplotree_research() {
         gen.neo4jlib.neo4j_info.neo4j_var_reload();
@@ -42,7 +42,7 @@ public class upload_mito_ftdna_haplotree {
      {
         //delete prior haplotree data
 //        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:mt_block_child]-() delete r");
-//        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:mt_block_snp]-() delete r");
+//        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:mt_block_variant]-() delete r");
         gen.neo4jlib.neo4j_qry.qry_write("match (b:mt_block)-[r]-() delete r");
         gen.neo4jlib.neo4j_qry.qry_write("match (b:mt_block) delete b");
         gen.neo4jlib.neo4j_qry.qry_write("match (v:mt_variant)-[r]-() delete r");
@@ -166,7 +166,7 @@ public class upload_mito_ftdna_haplotree {
        neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 200000);
        
        
-      cq = "match (b:mt_block{haplogroupId:toInteger(line.haplogroupId)}) match (v:mt_variant{name:toString(line.variant_name)}) merge (b)-[r:mt_block_snp]->(v)";
+      cq = "match (b:mt_block{haplogroupId:toInteger(line.haplogroupId)}) match (v:mt_variant{name:toString(line.variant_name)}) merge (b)-[r:mt_block_variant]->(v)";
       neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 200000);
 
        gen.neo4jlib.neo4j_qry.qry_write("MATCH (b1:mt_block) with b1 match (b2:mt_block) where b2.haplogroupId=b1.parentId merge (b2)-[r:mt_block_child]-(b1)");
@@ -177,22 +177,22 @@ public class upload_mito_ftdna_haplotree {
        //match_block
        gen.neo4jlib.neo4j_qry.qry_write("MATCH (m:DNA_Match) where m.mtHG is not null with m match (b:mt_block) where b.name=m.mtHG merge (m)-[mb:mt_match_block]->(b)");
        
-       //mt_block snp aliases
-       gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(b:mt_block)-[r:mt_block_snp]->(v:mt_variant) with b, v.name as vname order by v.pos with b,collect(distinct vname) as vname set b.snp_ct=size(vname),b.snps=vname");
+       //mt_block variant aliases
+       gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(b:mt_block)-[r:mt_block_variant]->(v:mt_variant) with b, v.name as vname order by v.pos with b,collect(distinct vname) as vname set b.variant_ct=size(vname),b.variants=vname");
        
-       //all_snps
-       gen.neo4jlib.neo4j_qry.qry_write("MATCH path=(b1:mt_block{name:'RSRS'})-[r:mt_block_child*0..999]->(b2:mt_block) with b2, [x in nodes(path)|x.name] as blocks, [y in nodes(path)|id(y)] as op, apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten([z in nodes(path) where z.snps is not null|z.snps]))) as snps with b2,blocks,snps,size(op) as lvl, gen.graph.get_ordpath(op) as op set b2.all_snps = snps,b2.all_snp_ct=size(snps)");
+       //all_variants
+       gen.neo4jlib.neo4j_qry.qry_write("MATCH path=(b1:mt_block{name:'RSRS'})-[r:mt_block_child*0..999]->(b2:mt_block) with b2, [x in nodes(path)|x.name] as blocks, [y in nodes(path)|id(y)] as op, apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten([z in nodes(path) where z.variants is not null|z.variants]))) as variants with b2,blocks,variants,size(op) as lvl, gen.graph.get_ordpath(op) as op set b2.all_variants = variants,b2.all_variant_ct=size(variants)");
        
        //mt chilId
        gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(b1)-[r:mt_block_child]->(b2) set b1.childId=1");
        
-       //mt_block_shared_snps
-       gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(b1:mt_block)-[r1:mt_block_snp]->(v:mt_variant)<-[r3:mt_block_snp]-(b2:mt_block) where b1.name < b2.name with b1,b2,apoc.coll.sort(collect(distinct v.name)) as snps merge (b1)-[r:mt_block_shared_snps{snps:snps,snp_ct:size(snps)}]->(b2)");
+       //mt_block_shared_variants
+       gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(b1:mt_block)-[r1:mt_block_variant]->(v:mt_variant)<-[r3:mt_block_variant]-(b2:mt_block) where b1.name < b2.name with b1,b2,apoc.coll.sort(collect(distinct v.name)) as variants merge (b1)-[r:mt_block_shared_variants{variants:variants,variant_ct:size(variants)}]->(b2)");
        
        //need kit_ct to avoid deleting SNPs needed for kit haplotree assihments
        //this is kit ct at FTDNA in their json, not kits in this project
-       //surrogate for snps relevant to the haplotree
-       gen.neo4jlib.neo4j_qry.qry_write("MATCH (k:mt_kit_snp) with k match (v:mt_variant{name:k.name}) set v.kit_ct=k.kit_ct");
+       //surrogate for variants relevant to the haplotree
+       gen.neo4jlib.neo4j_qry.qry_write("MATCH (k:mt_kit_variant) with k match (v:mt_variant{name:k.name}) set v.kit_ct=k.kit_ct");
 
        gen.neo4jlib.neo4j_qry.qry_write("match (b:mt_block) set b.ftdna=1");
        gen.neo4jlib.neo4j_qry.qry_write("match(v:mt_variant) set v.ftdna=1");
@@ -206,33 +206,33 @@ public class upload_mito_ftdna_haplotree {
        
         //prepare reports
         int ct = 1;
-        cq = "MATCH path=(b1:mt_block{name:'RSRS'})-[r:mt_block_child*0..999]->(b2:mt_block) with b2.name as hg,path,[m in nodes(path)|id(m)] as R optional match (m:DNA_Match) where m.mtHG=hg with hg,apoc.coll.sort(collect(case when m.ancestor_rn>0 then '*^' + m.fullname else m.fullname end + case when m.RN is not null then ' [' + m.RN + ']' else '' end)) as match, R, gen.graph.get_ordpath(R) as op with op, R,match,hg order by op MATCH p=(b3:mt_block{name:hg})-[r:mt_block_snp]->(v) with v, R,match,hg order by op, v.sort with R,match,hg, collect(v.name) as variants return apoc.text.lpad('',(size(R)-1)*3,'.') + hg as haplogroup ,size(variants) as var_ct,variants,size(R) as haplotree_level, size(match) as match_ct,case when size(match)>100 then 'truncated ' + apoc.coll.remove(match,100,size(match)-99) else match end as match";
+        cq = "MATCH path=(b1:mt_block{name:'RSRS'})-[r:mt_block_child*0..999]->(b2:mt_block) with b2.name as hg,path,[m in nodes(path)|id(m)] as R optional match (m:DNA_Match) where m.mtHG=hg with hg,apoc.coll.sort(collect(case when m.ancestor_rn>0 then '*^' + m.fullname else m.fullname end + case when m.RN is not null then ' [' + m.RN + ']' else '' end)) as match, R, gen.graph.get_ordpath(R) as op with op, R,match,hg order by op MATCH p=(b3:mt_block{name:hg})-[r:mt_block_variant]->(v) with v, R,match,hg order by op, v.sort with R,match,hg, collect(v.name) as variants return apoc.text.lpad('',(size(R)-1)*3,'.') + hg as haplogroup ,size(variants) as var_ct,variants,size(R) as haplotree_level, size(match) as match_ct,case when size(match)>100 then 'truncated ' + apoc.coll.remove(match,100,size(match)-99) else match end as match";
         String excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "pruning_mt_haplotree", "original_tree", ct, "", "1:####;3:####;4:####", "", false, cq, false);
         ct = ct + 1;
 
-        cq = "MATCH path=(b1:mt_block{name:'RSRS'})-[r:mt_block_child*0..999]->(b2:mt_block) with b2.name as hg,path,[m in nodes(path)|id(m)] as R optional match (m:DNA_Match) where m.mtHG=hg with hg,apoc.coll.sort(collect(case when m.ancestor_rn>0 then '*^' + m.fullname else m.fullname end + case when m.RN is not null then ' [' + m.RN + ']' else '' end)) as match, R, gen.graph.get_ordpath(R) as op with op, R,match,hg order by op optional MATCH p=(b3:mt_block{name:hg})-[r:mt_block_snp]->(v) with v, R,match,hg order by op, v.sort with R,match,hg, collect(v.name) as variants where size(collect(v.name))=0 return apoc.text.lpad('',(size(R)-1)*3,'.') + hg as haplogroup ,size(variants) as var_ct,variants,size(R) as haplotree_level, size(match) as match_ct,case when size(match)>100 then 'truncated ' + apoc.coll.remove(match,100,size(match)-99) else match end as match";
-        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "original_just_zero_snp", "original_just_zero_snp", ct, "", "1:####;3:####;4:####", excelFile, false, cq, false);
+        cq = "MATCH path=(b1:mt_block{name:'RSRS'})-[r:mt_block_child*0..999]->(b2:mt_block) with b2.name as hg,path,[m in nodes(path)|id(m)] as R optional match (m:DNA_Match) where m.mtHG=hg with hg,apoc.coll.sort(collect(case when m.ancestor_rn>0 then '*^' + m.fullname else m.fullname end + case when m.RN is not null then ' [' + m.RN + ']' else '' end)) as match, R, gen.graph.get_ordpath(R) as op with op, R,match,hg order by op optional MATCH p=(b3:mt_block{name:hg})-[r:mt_block_variant]->(v) with v, R,match,hg order by op, v.sort with R,match,hg, collect(v.name) as variants where size(collect(v.name))=0 return apoc.text.lpad('',(size(R)-1)*3,'.') + hg as haplogroup ,size(variants) as var_ct,variants,size(R) as haplotree_level, size(match) as match_ct,case when size(match)>100 then 'truncated ' + apoc.coll.remove(match,100,size(match)-99) else match end as match";
+        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "original_just_zero_variant", "original_just_zero_variant", ct, "", "1:####;3:####;4:####", excelFile, false, cq, false);
         ct = ct + 1;
 
        
        //set deleteable property
        //method 2
-       //gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(b1)-[r:mt_block_shared_snps]->(b2) with b1,r, apoc.coll.subtract(b1.snps,r.snps) as remaining_snps with b1 as b1,remaining_snps,r.snps as shared_snps, b1.snps as block_snps with b1,remaining_snps,shared_snps,block_snps where size(remaining_snps)>0 match (b1)-[r2:mt_block_snp]-(v:mt_variant) where v.name in shared_snps set r2.deletable=1,r2.del_snp=v.name");
+       //gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(b1)-[r:mt_block_shared_variants]->(b2) with b1,r, apoc.coll.subtract(b1.variants,r.variants) as remaining_variants with b1 as b1,remaining_variants,r.variants as shared_variants, b1.variants as block_variants with b1,remaining_variants,shared_variants,block_variants where size(remaining_variants)>0 match (b1)-[r2:mt_block_variant]-(v:mt_variant) where v.name in shared_variants set r2.deletable=1,r2.del_variant=v.name");
              
        //method 1
-        //gen.neo4jlib.neo4j_qry.qry_write(" MATCH p=(b1)-[r:mt_block_shared_snps]->(b2) with b1,r, apoc.coll.subtract(b1.snps,r.snps) as remaining_snps with b1 as b1,remaining_snps,r.snps as shared_snps, b1.snps as block_snps with b1,remaining_snps,shared_snps,block_snps where size(remaining_snps)>0 match (b1)-[r2:mt_block_snp]-(v:mt_variant) where v.name in shared_snps set r2.deletable=1,r2.del_snp=v.name");
+        //gen.neo4jlib.neo4j_qry.qry_write(" MATCH p=(b1)-[r:mt_block_shared_variants]->(b2) with b1,r, apoc.coll.subtract(b1.variants,r.variants) as remaining_variants with b1 as b1,remaining_variants,r.variants as shared_variants, b1.variants as block_variants with b1,remaining_variants,shared_variants,block_variants where size(remaining_variants)>0 match (b1)-[r2:mt_block_variant]-(v:mt_variant) where v.name in shared_variants set r2.deletable=1,r2.del_variant=v.name");
        
       //method 3
-      //gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(b1)-[r:mt_block_shared_snps]->(b2) where size(b1.snps)>1 and size(b2.snps)>1 match (b1)-[rv:mt_block_snp]-(v:mt_variant) where v.name in r.snps with distinct b1.name as b1,v,rv, id(rv) as id,count(*) as ct with b1,v,rv, id,ct where ct>1 delete rv");
+      //gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(b1)-[r:mt_block_shared_variants]->(b2) where size(b1.variants)>1 and size(b2.variants)>1 match (b1)-[rv:mt_block_variant]-(v:mt_variant) where v.name in r.variants with distinct b1.name as b1,v,rv, id(rv) as id,count(*) as ct with b1,v,rv, id,ct where ct>1 delete rv");
                               
                
                
-       //prune mt_block_snp nodes
+       //prune mt_block_variant nodes
        //method 2
-       //gen.neo4jlib.neo4j_qry.qry_write("MATCH (b1:mt_block) optional match p=(b1)-[r:mt_block_snp]->(v) with b1,apoc.coll.sort(apoc.coll.flatten(collect([x in relationships(p) where x.deletable=1 |id(x) ]))) as del, apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten (collect (distinct[y in nodes(p) where y.kit_ct>0 | y.name])))) as snps1 with b1.name as hg,b1.snps as snps, b1.snp_ct as snp_ct, del,b1.snp_ct-size(del) as snp_left,size(del) as del_ct,snps1, size(snps1) as kit_snp_ct where snp_left=0 with hg,snp_left, snp_ct,del_ct,kit_snp_ct, del,snps,snps1 as snp_in_kits,apoc.coll.subtract(snps,snps1) as toDelete with hg,snp_left, snp_ct,del_ct,kit_snp_ct,size(toDelete) as toDel_ct, del,snps, snp_in_kits,toDelete optional match (m2:mt_block{name:hg})-[rr:mt_block_snp]-(vv:mt_variant) where vv.name in toDelete with hg,snp_left, snp_ct,del_ct,kit_snp_ct,toDel_ct, del,snps, snp_in_kits,toDelete,collect(id(rr)) as idToDel where snp_ct-toDel_ct + 1 >0 and toDel_ct>0 match (m3:mt_block)-[rdel:mt_block_snp]-(vv3:mt_variant) where id(rdel) in idToDel delete rdel");
+       //gen.neo4jlib.neo4j_qry.qry_write("MATCH (b1:mt_block) optional match p=(b1)-[r:mt_block_variant]->(v) with b1,apoc.coll.sort(apoc.coll.flatten(collect([x in relationships(p) where x.deletable=1 |id(x) ]))) as del, apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten (collect (distinct[y in nodes(p) where y.kit_ct>0 | y.name])))) as variants1 with b1.name as hg,b1.variants as variants, b1.variant_ct as variant_ct, del,b1.variant_ct-size(del) as variant_left,size(del) as del_ct,variants1, size(variants1) as kit_variant_ct where variant_left=0 with hg,variant_left, variant_ct,del_ct,kit_variant_ct, del,variants,variants1 as variant_in_kits,apoc.coll.subtract(variants,variants1) as toDelete with hg,variant_left, variant_ct,del_ct,kit_variant_ct,size(toDelete) as toDel_ct, del,variants, variant_in_kits,toDelete optional match (m2:mt_block{name:hg})-[rr:mt_block_variant]-(vv:mt_variant) where vv.name in toDelete with hg,variant_left, variant_ct,del_ct,kit_variant_ct,toDel_ct, del,variants, variant_in_kits,toDelete,collect(id(rr)) as idToDel where variant_ct-toDel_ct + 1 >0 and toDel_ct>0 match (m3:mt_block)-[rdel:mt_block_variant]-(vv3:mt_variant) where id(rdel) in idToDel delete rdel");
       
        //method1
-      //gen.neo4jlib.neo4j_qry.qry_write("MATCH (b1:mt_block) optional match p=(b1)-[r:mt_block_snp]->(v) with b1,apoc.coll.sort(apoc.coll.flatten(collect([x in relationships(p) where x.deletable=1 |id(x) ]))) as del, apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten (collect (distinct[y in nodes(p) where y.kit_ct>0 | y.name])))) as snps1 with b1.name as hg,b1.snps as snps, b1.snp_ct as snp_ct, del,b1.snp_ct-size(del) as snp_left,size(del) as del_ct,snps1, size(snps1) as kit_snp_ct where snp_left=0 with hg,snp_left, snp_ct,del_ct,kit_snp_ct, del,snps,snps1 as snp_in_kits,apoc.coll.subtract(snps,snps1) as toDelete with hg,snp_left, snp_ct,del_ct,kit_snp_ct,size(toDelete) as toDel_ct, del,snps, snp_in_kits,toDelete optional match (m2:mt_block{name:hg})-[rr:mt_block_snp]-(vv:mt_variant) where vv.name in toDelete with hg,snp_left, snp_ct,del_ct,kit_snp_ct,toDel_ct, del,snps, snp_in_kits,toDelete,collect(id(rr)) as idToDel where snp_ct-toDel_ct + 1 >0 and toDel_ct>0 with apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten (collect(idToDel)))) as ids match (m3:mt_block)-[rdel:mt_block_snp]-(vv3:mt_variant) where id(rdel) in ids delete rdel");
+      //gen.neo4jlib.neo4j_qry.qry_write("MATCH (b1:mt_block) optional match p=(b1)-[r:mt_block_variant]->(v) with b1,apoc.coll.sort(apoc.coll.flatten(collect([x in relationships(p) where x.deletable=1 |id(x) ]))) as del, apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten (collect (distinct[y in nodes(p) where y.kit_ct>0 | y.name])))) as variants1 with b1.name as hg,b1.variants as variants, b1.variant_ct as variant_ct, del,b1.variant_ct-size(del) as variant_left,size(del) as del_ct,variants1, size(variants1) as kit_variant_ct where variant_left=0 with hg,variant_left, variant_ct,del_ct,kit_variant_ct, del,variants,variants1 as variant_in_kits,apoc.coll.subtract(variants,variants1) as toDelete with hg,variant_left, variant_ct,del_ct,kit_variant_ct,size(toDelete) as toDel_ct, del,variants, variant_in_kits,toDelete optional match (m2:mt_block{name:hg})-[rr:mt_block_variant]-(vv:mt_variant) where vv.name in toDelete with hg,variant_left, variant_ct,del_ct,kit_variant_ct,toDel_ct, del,variants, variant_in_kits,toDelete,collect(id(rr)) as idToDel where variant_ct-toDel_ct + 1 >0 and toDel_ct>0 with apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten (collect(idToDel)))) as ids match (m3:mt_block)-[rdel:mt_block_variant]-(vv3:mt_variant) where id(rdel) in ids delete rdel");
         
       //method 3 -- no 2nd step
        
@@ -242,16 +242,16 @@ public class upload_mito_ftdna_haplotree {
      
         
         // report continued
-        cq = "MATCH path=(b1:mt_block{name:'RSRS'})-[r:mt_block_child*0..999]->(b2:mt_block) with b2.name as hg,path,[m in nodes(path)|id(m)] as R optional match (m:DNA_Match) where m.mtHG=hg with hg,apoc.coll.sort(collect(case when m.ancestor_rn>0 then '*^' + m.fullname else m.fullname end + case when m.RN is not null then ' [' + m.RN + ']' else '' end)) as match, R, gen.graph.get_ordpath(R) as op with op, R,match,hg order by op MATCH p=(b3:mt_block{name:hg})-[r:mt_block_snp]->(v) with v, R,match,hg order by op, v.sort with R,match,hg, collect(v.name) as variants return apoc.text.lpad('',(size(R)-1)*3,'.') + hg as haplogroup ,size(variants) as var_ct,variants,size(R) as haplotree_level, size(match) as match_ct,case when size(match)>100 then 'truncated ' + apoc.coll.remove(match,100,size(match)-99) else match end as match";
+        cq = "MATCH path=(b1:mt_block{name:'RSRS'})-[r:mt_block_child*0..999]->(b2:mt_block) with b2.name as hg,path,[m in nodes(path)|id(m)] as R optional match (m:DNA_Match) where m.mtHG=hg with hg,apoc.coll.sort(collect(case when m.ancestor_rn>0 then '*^' + m.fullname else m.fullname end + case when m.RN is not null then ' [' + m.RN + ']' else '' end)) as match, R, gen.graph.get_ordpath(R) as op with op, R,match,hg order by op MATCH p=(b3:mt_block{name:hg})-[r:mt_block_variant]->(v) with v, R,match,hg order by op, v.sort with R,match,hg, collect(v.name) as variants return apoc.text.lpad('',(size(R)-1)*3,'.') + hg as haplogroup ,size(variants) as var_ct,variants,size(R) as haplotree_level, size(match) as match_ct,case when size(match)>100 then 'truncated ' + apoc.coll.remove(match,100,size(match)-99) else match end as match";
         excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "pruned_tree", "pruned_tree", ct, "", "1:####;3:####;4:####", excelFile, false, cq, false);
         ct = ct + 1;
 
-        cq = "MATCH path=(b1:mt_block{name:'RSRS'})-[r:mt_block_child*0..999]->(b2:mt_block) with b2.name as hg,path,[m in nodes(path)|id(m)] as R optional match (m:DNA_Match) where m.mtHG=hg with hg,apoc.coll.sort(collect(case when m.ancestor_rn>0 then '*^' + m.fullname else m.fullname end + case when m.RN is not null then ' [' + m.RN + ']' else '' end)) as match, R, gen.graph.get_ordpath(R) as op with op, R,match,hg order by op optional MATCH p=(b3:mt_block{name:hg})-[r:mt_block_snp]->(v) with v, R,match,hg order by op, v.sort with R,match,hg, collect(v.name) as variants return apoc.text.lpad('',(size(R)-1)*3,'.') + hg as haplogroup ,size(variants) as var_ct,variants,size(R) as haplotree_level, size(match) as match_ct,case when size(match)>100 then 'truncated ' + apoc.coll.remove(match,100,size(match)-99) else match end as match";
-        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "pruned_with_zero_snps", "pruned_with_zero_snps", ct, "", "1:####;3:####;4:####", excelFile, false, cq, false);
+        cq = "MATCH path=(b1:mt_block{name:'RSRS'})-[r:mt_block_child*0..999]->(b2:mt_block) with b2.name as hg,path,[m in nodes(path)|id(m)] as R optional match (m:DNA_Match) where m.mtHG=hg with hg,apoc.coll.sort(collect(case when m.ancestor_rn>0 then '*^' + m.fullname else m.fullname end + case when m.RN is not null then ' [' + m.RN + ']' else '' end)) as match, R, gen.graph.get_ordpath(R) as op with op, R,match,hg order by op optional MATCH p=(b3:mt_block{name:hg})-[r:mt_block_variant]->(v) with v, R,match,hg order by op, v.sort with R,match,hg, collect(v.name) as variants return apoc.text.lpad('',(size(R)-1)*3,'.') + hg as haplogroup ,size(variants) as var_ct,variants,size(R) as haplotree_level, size(match) as match_ct,case when size(match)>100 then 'truncated ' + apoc.coll.remove(match,100,size(match)-99) else match end as match";
+        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "pruned_with_zero_variants", "pruned_with_zero_variants", ct, "", "1:####;3:####;4:####", excelFile, false, cq, false);
         ct = ct + 1;
         
-        cq = "MATCH path=(b1:mt_block{name:'RSRS'})-[r:mt_block_child*0..999]->(b2:mt_block) with b2.name as hg,path,[m in nodes(path)|id(m)] as R optional match (m:DNA_Match) where m.mtHG=hg with hg,apoc.coll.sort(collect(case when m.ancestor_rn>0 then '*^' + m.fullname else m.fullname end + case when m.RN is not null then ' [' + m.RN + ']' else '' end)) as match, R, gen.graph.get_ordpath(R) as op with op, R,match,hg order by op optional MATCH p=(b3:mt_block{name:hg})-[r:mt_block_snp]->(v) with v, R,match,hg order by op, v.sort with R,match,hg, collect(v.name) as variants where size(collect(v.name))=0 return apoc.text.lpad('',(size(R)-1)*3,'.') + hg as haplogroup ,size(variants) as var_ct,variants,size(R) as haplotree_level, size(match) as match_ct,case when size(match)>100 then 'truncated ' + apoc.coll.remove(match,100,size(match)-99) else match end as match";
-        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "pruned_just_zero_snp", "pruned_just_zero_snp", ct, "", "1:####;3:####;4:####", excelFile, true, cq, false);
+        cq = "MATCH path=(b1:mt_block{name:'RSRS'})-[r:mt_block_child*0..999]->(b2:mt_block) with b2.name as hg,path,[m in nodes(path)|id(m)] as R optional match (m:DNA_Match) where m.mtHG=hg with hg,apoc.coll.sort(collect(case when m.ancestor_rn>0 then '*^' + m.fullname else m.fullname end + case when m.RN is not null then ' [' + m.RN + ']' else '' end)) as match, R, gen.graph.get_ordpath(R) as op with op, R,match,hg order by op optional MATCH p=(b3:mt_block{name:hg})-[r:mt_block_variant]->(v) with v, R,match,hg order by op, v.sort with R,match,hg, collect(v.name) as variants where size(collect(v.name))=0 return apoc.text.lpad('',(size(R)-1)*3,'.') + hg as haplogroup ,size(variants) as var_ct,variants,size(R) as haplotree_level, size(match) as match_ct,case when size(match)>100 then 'truncated ' + apoc.coll.remove(match,100,size(match)-99) else match end as match";
+        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "pruned_just_zero_variant", "pruned_just_zero_variant", ct, "", "1:####;3:####;4:####", excelFile, true, cq, false);
         ct = ct + 1;
         
 

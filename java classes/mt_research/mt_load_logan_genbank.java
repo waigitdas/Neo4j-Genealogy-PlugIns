@@ -33,7 +33,7 @@ public class mt_load_logan_genbank {
     
     
     public static void main(String args[]) {
-        load_genbank("logan_mt_hg_snps1.csv");
+        load_genbank("logan_mt_hg_variants1.csv");
     }
     
      public static String load_genbank(String fn) 
@@ -42,23 +42,23 @@ public class mt_load_logan_genbank {
         gen.neo4jlib.neo4j_info.neo4j_var_reload();
         
         
-        String fny =neo4j_info.Import_Dir + "genbank_hg_snp.csv";
+        String fny =neo4j_info.Import_Dir + "genbank_hg_variant.csv";
         File fy = new File(fny);
         FileWriter fwy=null;
        try{
 
         fwy = new FileWriter(fy);
-        fwy.write("hg|snp\n");
+        fwy.write("hg|variant\n");
        }
        catch(Exception e){}
 
        
         //mt_block, add if new hg and set genbank=1 property for all
-        //gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///logan_mt_hg_snps1.csv' as line FIELDTERMINATOR '|' merge (b:mt_block{name:line.hg}) set b.genbank=1");
+        //gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///logan_mt_hg_variants1.csv' as line FIELDTERMINATOR '|' merge (b:mt_block{name:line.hg}) set b.genbank=1");
         
         
-        //get distinct snp patterns  n= 5029
-        String c[] = gen.neo4jlib.neo4j_qry.qry_to_csv("LOAD CSV WITH HEADERS FROM 'file:///logan_mt_hg_snps1.csv' as line FIELDTERMINATOR '|' return count(*) as ct, line.hg, size(line.snps) as snps_ct, line.snps").split("\n");
+        //get distinct variant patterns  n= 5029
+        String c[] = gen.neo4jlib.neo4j_qry.qry_to_csv("LOAD CSV WITH HEADERS FROM 'file:///logan_mt_hg_variants1.csv' as line FIELDTERMINATOR '|' return count(*) as ct, line.hg, size(line.variants) as variants_ct, line.variants").split("\n");
         
         for (int i=0; i<c.length; i++)
         {
@@ -79,10 +79,10 @@ public class mt_load_logan_genbank {
         }
         catch(Exception e){}
         
-        //add any new snps and to all add property genbank=1
-        gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///genbank_hg_snp.csv' as line FIELDTERMINATOR '|' with line.snp as snp,count(*) as ct with snp,ct where 'T'>=left(snp,1)>='A' and not snp in ['Taylor','Thr..'] merge (v:mt_variant{name:snp}) set v.genbank=1");
+        //add any new variants and to all add property genbank=1
+        gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///genbank_hg_variant.csv' as line FIELDTERMINATOR '|' with line.variant as variant,count(*) as ct with variant,ct where 'T'>=left(variant,1)>='A' and not variant in ['Taylor','Thr..'] merge (v:mt_variant{name:variant}) set v.genbank=1");
         
-        gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///genbank_hg_snp.csv' as line FIELDTERMINATOR '|' match (b:mt_block{name:line.hg}) match(v:mt_variant{name:line.snp}) merge(b)-[r:mt_block_snp]->(v) set r.genbank=1");
+        gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///genbank_hg_variant.csv' as line FIELDTERMINATOR '|' match (b:mt_block{name:line.hg}) match(v:mt_variant{name:line.variant}) merge(b)-[r:mt_block_variant]->(v) set r.genbank=1");
         
         
         return "";

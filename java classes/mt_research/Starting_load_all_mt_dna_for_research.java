@@ -40,20 +40,21 @@ public class Starting_load_all_mt_dna_for_research {
         
  
         gen.mt_research.tessellator tsl = new gen.mt_research.tessellator();
-        tsl.tessellate_kits("E:/DAS_Coded_BU_2017/Genealogy/DNA/mt_haplotree_project/mt_DNA_sequences/entrez/");
+        tsl.tessellate_kits("all","E:/DAS_Coded_BU_2017/Genealogy/DNA/mt_haplotree_project/mt_DNA_sequences/",false);
  
-        //add rCRC reference sequence   
-        gen.mt_research.mt_add_reference_seq rcrsr = new gen.mt_research.mt_add_reference_seq();
-        rcrsr.mt_sequenc_map("rCRS", "E:/DAS_Coded_BU_2017/Genealogy/DNA/mt_haplotree_project/mt_DNA_sequences/human_mt_DNA_reference_sequence/","NC_012920.1");
-        
-        //add RSRS reference sequence
-        rcrsr.mt_sequenc_map("RSRS", "E:/DAS_Coded_BU_2017/Genealogy/DNA/mt_haplotree_project/mt_DNA_sequences/human_mt_DNA_reference_sequence/", "RSRS_reference_sequence.fasta");
-        
+//        //add rCRC reference sequence   
+//        gen.mt_research.mt_add_reference_seq rcrsr = new gen.mt_research.mt_add_reference_seq();
+//        rcrsr.mt_sequenc_map("rCRS", "E:/DAS_Coded_BU_2017/Genealogy/DNA/mt_haplotree_project/mt_DNA_sequences/human_mt_DNA_reference_sequence/","NC_012920.1");
+//        
+//        //add RSRS reference sequence
+//        rcrsr.mt_sequenc_map("RSRS", "E:/DAS_Coded_BU_2017/Genealogy/DNA/mt_haplotree_project/mt_DNA_sequences/human_mt_DNA_reference_sequence/", "RSRS_reference_sequence.fasta");
+//        
         
  
 //        gen.mt_research.load_genbank_files lgf = new gen.mt_research.load_genbank_files();
 //        lgf.load_genbank_file_kits_and_pos();
  
+//        gen.mt_research.logan_database_get_kit_hg_mutations.main(args);
         
         return "";
         

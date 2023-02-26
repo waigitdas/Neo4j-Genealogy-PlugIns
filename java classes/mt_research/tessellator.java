@@ -30,32 +30,48 @@ public class tessellator {
     @Description("Template used in creating new functions.")
 
     public String tessellate_kits(
-        @Name("kit_dir") 
-            String kit_dir
+        @Name("source") 
+            String source,
+         @Name("kit_dir") 
+            String kit_dir,
+         @Name("adding")
+            Boolean adding
       )
    
          { 
              
-        create_tiles(kit_dir);
+        create_tiles(source,kit_dir,adding);
          return "";
             }
 
     
     
     public static void main(String args[]) {
-        create_tiles("E:/DAS_Coded_BU_2017/Genealogy/DNA/mt_haplotree_project/mt_DNA_sequences/entrez/");
+        //specified directory holdin the fasta files
+        create_tiles("all","E:/DAS_Coded_BU_2017/Genealogy/DNA/mt_haplotree_project/mt_DNA_sequences/",true);
+                
+//        create_tiles("genBank","E:/DAS_Coded_BU_2017/Genealogy/DNA/mt_haplotree_project/mt_DNA_sequences/entrez/",false);
+//        create_tiles("coker","E:/DAS_Coded_BU_2017/Genealogy/DNA/mt_haplotree_project/mt_DNA_sequences/Other_fasta/Steve_Coker/", true);
+//        create_tiles("stumpf","E:/DAS_Coded_BU_2017/Genealogy/DNA/mt_haplotree_project/mt_DNA_sequences/Other_fasta/my_projects/", true);
     }
     
-     public static String create_tiles(String dir) 
+     public static String create_tiles(String src, String dir, Boolean adding) 
     {
         gen.neo4jlib.neo4j_info.neo4j_var();
         gen.neo4jlib.neo4j_info.neo4j_var_reload();
 
-        gen.neo4jlib.neo4j_qry.qry_write("match(k:seq_kit)-[r]-() delete r");
-        gen.neo4jlib.neo4j_qry.qry_write("match(t:tile) delete t");
-//        gen.neo4jlib.neo4j_qry.qry_write("match (k:seq_pos)-[r]-() delete r");
-        gen.neo4jlib.neo4j_qry.qry_write("match (k:seq_kit) delete k");
-//        gen.neo4jlib.neo4j_qry.qry_write("match (k:seq_pos) delete k");
+        //*****************************************
+        //*****************************************
+        //in development section for adding kits
+            //        if (adding.compareTo(false)==0){
+            //            gen.neo4jlib.neo4j_qry.qry_write("match(k:seq_kit)-[r]-() delete r");
+            //            gen.neo4jlib.neo4j_qry.qry_write("match(t:tile) delete t");
+            //    //        gen.neo4jlib.neo4j_qry.qry_write("match (k:seq_pos)-[r]-() delete r");
+            //            gen.neo4jlib.neo4j_qry.qry_write("match (k:seq_kit) delete k");
+            //    //        gen.neo4jlib.neo4j_qry.qry_write("match (k:seq_pos) delete k");
+            //        }
+        //*****************************************
+        //*****************************************
         
         
         //set up variables to hold data from processing kits and their tiles
@@ -80,7 +96,7 @@ public class tessellator {
         
         //create Neo4j indices before data populates the database
         try{
-            gen.neo4jlib.neo4j_qry.CreateIndex("tile", "n");
+            gen.neo4jlib.neo4j_qry.CreateIndex("tile", "partition_id");
             gen.neo4jlib.neo4j_qry.CreateIndex("tile", "seq");
             gen.neo4jlib.neo4j_qry.CreateIndex("tile", "tile_id");
             gen.neo4jlib.neo4j_qry.CreateCompositeIndex("tile","tile_id, n" );
@@ -107,6 +123,11 @@ public class tessellator {
        kit = new String[fasta.size()];
        int ckit[][] = new int[fasta.size()][tile_partitions];
        
+       
+//       if (adding.compareTo(true)==0)
+//       {
+//       }
+       
        //iterate through each kit
        for (i=0; i<fasta.size(); i++)  
        {
@@ -121,7 +142,7 @@ public class tessellator {
            String s[] = gen.neo4jlib.file_lib.readFileByLine(fasta.get(i).getPath()).split("\n");
            String seq = "";
            String tile[] = new String[tile_partitions];
-           kit[i] = s[0].split(" ")[0].replace(">","").split(Pattern.quote("."))[0];
+           kit[i] = s[0].replace(",", " ").split(" ")[0].replace(">","").split(Pattern.quote("."))[0];
            int n =0;
            
            // concatenate the rows into a sinle string with the full sequence
@@ -129,6 +150,15 @@ public class tessellator {
            {
                seq = seq + s[j];
                }
+           
+           if(adding.compareTo(true)==0)
+           {
+               gen.mt_research.seq_to_tiles_and_pattern sp = new gen.mt_research.seq_to_tiles_and_pattern();
+               sp.get_tiles_and_pattern(seq);
+               
+                       
+               return "";
+           }
            
            //partition the sequence using the substring function into the tiles
            //the partition will have a variable length because of difference in insertions and deletions
@@ -140,12 +170,12 @@ public class tessellator {
                {
                   if (seq.length() < (j+1)*tile_len) {  //shorter last partition
                    tile[j] = seq.substring(j * tile_len, seq.length());
-                    n = process_tile(kit[i], j, tile[j]);   
+                    n = process_tile(kit[i], j, tile[j], adding);   
                   }
                   else
                   {  //full length partition
                    tile[j] = seq.substring(j * tile_len, (j+1) * tile_len);
-                   n = process_tile(kit[i], j, tile[j]);   
+                   n = process_tile(kit[i], j, tile[j], adding);   
                   }
                 ckit[i][j] = n;   
                    
@@ -155,22 +185,11 @@ public class tessellator {
                }           
            }
            
-//           try
-//           {
-//               fw.flush();
-//           }
-//           catch(Exception e){}
            
        }
 
-//       try
-//       {
-//           fw.flush();
-//           fw.close();
-//       }
-//       catch(Exception e){}
        //finished partitioning kits; the results are in the arrays which are next processed for imort into Neo4j
-       
+     
        
        //////////////////////////////////////////////////////////////
        //print csv files for uploading to Neo4
@@ -279,14 +298,24 @@ public class tessellator {
 //////////////////////////////////////////////////////////////////////////
 // import to Neo4j using LOAD CSV
 //create tiles; each is unique so the faster create can be used rather than merge.
-gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///tiles.csv' as line FIELDTERMINATOR '|' create (t:tile{tile_id:toInteger(line.tile_id), n:toInteger(line.partition),seq:toString(line.tile)})");
+gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///tiles.csv' as line FIELDTERMINATOR '|' create (t:tile{tile_id:toInteger(line.tile_id), partition_id:toInteger(line.partition),seq:toString(line.tile)})");
 
 //merge kits; merge to avoid duplicate kits or tiles
 gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///kits.csv' as line FIELDTERMINATOR '|' merge(k:seq_kit{name:toString(line.kit)})");
 
 //create kit_tile relationships
 //this take ~5 min; this is the heavy lift which, even with indices, takes a while.
-gen.neo4jlib.neo4j_qry.APOCPeriodicIterateCSV("LOAD CSV WITH HEADERS FROM 'file:///kit_tiles.csv' as line FIELDTERMINATOR ','  return line ", "match(k:seq_kit{name:toString(line.kit)}) match(t:tile{n:toInteger(line.partition), tile_id:toInteger(line.tile_id)}) merge (k)-[r:kit_tile]->(t)",20000);
+gen.neo4jlib.neo4j_qry.APOCPeriodicIterateCSV("LOAD CSV WITH HEADERS FROM 'file:///kit_tiles.csv' as line FIELDTERMINATOR ','  return line ", "match(k:seq_kit{name:toString(line.kit)}) match(t:tile{partition_id:toInteger(line.partition), tile_id:toInteger(line.tile_id)}) merge (k)-[r:kit_tile]->(t)",20000);
+
+
+//flag sequences with anomalies
+//hyphen(s)
+gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(k:seq_kit)-[r:kit_tile]->(t:tile) with k,r,t order by t.partition_id with k,t with k, reduce(s='', x in collect(t)|s + x.seq) as seq with k,seq, size(trim(seq))-size(replace(trim(seq),'-',''))-1 as Ns with k,seq,Ns where Ns>0 set k.hyphens=Ns");
+
+//Ns
+gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(k:seq_kit)-[r:kit_tile]->(t:tile) with k,r,t order by t.partition_id with k,t with k, reduce(s='', x in collect(t)|s + x.seq) as seq with k,seq, size(trim(seq))-size(replace(trim(seq),'N',''))-1 as Ns with k,seq,Ns where Ns>0 set k.Ns=Ns");
+
+
 
        return "";
     }
@@ -298,7 +327,7 @@ gen.neo4jlib.neo4j_qry.APOCPeriodicIterateCSV("LOAD CSV WITH HEADERS FROM 'file:
      //uses an array of each tile (presently 1 to 170) with the patterns observed at each, 
      //   distinguished by their tial_id, the number of the sequence instance and the tile sequence itself
      //the tile_id for each kit partition is written to a file; more efficient than holding in memory
-     public static int process_tile(String kit, int n, String tile)
+     public static int process_tile(String kit, int n, String tile, Boolean adding)
      {
          Boolean fnd = false;
          int fnd_item=0;
@@ -317,7 +346,6 @@ gen.neo4jlib.neo4j_qry.APOCPeriodicIterateCSV("LOAD CSV WITH HEADERS FROM 'file:
             }
          catch(Exception e) 
          {
-//             System.out.println(kit + "\terror #107  " + e.getMessage());
              break;
          }
              
@@ -325,7 +353,6 @@ gen.neo4jlib.neo4j_qry.APOCPeriodicIterateCSV("LOAD CSV WITH HEADERS FROM 'file:
          }
          
          String fndTile="";
-//         int fndCt = 0;
          
          if (fnd.compareTo(false)==0)
          {
@@ -341,19 +368,8 @@ gen.neo4jlib.neo4j_qry.APOCPeriodicIterateCSV("LOAD CSV WITH HEADERS FROM 'file:
 //             fndCt = fnd_item;
             tile_seq[n][fnd_item]=fndTile; 
          }
-//         try
-//         {  
-//        //write kit partition data to file
-//        //kit name; the partition number and the tile_id of the fund or created tile sequence
-//             //saves to tiles.csv file
-//        fw.write(kit + "|" + n + "|" + tile_seq[n][tile_seq_ct[n]] + "|" + fndTile + "\n");
-//        fw.flush();
-//        }
-//        catch(Exception e)
-//        {
-//        System.out.println(kit + "\terror #109 " + e.getMessage());
-//        }
-          if (fnd.compareTo(false)==0)
+
+         if (fnd.compareTo(false)==0)
          {
             //break at i when fnd=false is where in the array you add the seq
             tile_seq_ct[n] = tile_seq_ct[n] + 1;
@@ -362,7 +378,5 @@ gen.neo4jlib.neo4j_qry.APOCPeriodicIterateCSV("LOAD CSV WITH HEADERS FROM 'file:
            
          return fnd_item;
 }
-
-
 }
 

@@ -32,7 +32,7 @@ public class mt_seq_to_haplogroup {
      @UserFunction
     @Description("Template used in creating new functions.")
     
-    public String find_mt_seq_snps(
+    public String find_mt_seq_variants(
         @Name("kit") 
             String kit,
         @Name("ref_type")
@@ -43,46 +43,46 @@ public class mt_seq_to_haplogroup {
    
          { 
              
-        find_snps(kit,ref_type,vendor);
+        find_variants(kit,ref_type,vendor);
          return "";
             }
 
     
     
     public static void main(String args[]) {
-//        find_snps("425497","RSRS","ftdna");                               
-//        find_snps("425497","RSRS","yfull");                               
-//        find_snps("425497","RSRS","phylotree");                               
-//        find_snps("B51965","RSRS","ftdna");
-//        find_snps("B51965","RSRS","yfull");
-//        find_snps("B51965","RSRS","phylotree");
-        find_snps("EU684000","RSRS","ftdna");
-//        find_snps("330527","RSRS","yfull");
-//        find_snps("330527","RSRS","phylotree");
-//        find_snps("446574","RSRS","ftdna");
-//        find_snps("446574","RSRS","yfull");
-//        find_snps("446574","RSRS","phylotree");
-//        find_snps("425497","rCRS","ftdna");                               
-//        find_snps("425497","rCRS","yfull");                               
-//        find_snps("425497","rCRS","phylotree");                               
-//        find_snps("B51965","rCRS","ftdna");
-//        find_snps("B51965","rCRS","phylotree");
-//        find_snps("B51965","rCRS","yfull");
-//        find_snps("330527","rCRS","ftdna");
-//        find_snps("330527","rCRS","yfull");
-//        find_snps("330527","rCRS","phylotree");
-//        find_snps("446574","rCRS","ftdna");
-//        find_snps("446574","rCRS","yfull");
-//        find_snps("446574","rCRS","phylotree");
-//        find_snps("792577","RSRS","ftdna");
+//        find_variants("425497","RSRS","ftdna");                               
+//        find_variants("425497","RSRS","yfull");                               
+//        find_variants("425497","RSRS","phylotree");                               
+//        find_variants("B51965","RSRS","ftdna");
+//        find_variants("B51965","RSRS","yfull");
+//        find_variants("B51965","RSRS","phylotree");
+        find_variants("EU684000","RSRS","ftdna");
+//        find_variants("330527","RSRS","yfull");
+//        find_variants("330527","RSRS","phylotree");
+//        find_variants("446574","RSRS","ftdna");
+//        find_variants("446574","RSRS","yfull");
+//        find_variants("446574","RSRS","phylotree");
+//        find_variants("425497","rCRS","ftdna");                               
+//        find_variants("425497","rCRS","yfull");                               
+//        find_variants("425497","rCRS","phylotree");                               
+//        find_variants("B51965","rCRS","ftdna");
+//        find_variants("B51965","rCRS","phylotree");
+//        find_variants("B51965","rCRS","yfull");
+//        find_variants("330527","rCRS","ftdna");
+//        find_variants("330527","rCRS","yfull");
+//        find_variants("330527","rCRS","phylotree");
+//        find_variants("446574","rCRS","ftdna");
+//        find_variants("446574","rCRS","yfull");
+//        find_variants("446574","rCRS","phylotree");
+//        find_variants("792577","RSRS","ftdna");
          }
     ////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////
-     public static String find_snps(String kit, String ref_type, String vendor) 
+     public static String find_variants(String kit, String ref_type, String vendor) 
     {
         gen.neo4jlib.neo4j_info.neo4j_var();
         gen.neo4jlib.neo4j_info.neo4j_var_reload();
-        String snps = "[";
+        String variants = "[";
        kit_name=kit;
         phase_shift = 0 ;
         if (ref_type.compareTo("rCRS")==0)
@@ -119,7 +119,7 @@ public class mt_seq_to_haplogroup {
         // 6 = RSRS different
         // 7 rCRS and RSRS are different
         // 8 phase shift
-        // 9 added text to snp name
+        // 9 added text to variant name
         
         for (int i= 0;i<c.length;i++)
         {
@@ -146,21 +146,21 @@ public class mt_seq_to_haplogroup {
                 if (r[i-1][ext]==null)
                 {
 //                System.out.println(r[i][type_pos] +  r[i][1] + r[i + phase_shift][2]  + "\t\t" + phase_shift);
-                snps = snps + "'" + r[i][type_pos] +  r[i][1] + r[i + phase_shift][2]  + "',";
+                variants = variants + "'" + r[i][type_pos] +  r[i][1] + r[i + phase_shift][2]  + "',";
                 }
                 else //insertion or deletion
                 {
 //                System.out.println(r[i-1][1] + r[i-1][ext] + "\t\t" + phase_shift);
-                snps = snps + "'" + r[i  - 1][1] + r[i  - 1][ext] +  "',";
+                variants = variants + "'" + r[i  - 1][1] + r[i  - 1][ext] +  "',";
                 }
             }
             }
             catch(Exception e){}
         }  //next i
         
-        snps = snps.strip().substring(0,snps.length()-1) + "]";
+        variants = variants.strip().substring(0,variants.length()-1) + "]";
         
-//        System.out.println(snps);
+//        System.out.println(variants);
         
         File fsum = new File(gen.neo4jlib.neo4j_info.Import_Dir + "seq_sum.csv");
         try{
@@ -194,17 +194,17 @@ public class mt_seq_to_haplogroup {
         }
         
         if (vendor.compareTo("ftdna")==0){
-        cq = "with " + snps + " as proband_snps MATCH path=(b1:mt_block{name:'RSRS'})-[r:mt_block_child*0..999]->(b2:mt_block{ftdna:1}) with proband_snps,b2, [x in nodes(path)|case when size(apoc.coll.intersection(x.snps, proband_snps))>0 then '*' else '' end + x.name] as blocks,[y in nodes(path)|id(y)] as op, apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten([z in nodes(path) where z.snps is not null|z.snps]))) as snps, [w in nodes(path)|case when size(apoc.coll.intersection(w.snps, proband_snps))>0 then '1' else '0' end] as lvl_ct with proband_snps,b2,blocks,snps,size(op) as lvl, lvl_ct,gen.graph.get_ordpath(op) as op with b2.name as block,lvl-1 as lvl, size(b2.snps) as ct, lvl_ct, b2.snps as block_snps, blocks,size(snps) as ct2, snps as cum_snps, op, apoc.coll.intersection(snps, proband_snps) as intersect,apoc.coll.subtract(proband_snps,snps ) as unused,apoc.coll.subtract(snps, proband_snps) as missing with block,lvl,apoc.coll.occurrences(lvl_ct,'1') as lvl_ok, blocks as path,ct2 as ref_snp_ct, size(intersect) as matching_snp_ct,size(missing) as missing_ct,size(unused) as unused_snp_ct, intersect,missing, unused, ct as block_snp_ct,block_snps,cum_snps with block, lvl, lvl_ok, path, ref_snp_ct, matching_snp_ct, missing_ct, unused_snp_ct, intersect, missing, unused, block_snp_ct, block_snps, cum_snps where lvl=lvl_ok return block, lvl, lvl_ok, path, ref_snp_ct, matching_snp_ct, missing_ct, unused_snp_ct, intersect, missing, unused, block_snp_ct, block_snps, cum_snps order by size(intersect) desc,lvl desc limit 1";
+        cq = "with " + variants + " as proband_variants MATCH path=(b1:mt_block{name:'RSRS'})-[r:mt_block_child*0..999]->(b2:mt_block{ftdna:1}) with proband_variants,b2, [x in nodes(path)|case when size(apoc.coll.intersection(x.variants, proband_variants))>0 then '*' else '' end + x.name] as blocks,[y in nodes(path)|id(y)] as op, apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten([z in nodes(path) where z.variants is not null|z.variants]))) as variants, [w in nodes(path)|case when size(apoc.coll.intersection(w.variants, proband_variants))>0 then '1' else '0' end] as lvl_ct with proband_variants,b2,blocks,variants,size(op) as lvl, lvl_ct,gen.graph.get_ordpath(op) as op with b2.name as block,lvl-1 as lvl, size(b2.variants) as ct, lvl_ct, b2.variants as block_variants, blocks,size(variants) as ct2, variants as cum_variants, op, apoc.coll.intersection(variants, proband_variants) as intersect,apoc.coll.subtract(proband_variants,variants ) as unused,apoc.coll.subtract(variants, proband_variants) as missing with block,lvl,apoc.coll.occurrences(lvl_ct,'1') as lvl_ok, blocks as path,ct2 as ref_variant_ct, size(intersect) as matching_variant_ct,size(missing) as missing_ct,size(unused) as unused_variant_ct, intersect,missing, unused, ct as block_variant_ct,block_variants,cum_variants with block, lvl, lvl_ok, path, ref_variant_ct, matching_variant_ct, missing_ct, unused_variant_ct, intersect, missing, unused, block_variant_ct, block_variants, cum_variants where lvl=lvl_ok return block, lvl, lvl_ok, path, ref_variant_ct, matching_variant_ct, missing_ct, unused_variant_ct, intersect, missing, unused, block_variant_ct, block_variants, cum_variants order by size(intersect) desc,lvl desc limit 1";
        System.out.println(cq);
         }
   
         if (vendor.compareTo("phylotree")==0){
-        cq = "with " + snps + " as proband_snps MATCH path=(b1:mt_block{name:'RSRS'})-[r:mt_block_child*0..999]->(b2:mt_block{phylotree:1}) with proband_snps,b2, [x in nodes(path)|case when size(apoc.coll.intersection(x.snps, proband_snps))>0 then '*' else '' end + x.name] as blocks,[y in nodes(path)|id(y)] as op, apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten([z in nodes(path) where z.snps is not null|z.snps]))) as snps, [w in nodes(path)|case when size(apoc.coll.intersection(w.snps, proband_snps))>0 then '1' else '0' end] as lvl_ct with proband_snps,b2,blocks,snps,size(op) as lvl, lvl_ct,gen.graph.get_ordpath(op) as op with b2.name as block,lvl-1 as lvl, size(b2.snps) as ct, lvl_ct, b2.snps as block_snps, blocks,size(snps) as ct2, snps as cum_snps, op, apoc.coll.intersection(snps, proband_snps) as intersect,apoc.coll.subtract(proband_snps,snps ) as unused,apoc.coll.subtract(snps, proband_snps) as missing with block,lvl,apoc.coll.occurrences(lvl_ct,'1') as lvl_ok, blocks as path,ct2 as ref_snp_ct, size(intersect) as matching_snp_ct,size(missing) as missing_ct,size(unused) as unused_snp_ct, intersect,missing, unused, ct as block_snp_ct,block_snps,cum_snps with block, lvl, lvl_ok, path, ref_snp_ct, matching_snp_ct, missing_ct, unused_snp_ct, intersect, missing, unused, block_snp_ct, block_snps, cum_snps where lvl=lvl_ok return block, lvl, lvl_ok, path, ref_snp_ct, matching_snp_ct, missing_ct, unused_snp_ct, intersect, missing, unused, block_snp_ct, block_snps, cum_snps order by size(intersect) desc,lvl desc limit 1";
+        cq = "with " + variants + " as proband_variants MATCH path=(b1:mt_block{name:'RSRS'})-[r:mt_block_child*0..999]->(b2:mt_block{phylotree:1}) with proband_variants,b2, [x in nodes(path)|case when size(apoc.coll.intersection(x.variants, proband_variants))>0 then '*' else '' end + x.name] as blocks,[y in nodes(path)|id(y)] as op, apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten([z in nodes(path) where z.variants is not null|z.variants]))) as variants, [w in nodes(path)|case when size(apoc.coll.intersection(w.variants, proband_variants))>0 then '1' else '0' end] as lvl_ct with proband_variants,b2,blocks,variants,size(op) as lvl, lvl_ct,gen.graph.get_ordpath(op) as op with b2.name as block,lvl-1 as lvl, size(b2.variants) as ct, lvl_ct, b2.variants as block_variants, blocks,size(variants) as ct2, variants as cum_variants, op, apoc.coll.intersection(variants, proband_variants) as intersect,apoc.coll.subtract(proband_variants,variants ) as unused,apoc.coll.subtract(variants, proband_variants) as missing with block,lvl,apoc.coll.occurrences(lvl_ct,'1') as lvl_ok, blocks as path,ct2 as ref_variant_ct, size(intersect) as matching_variant_ct,size(missing) as missing_ct,size(unused) as unused_variant_ct, intersect,missing, unused, ct as block_variant_ct,block_variants,cum_variants with block, lvl, lvl_ok, path, ref_variant_ct, matching_variant_ct, missing_ct, unused_variant_ct, intersect, missing, unused, block_variant_ct, block_variants, cum_variants where lvl=lvl_ok return block, lvl, lvl_ok, path, ref_variant_ct, matching_variant_ct, missing_ct, unused_variant_ct, intersect, missing, unused, block_variant_ct, block_variants, cum_variants order by size(intersect) desc,lvl desc limit 1";
         }
   
         if (vendor.compareTo("yfull")==0){
-                    cq = "with " + snps + " as proband_snps MATCH path=(b1:mt_block{name:'L'})-[r:mt_block_child*0..999]->(b2:mt_block{yfull:1}) with proband_snps,b2, [x in nodes(path)|case when size(apoc.coll.intersection(x.yfull_snps, proband_snps))>0 then '*' else '' end + x.name] as blocks,[y in nodes(path)|id(y)] as op, apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten([z in nodes(path) where z.yfull_snps is not null|z.yfull_snps]))) as snps, [w in nodes(path)|case when size(apoc.coll.intersection(w.yfull_snps, proband_snps))>0 then '1' else '0' end] as lvl_ct with proband_snps,b2,blocks,snps,size(op) as lvl, lvl_ct,gen.graph.get_ordpath(op) as op with b2.name as block,lvl-1 as lvl, size(b2.yfull_snps) as ct, lvl_ct, b2.yfull_snps as block_snps, blocks,size(snps) as ct2, snps as cum_snps, op, apoc.coll.intersection(snps, proband_snps) as intersect,apoc.coll.subtract(proband_snps,snps ) as unused,apoc.coll.subtract(snps, proband_snps) as missing with block,lvl,apoc.coll.occurrences(lvl_ct,'1') as lvl_ok, blocks as path,ct2 as ref_snp_ct, size(intersect) as matching_snp_ct,size(missing) as missing_ct,size(unused) as unused_snp_ct, intersect,missing, unused, ct as block_snp_ct,block_snps,cum_snps with block, lvl, lvl_ok, path, ref_snp_ct, matching_snp_ct, missing_ct, unused_snp_ct, intersect, missing, unused, block_snp_ct, block_snps, cum_snps where lvl=lvl_ok return block, lvl, lvl_ok, path, ref_snp_ct, matching_snp_ct, missing_ct, unused_snp_ct, intersect, missing, unused, block_snp_ct, block_snps, cum_snps order by size(intersect) desc,lvl desc limit 1";
-            //cq="with " + snps + " as proband_snps MATCH path=(b1:mt_yfull_block{name:'L'})-[r:mt_yfull_block_child*0..999]->(b2:mt_yfull_block) with proband_snps,b2, [x in nodes(path)|case when size(apoc.coll.intersection(x.snps, proband_snps))>0 then '*' else '' end + x.name] as blocks,[y in nodes(path)|id(y)] as op, apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten([z in nodes(path) where z.snps is not null|z.snps]))) as snps, [w in nodes(path)|case when size(apoc.coll.intersection(w.snps, proband_snps))>0 then '1' else '0' end] as lvl_ct with proband_snps,b2,blocks,snps,size(op) as lvl, lvl_ct,gen.graph.get_ordpath(op) as op with b2.name as block,lvl-1 as lvl, size(b2.snps) as ct, lvl_ct, b2.snps as block_snps, blocks,size(snps) as ct2, snps as cum_snps, op, apoc.coll.intersection(snps, proband_snps) as intersect,apoc.coll.subtract(proband_snps,snps ) as unused,apoc.coll.subtract(snps, proband_snps) as missing with block,lvl,apoc.coll.occurrences(lvl_ct,'1') as lvl_ok, blocks as path,ct2 as ref_snp_ct, size(intersect) as matching_snp_ct,size(missing) as missing_ct,size(unused) as unused_snp_ct, intersect,missing, unused, ct as block_snp_ct,block_snps,cum_snps with block, lvl, lvl_ok, path, ref_snp_ct, matching_snp_ct, missing_ct, unused_snp_ct, intersect, missing, unused, block_snp_ct, block_snps, cum_snps where lvl=lvl_ok return block, lvl, lvl_ok, path, ref_snp_ct, matching_snp_ct, missing_ct, unused_snp_ct, intersect, missing, unused, block_snp_ct, block_snps, cum_snps order by size(intersect) desc,lvl desc limit 1";
+                    cq = "with " + variants + " as proband_variants MATCH path=(b1:mt_block{name:'L'})-[r:mt_block_child*0..999]->(b2:mt_block{yfull:1}) with proband_variants,b2, [x in nodes(path)|case when size(apoc.coll.intersection(x.yfull_variants, proband_variants))>0 then '*' else '' end + x.name] as blocks,[y in nodes(path)|id(y)] as op, apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten([z in nodes(path) where z.yfull_variants is not null|z.yfull_variants]))) as variants, [w in nodes(path)|case when size(apoc.coll.intersection(w.yfull_variants, proband_variants))>0 then '1' else '0' end] as lvl_ct with proband_variants,b2,blocks,variants,size(op) as lvl, lvl_ct,gen.graph.get_ordpath(op) as op with b2.name as block,lvl-1 as lvl, size(b2.yfull_variants) as ct, lvl_ct, b2.yfull_variants as block_variants, blocks,size(variants) as ct2, variants as cum_variants, op, apoc.coll.intersection(variants, proband_variants) as intersect,apoc.coll.subtract(proband_variants,variants ) as unused,apoc.coll.subtract(variants, proband_variants) as missing with block,lvl,apoc.coll.occurrences(lvl_ct,'1') as lvl_ok, blocks as path,ct2 as ref_variant_ct, size(intersect) as matching_variant_ct,size(missing) as missing_ct,size(unused) as unused_variant_ct, intersect,missing, unused, ct as block_variant_ct,block_variants,cum_variants with block, lvl, lvl_ok, path, ref_variant_ct, matching_variant_ct, missing_ct, unused_variant_ct, intersect, missing, unused, block_variant_ct, block_variants, cum_variants where lvl=lvl_ok return block, lvl, lvl_ok, path, ref_variant_ct, matching_variant_ct, missing_ct, unused_variant_ct, intersect, missing, unused, block_variant_ct, block_variants, cum_variants order by size(intersect) desc,lvl desc limit 1";
+            //cq="with " + variants + " as proband_variants MATCH path=(b1:mt_yfull_block{name:'L'})-[r:mt_yfull_block_child*0..999]->(b2:mt_yfull_block) with proband_variants,b2, [x in nodes(path)|case when size(apoc.coll.intersection(x.variants, proband_variants))>0 then '*' else '' end + x.name] as blocks,[y in nodes(path)|id(y)] as op, apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten([z in nodes(path) where z.variants is not null|z.variants]))) as variants, [w in nodes(path)|case when size(apoc.coll.intersection(w.variants, proband_variants))>0 then '1' else '0' end] as lvl_ct with proband_variants,b2,blocks,variants,size(op) as lvl, lvl_ct,gen.graph.get_ordpath(op) as op with b2.name as block,lvl-1 as lvl, size(b2.variants) as ct, lvl_ct, b2.variants as block_variants, blocks,size(variants) as ct2, variants as cum_variants, op, apoc.coll.intersection(variants, proband_variants) as intersect,apoc.coll.subtract(proband_variants,variants ) as unused,apoc.coll.subtract(variants, proband_variants) as missing with block,lvl,apoc.coll.occurrences(lvl_ct,'1') as lvl_ok, blocks as path,ct2 as ref_variant_ct, size(intersect) as matching_variant_ct,size(missing) as missing_ct,size(unused) as unused_variant_ct, intersect,missing, unused, ct as block_variant_ct,block_variants,cum_variants with block, lvl, lvl_ok, path, ref_variant_ct, matching_variant_ct, missing_ct, unused_variant_ct, intersect, missing, unused, block_variant_ct, block_variants, cum_variants where lvl=lvl_ok return block, lvl, lvl_ok, path, ref_variant_ct, matching_variant_ct, missing_ct, unused_variant_ct, intersect, missing, unused, block_variant_ct, block_variants, cum_variants order by size(intersect) desc,lvl desc limit 1";
         }
 //        String fn2 = "haplogroup_report";
 //        File fnhg = new File(gen.neo4jlib.neo4j_info.Database_Dir + fns);

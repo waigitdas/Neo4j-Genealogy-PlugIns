@@ -29,7 +29,7 @@ public class DNA_coverage_2 {
     public String dna_coverage_of_ancestor_summary(
         @Name("anc_rn") 
             Long anc_rn,
-        @Name("methos") 
+        @Name("method") 
             Long method
   )
    

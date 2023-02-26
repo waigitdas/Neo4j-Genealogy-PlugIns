@@ -26,14 +26,14 @@ import org.neo4j.procedure.UserFunction;
  */
 public class upload_mt_haplotree {
        @UserFunction
-       @Description("Loads the entire mt-haplotree directly from the current FTDNA mt-DNA json refernce file into Neo4j. This json is updated frequently as new snps and haplotree branches are discovered. Source: https://www.familytreedna.com/public/mt-dna-haplotree/get")
+       @Description("Loads the entire mt-haplotree directly from the current FTDNA mt-DNA json refernce file into Neo4j. This json is updated frequently as new variants and haplotree branches are discovered. Source: https://www.familytreedna.com/public/mt-dna-haplotree/get")
 
      public String upload_FTDNA_mt_haplotree() {
         gen.neo4jlib.neo4j_info.neo4j_var_reload();
         
         //delete prior haplotree data
         gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:mt_block_child]-() delete r");
-        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:mt_block_snp]-() delete r");
+        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:mt_block_variant]-() delete r");
         gen.neo4jlib.neo4j_qry.qry_write("match (b:mt_block)-[r]-() delete r");
         gen.neo4jlib.neo4j_qry.qry_write("match (b:mt_block) delete b");
         gen.neo4jlib.neo4j_qry.qry_write("match (v:mt_variant) delete v");
@@ -153,7 +153,7 @@ public class upload_mt_haplotree {
        neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 200000);
        
        
-      cq = "match (b:mt_block{haplogroupId:toInteger(line.haplogroupId)}) match (v:mt_variant{name:toString(line.variant_name)}) merge (b)-[r:mt_block_snp]->(v)";
+      cq = "match (b:mt_block{haplogroupId:toInteger(line.haplogroupId)}) match (v:mt_variant{name:toString(line.variant_name)}) merge (b)-[r:mt_block_variant]->(v)";
       neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 200000);
 
        gen.neo4jlib.neo4j_qry.qry_write("MATCH (b1:mt_block) with b1 match (b2:mt_block) where b2.haplogroupId=b1.parentId merge (b2)-[r:mt_block_child]-(b1)");

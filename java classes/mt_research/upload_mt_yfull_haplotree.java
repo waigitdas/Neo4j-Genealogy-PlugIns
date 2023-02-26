@@ -178,7 +178,7 @@ public class upload_mt_yfull_haplotree {
         gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///YFull_mt_hg_snps.csv' as line FIELDTERMINATOR '|' with line.snp as snp with snp where snp is not null merge(v:mt_variant{name:snp})");
         
         //tag variate from YFill
-        gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///YFull_mt_hg_snps.csv' as line FIELDTERMINATOR '|' match(v:mt_variant{name:line.snp}) set v.yfull=1");
+        gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///YFull_mt_hg_snps.csv' as line FIELDTERMINATOR '|' match(v:mt_variant{name:toString(line.snp)}) set v.yfull=1");
                 
         //mt_block_snp
         gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///YFull_mt_hg_snps.csv' as line FIELDTERMINATOR '|' match (m:mt_block{name:line.hg,yfull:1}) match(v:mt_variant{name:line.snp,yfull:1}) merge (m)-[r:mt_block_snp]->(v)");
@@ -187,7 +187,9 @@ public class upload_mt_yfull_haplotree {
         gen.neo4jlib.neo4j_qry.qry_write("MATCH (v:mt_variant{yfull:1}) with v,apoc.text.replace(v.name, '[^0-9]','') as pos set v.pos = toInteger(pos)");
                 
         //add snp & pos to blocks
-        gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(b:mt_block{yfull:1})-[r:mt_block_snp]->(v:mt_variant{yfull:1}) with b, v.name as snp,v.pos as pos with b,snp,pos order by pos with b,collect(distinct snp) as snps,collect(distinct toInteger(pos)) as pos set b.yfull_snp_ct=size(snps),b.yfull_snps=snps,b.yfull_pos=pos");
+        gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(b:mt_block{yfull:1})-[r:mt_block_variant]->(v:mt_variant{yfull:1}) with b, v.name as snp,v.pos as pos with b,snp,pos order by pos with b,collect(distinct snp) as snps,collect(distinct toInteger(pos)) as pos set b.yfull_snp_ct=size(snps),b.yfull_snps=snps,b.yfull_pos=pos");
+        
+        gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(b:mt_block{yfull:1})-[r:mt_block_variant]->(v:mt_variant{yfull:1}) set r.yfull=1"); 
         
         //all cumulative _snps to blocks
         gen.neo4jlib.neo4j_qry.qry_write("MATCH path=(b1:mt_block{name:'L'})-[r:mt_block_child*0..999]->(b2:mt_block{yfull:1}) with b2, [x in nodes(path)|x.name] as blocks, [y in nodes(path)|id(y)] as op, apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten([z in nodes(path) where z.yfull_snps is not null|z.yfull_snps]))) as snps with b2,blocks,snps,size(op) as lvl, gen.graph.get_ordpath(op) as op set b2.yfull_all_snps = snps,b2.yfull_all_snp_ct=size(snps)");

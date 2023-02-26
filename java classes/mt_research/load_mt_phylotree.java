@@ -46,15 +46,15 @@ public class load_mt_phylotree {
         web_file_to_import_folder.url_file_to_import_dir(ptf,"phylotree16.txt");        
         
         //delete prior load
-        gen.neo4jlib.neo4j_qry.qry_write("match (b:mt_block)-[r:mt_block_snp{src:'phylotree'}]-(v:mt_variant{src:'phylotree'}) delete r,v") ;
+        gen.neo4jlib.neo4j_qry.qry_write("match (b:mt_block)-[r:mt_block_variant{src:'phylotree'}]-(v:mt_variant{src:'phylotree'}) delete r,v") ;
         gen.neo4jlib.neo4j_qry.qry_write("match(b:mt_block{phylotree:1}) remove b.phylotree");
         gen.neo4jlib.neo4j_qry.qry_write("match (v:mt_varant) remove v.phylotree");
-        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:mt_block_snp]-() remove r.phylotree");
+        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:mt_block_variant]-() remove r.phylotree");
 
         //gen.neo4jlib.neo4j_qry.qry_write("match (b:mt_block) set b.ftdna=1");
         
         String c[] = gen.neo4jlib.file_lib.ReadFileByLineWithEncoding(gen.neo4jlib.neo4j_info.Import_Dir + "phylotree16.txt").split("\n");
-        String s="hg|snp\n";
+        String s="hg|variant\n";
         for (int i=0; i < c.length; i++)
         {
             String ss[] = c[i].split(" ");
@@ -75,22 +75,22 @@ public class load_mt_phylotree {
         
         
         //add new SNPs from phylotree
-        gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///phylotree.csv' as line FIELDTERMINATOR '|' with collect(distinct line.snp) as snps match (v0:mt_variant) with snps,collect(distinct v0.name) as existing_snps with apoc.coll.subtract(snps,existing_snps) as add_snps unwind add_snps as x with x where x<>',' merge (v2:mt_variant{name:x, phylotree:1})");
+        gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///phylotree.csv' as line FIELDTERMINATOR '|' with collect(distinct line.variant) as variants match (v0:mt_variant) with variants,collect(distinct v0.name) as existing_variants with apoc.coll.subtract(variants,existing_variants) as add_variants unwind add_variants as x with x where x<>',' merge (v2:mt_variant{name:x, phylotree:1})");
         
-        //add phylotree mt_block_snp relationship
-        gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///phylotree.csv' as line FIELDTERMINATOR '|' match (b:mt_block{name:line.hg}) match (v:mt_variant{name:line.snp}) merge (b)-[t:mt_block_snp]->(v)");
+        //add phylotree mt_block_variant relationship
+        gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///phylotree.csv' as line FIELDTERMINATOR '|' match (b:mt_block{name:line.hg}) match (v:mt_variant{name:line.variant}) merge (b)-[t:mt_block_variant]->(v)");
         
-        gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///phylotree.csv' as line FIELDTERMINATOR '|' MATCH p=(b:mt_block{name:line.hg})-[r:mt_block_snp]->(v:mt_variant{name:line.snp})  set b.phylotree=1, v.phylotree=1, r.phylotree=1");
+        gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///phylotree.csv' as line FIELDTERMINATOR '|' MATCH p=(b:mt_block{name:line.hg})-[r:mt_block_variant]->(v:mt_variant{name:line.variant})  set b.phylotree=1, v.phylotree=1, r.phylotree=1");
         
         //set flag
-        //gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(b:mt_block)-[r:mt_block_snp]->(v:mt_variant) with v where b.phylotree is null and v.phylotree is null and r.phylotree=1 set v.phylotree=1,r.phylotree=1");
+        //gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(b:mt_block)-[r:mt_block_variant]->(v:mt_variant) with v where b.phylotree is null and v.phylotree is null and r.phylotree=1 set v.phylotree=1,r.phylotree=1");
         
-        //MATCH (v:mt_variant{src:'phylotree'}) LOAD CSV WITH HEADERS FROM 'file:///phylotree.csv' as line FIELDTERMINATOR '|' with v, line.hg as hg where line.snp=v.name match (b:mt_block{name:hg}) merge (b)-[rv:mt_block_snp{src:'phylotree'}]-(v)");
+        //MATCH (v:mt_variant{src:'phylotree'}) LOAD CSV WITH HEADERS FROM 'file:///phylotree.csv' as line FIELDTERMINATOR '|' with v, line.hg as hg where line.variant=v.name match (b:mt_block{name:hg}) merge (b)-[rv:mt_block_variant{src:'phylotree'}]-(v)");
         
         
-        //add mt_variant src property when mt_block_snp relationship already present and
+        //add mt_variant src property when mt_block_variant relationship already present and
         //distinguish origin of the relationship
-        //gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///phylotree.csv' as line FIELDTERMINATOR '|' MATCH p=(b:mt_block{name:line.hg})-[r:mt_block_snp]->(v:mt_variant{name:line.snp}) where v.src is null set r.src='phylotree'");
+        //gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///phylotree.csv' as line FIELDTERMINATOR '|' MATCH p=(b:mt_block{name:line.hg})-[r:mt_block_variant]->(v:mt_variant{name:line.variant}) where v.src is null set r.src='phylotree'");
         
         
        // gen.neo4jlib.neo4j_qry.qry_write("MATCH (n:mt_variant) where n.name='' delete n");

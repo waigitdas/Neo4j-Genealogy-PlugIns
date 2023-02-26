@@ -40,13 +40,13 @@ public class dna_coverage {
             }
    
     public static void main(String args[]) {
-        //get_coverage(4441L, 2L);
+        get_coverage(4441L, 2L);
         //get_coverage(33454L,2L);
         //get_coverage(26828L,1L);
         //get_coverage(75L,2L);//
         //get_coverage(1086L,1L);
         //get_coverage(23446L,2L);
-        get_coverage(467L,1l);
+       // get_coverage(467L,1l);
     }
     
      public  static String get_coverage(Long anc_rn, Long method) 
