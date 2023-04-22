@@ -39,5 +39,6 @@ public class fam_rel {
         gen.neo4jlib.neo4j_qry.CreateIndex("fam_rel", "Indx");
         String cq = "LOAD CSV WITH HEADERS FROM 'file:///Family_relationship_table.csv' AS line FIELDTERMINATOR ',' merge (f:fam_rel{Indx:toString(line.Indx), path1:toInteger(line.path1), path2:toInteger(line.path2), nmrca:toInteger(line.nmrca), LowSharedCM:toInteger(line.LowSharedCM), MeanSharedCM:toInteger(line.MeanSharedCM), HighSharedCM:toInteger(line.HighSharedCM), relationship:toString(case when line.relationship is null then '' else line.relationship end)})";
         neo4j_qry.qry_write(cq);
+        gen.neo4jlib.neo4j_qry.CreateIndex("fam_rel", "Indx");
     }
 }

@@ -28,13 +28,14 @@ package gen.rel;
             }
      }
    
-//       public static void main(String args[]) {
-//        String lo = mrca_qry_rn(1L,600L);
-//        int fgg = 0;
-//    }
-//       
+       public static void main(String args[]) {
+        String lo = mrca_qry_rn(1L,600L);
+        System.out.println(lo);;
+        int fgg = 0;
+    }
        
-    public String mrca_qry_rn(Long rn1, Long rn2) 
+       
+    public static String mrca_qry_rn(Long rn1, Long rn2) 
     {
         gen.neo4jlib.neo4j_info.neo4j_var();
         gen.neo4jlib.neo4j_info.neo4j_var_reload();

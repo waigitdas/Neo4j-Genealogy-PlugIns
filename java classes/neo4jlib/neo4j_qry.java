@@ -11,6 +11,7 @@ package gen.neo4jlib;
     import java.util.List;       
     import java.util.*;  
     import java.util.function.Function;
+import java.util.regex.Pattern;
     import org.neo4j.driver.Record;
     import org.neo4j.driver.Value;
 
@@ -33,7 +34,8 @@ public class neo4j_qry {
                     s = s + "n." + n[i];
                     if (i<n.length-1) {s = s + ",";}
                 }
-                String cq ="CREATE INDEX " + nodeNm + "_" + s.replace(",","_") + " FOR (n:" + nodeNm + ") ON (" + s + ")";
+                String cq ="CREATE INDEX " + nodeNm + "_" + s.replace(",","_").replace("n.","").replace(" ","")  + " FOR (n:" + nodeNm + ") ON (" + s + ")";
+                
                 qry_write(cq); 
             }
             catch (Exception e) {}
@@ -55,7 +57,7 @@ public class neo4j_qry {
            
             {
             
-                session.writeTransaction( tx -> {
+                session.executeWrite( tx -> {
                    Result result = tx.run( cq );
                    //session.close();
                return 1;
@@ -76,8 +78,8 @@ public class neo4j_qry {
         gen.conn.connTest.cstatus();
         Session java_session =  gen.conn.connTest.session;
 
-        return java_session.readTransaction( tx -> {
-            String c = "";
+        return java_session.executeRead(tx -> {
+        String c = "";          
              //int rw = 0;
             Result result = tx.run(cq.replace("[[","[").replace("]]","]") );
             while ( result.hasNext() )
@@ -103,7 +105,7 @@ public class neo4j_qry {
         gen.conn.connTest.cstatus();
         Session java_session =  gen.conn.connTest.session;
 
-        return java_session.readTransaction( tx -> {
+        return java_session.executeRead( tx -> {
             String c = "";
              //int rw = 0;
             Result result = tx.run(cq.replace("[[","[").replace("]]","]") );
@@ -132,7 +134,7 @@ public class neo4j_qry {
         gen.conn.connTest.cstatus();
         Session java_session =  gen.conn.connTest.session;
         
-        return java_session.readTransaction( tx -> {
+        return java_session.executeRead(tx -> {
             List<String> names = new ArrayList<>();
             Result result = tx.run(cq );
             while ( result.hasNext() )
@@ -158,7 +160,7 @@ public static Result qry_obj_all(String cq) {
         gen.conn.connTest.cstatus();
         Session java_session =  gen.conn.connTest.session;
         
-        return java_session.readTransaction( tx -> 
+        return java_session.executeRead( tx -> 
         {
             Result result = tx.run(cq );
             List lr = result.list();
@@ -173,7 +175,7 @@ public static Result qry_obj_all(String cq) {
      public static List<Long> qry_long_list(String cq) {
          gen.conn.connTest.cstatus();
         Session java_session =  gen.conn.connTest.session;
-        return java_session.readTransaction( tx -> {
+        return java_session.executeRead( tx -> {
             List<Long> names = new ArrayList<>();
             Result result = tx.run(cq );
             while ( result.hasNext() )
@@ -191,7 +193,7 @@ public static Result qry_obj_all(String cq) {
         Session java_session =  gen.conn.connTest.session;
 
 
-        return java_session.readTransaction( tx -> {
+        return java_session.executeRead( tx -> {
             List<Object> names = new ArrayList<>();
             Result result = tx.run(cq );
             while ( result.hasNext() )
@@ -209,7 +211,7 @@ public static Result qry_obj_all(String cq) {
         Session java_session =  gen.conn.connTest.session;
 
 
-        return java_session.readTransaction( tx -> {
+        return java_session.executeRead( tx -> {
             String names = "";
             Result result = tx.run(cq );
             while ( result.hasNext() )
@@ -223,33 +225,33 @@ public static Result qry_obj_all(String cq) {
    }
   
       
-public static Map<String,Object> qry_map(String cq) {
-        //DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(gen.neo4jlib.neo4j_info.Database_Dir ).build();
-        //GraphDatabaseService db = managementService.database( DEFAULT_DATABASE_NAME );
-            Session java_session =  gen.conn.connTest.session;
-            return java_session.readTransaction( tx -> {
-            Result r = tx.run(cq) ;
-            
-            Map<String,Object> m = new HashMap<>();
-            //m.putall(r.stream());
-            {
-                
-                while (r.hasNext()){
-                    m.put(r.next().keys().toString(),r.next().values().toString());
-                    //m.put(r.next().get(0).asMap());
-                    //m.entrySet(r.next().get(0).asObject());
-                    //m.getOrDefault(r.next().asMap());
-                    //m.merge(r.next().asMap());  //, m, remappingFunction).
-                   //m = r.next().asMap();
-                   
-                }
-            //java_session.close();
-            return m;
-            }
-            }
-           );
-            
-                   }
+//public static Map<String,Object> qry_map(String cq) {
+//        //DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(gen.neo4jlib.neo4j_info.Database_Dir ).build();
+//        //GraphDatabaseService db = managementService.database( DEFAULT_DATABASE_NAME );
+//            Session java_session =  gen.conn.connTest.session;
+//            return java_session.executeRead( tx -> {
+//            Result r = tx.run(cq) ;
+//            
+//            Map<String,Object> m = new HashMap<>();
+//            //m.putall(r.stream());
+//            {
+//                
+//                while (r.hasNext()){
+//                    m.put(r.next().keys().toString(),r.next().values().toString());
+//                    //m.put(r.next().get(0).asMap());
+//                    //m.entrySet(r.next().get(0).asObject());
+//                    //m.getOrDefault(r.next().asMap());
+//                    //m.merge(r.next().asMap());  //, m, remappingFunction).
+//                   //m = r.next().asMap();
+//                   
+//                }
+//            //java_session.close();
+//            return m;
+//            }
+//            }
+//           );
+//            
+//                   }
 
  
  public static String qry_to_pipe_delimited(String cq,String csv_File) {
@@ -258,7 +260,7 @@ public static Map<String,Object> qry_map(String cq) {
         gen.conn.connTest.cstatus();
         Session java_session =  gen.conn.connTest.session;
 
-            return java_session.writeTransaction( tx -> {
+            return java_session.executeWrite( tx -> {
            
             tx.run(q);
   
@@ -273,7 +275,7 @@ public static Map<String,Object> qry_map(String cq) {
         gen.conn.connTest.cstatus();
         Session java_session =  gen.conn.connTest.session;
 
-            return java_session.writeTransaction(tx -> {
+            return java_session.executeWrite(tx -> {
             String Q = "\"";
             String q = "call apoc.export.csv.query(" + Q  + cq + Q + ",'" + csv_File + "' , {delim:',', quotes: true, format: 'plain'})"; 
                         

@@ -30,7 +30,7 @@ public class has_endogamous_ancestors {
     
     
     public static void main(String args[]) {
-        get_mrea_data(5L);
+        System.out.println(get_mrea_data(234160L));
     }
     
      public static String get_mrea_data(Long rn) 

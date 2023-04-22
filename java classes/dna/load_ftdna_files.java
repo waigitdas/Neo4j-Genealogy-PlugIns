@@ -831,23 +831,20 @@ catch(Exception e){}
     
     //gen.neo4jlib.neo4j_qry.qry_write("MATCH (v:mt_block) with v as v where size(v.name)>1  with v as v where toInteger(left(v.name,1)) is  null with v,v.name as name, toInteger(substring(v.name,1,size(v.name)-2)) as sort set v.sort=toInteger(sort)");
     
+     ;
    
        neo4j_qry.qry_write("match (d:DNA_Match) with d MATCH (y:DNA_YMatch) where d.fullname=y.fullname and d.RN is not null set y.RN=d.RN");
        neo4j_qry.qry_write("match (d:DNA_Match) with d MATCH (y:DNA_YMatch) where d.fullname=y.fullname and d.kit is not null set y.kit=d.kit");
  
+       try
+       {
        gen.dna.Y_DNA_FTDNA ysnp = new gen.dna.Y_DNA_FTDNA();
        ysnp.load_derived_file();
+       }
+       catch(Exception e){}
        
-       //inferred HGs
-       gen.neo4jlib.neo4j_qry.qry_write("match path1=(p:Person)-[r:father|mother*0..10]->(a:Person) with a where a.sex='M' and a.surname<>'MRCA' with collect(a.RN) as rns match path2 =(p2:Person)-[r:father*0..10]->(a2:Person) where a2.RN in rns and a2.sex='M' with rns,p2,collect(p2.RN) as rns2 ,[x in nodes(path2)|x.RN] as path_rns match (d:DNA_Match) where d.RN in rns2 and d.YHG is not null with rns,p2.surname as surname , d.YHG as Y_haplogroup,apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten(collect( distinct path_rns)))) as path_rns with surname,Y_haplogroup,apoc.coll.intersection(path_rns,rns) as pedigree_rns unwind pedigree_rns as x call { with x return x as prn } match path4=(p4:Person{RN:prn})-[r4:father*0..15]->(a4:Person) with p4,surname, gen.dna.deepest_level(apoc.text.join(collect(distinct Y_haplogroup),',')) as yhg, prn,last(collect(a4.RN)) as anc_rn set p4.iYHG=yhg");
        
-       gen.neo4jlib.neo4j_qry.qry_write("match (p:Person{sex:'M'})-[r:father*1..99]->(d:Person{sex:'M'}) where d.iYHG is not null with distinct p, d.iYHG as yhg set p.iYHG=yhg");
-       
-       gen.neo4jlib.neo4j_qry.qry_write("match path1=(p:Person)-[r:father|mother*0..10]->(a:Person) with a where a.sex='F' and a.surname<>'MRCA' with collect(a.RN) as rns match path2 =(p2:Person)-[r:mother*0..10]->(a2:Person) where a2.RN in rns with rns,p2,collect(p2.RN) as rns2 ,[x in nodes(path2)|x.RN] as path_rns match (d:DNA_Match) where d.RN in rns2 and d.mtHG is not null with rns, d.mtHG as mt_haplogroup, apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten(collect( distinct path_rns)))) as path_rns with mt_haplogroup,apoc.coll.intersection(path_rns,rns) as pedigree_rns unwind pedigree_rns as x call { with x return x as prn } match path4=(p4:Person{RN:prn})-[r4:mother*0..15]->(a4:Person) with distinct p4,gen.dna.mt_deepest_level(apoc.text.join(collect(distinct mt_haplogroup),',')) as mthg, prn set p4.imtHG=mthg");
-       
-       gen.neo4jlib.neo4j_qry.qry_write("match (p:Person{sex:'F'})-[r:mother*1..99]->(d:Person{sex:'F'}) where d.imtHG is not null with distinct p, d.imtHG as hg set p.imtHG=hg");
-       
-       //populate chr_cm cM
+  //populate chr_cm cM
         neo4j_qry.qry_write("MATCH (n:chr_cm) WITH n,n.chr as c,min(n.strt_pos) as s, max(n.end_pos) as e with n,c,s,e,gen.dna.hapmap_cm(case when c='0X' then 'X' else c end,s , e) as cm set n.cm=cm");   
 
 

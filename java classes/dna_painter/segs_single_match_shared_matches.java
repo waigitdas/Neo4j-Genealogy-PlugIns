@@ -7,6 +7,7 @@
 package gen.dna_painter;
 
 import gen.neo4jlib.neo4j_qry;
+import java.util.Arrays;
 import java.util.List;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
@@ -31,10 +32,11 @@ public class segs_single_match_shared_matches {
     
     
     public static void main(String args[]) {
-        // TODO code application logic here
+        List<String> s1 = Arrays.asList("Gary W Bray");
+        get_segments(s1);
     }
     
-     public String get_segments(List<String> names)
+     public static String get_segments(List<String> names)
     {
         String s="[[";
         String Q = "'";
@@ -45,6 +47,8 @@ public class segs_single_match_shared_matches {
         }
         
         String cq = "with " + s + " as names match (m:DNA_Match)-[[r:match_segment]]-(s:Segment) where r.p in names and r.m in names with s,r,names where gen.dna.chr_portion_of_segment(s.chr,id(r))<0.5 and (r.cor<0.5 or r.cor is null) with s as seg,r,names, collect(distinct case when r.p=names[[0]] or r.m=names[[0]] then case when r.p=names[[0]] then r.p + ':' + r.m else r.m + ':' + r.p end else null end) as match_pair with seg,match_pair,r,names where match_pair>[[]] return toInteger(case when seg.chr='0X'then 23 else seg.chr end) as chr,seg.strt_pos as start,seg.end_pos as end_pos,r.cm as cm,r.snp_ct as snps,match_pair as match, 'good' as confidence,names[[0]] as group,'maternal' as side,'' as notes,'green' as color order by seg.Indx";
+        String cqq = cq.replace("[[", "[").replace("]]", "]");
+        gen.neo4jlib.neo4j_qry.qry_to_csv(cqq, "DNA_Painter.csv");
         return cq;
   
     }

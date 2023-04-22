@@ -32,11 +32,11 @@ public String ged_to_gen_date(
    
     
     public static void main(String args[]) {
-        convert_date("BET JUL 1945 and 10 May 1946");
-         convert_date("JAN-FEB-MAR 1970");  //RootsMagic date
+//        convert_date("BET JUL 1945 and 10 May 1946");
+//         convert_date("JAN-FEB-MAR 1970");  //RootsMagic date
     }
     
-    public static String convert_date(String gedcom_date) {
+    public String convert_date(String gedcom_date) {
         String d ="";
         String y ="0000";
         String dy = "00";

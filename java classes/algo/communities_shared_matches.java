@@ -38,7 +38,7 @@ public class communities_shared_matches {
     
     
     public static void main(String args[]) {
-        run_algo(2L,25L,100L,true);
+        run_algo(2L,7L,250L,true);
     }
     
      public static String run_algo(Long algorithm, Long min_cm, Long max_cm,Boolean known_matches_only)  //, Boolean intermediateCommunities) 
@@ -82,7 +82,7 @@ public class communities_shared_matches {
         else if (algorithm.equals(2L)) { //modularity optimization
             algo = "modularity";
             algo_nbr = 2L;
-            cq ="CALL gds.beta.modularityOptimization.stream('shared_matches', {relationshipWeightProperty:'weight',tolerance:0.0000001}) YIELD nodeId, communityId with nodeId,case when gds.util.asNode(nodeId).RN is not null then '*' + gds.util.asNode(nodeId).fullname else gds.util.asNode(nodeId).fullname end AS name, communityId as cid with nodeId,cid,name order by name with cid,collect(name) as names,collect(gds.util.asNode(nodeId).RN) as rns with rns,cid as community,size(names) as ct, names as matches order by ct desc with rns,community,ct,matches where ct>2 with community,ct, matches,gen.rel.mrca_from_cypher_list(rns,15) as mrcas, split(gen.mss.mss_data(rns),'|') as rns return community,ct,matches,mrcas,rns[[1]] as community_seg_ct, rns[[0]] as mss_anc_desc,rns[[2]] as mss_in_comm, rns[[8]] as mss_seg_in_comm, rns[[3]] as included_mss_total_seg_ct, rns[[9]] as mss_seg_in_community_segs";
+            cq ="CALL gds.beta.modularityOptimization.stream('shared_matches', {relationshipWeightProperty:'weight',tolerance:0.0000001}) YIELD nodeId, communityId with nodeId,case when gds.util.asNode(nodeId).RN is not null then '*' + gds.util.asNode(nodeId).fullname else gds.util.asNode(nodeId).fullname end AS name, communityId as cid with nodeId,cid,name order by name with cid,collect(name) as names,collect(gds.util.asNode(nodeId).RN) as rns with rns,cid as community,size(names) as ct, names as matches order by ct desc with rns,community,ct,matches where ct>2 with community,ct, matches,gen.rel.mrca_from_cypher_list(rns,15) as mrcas, split(gen.mss.mss_data(rns),'|') as rns return community,ct,matches,size(mrcas)-size(replace(mrcas,';','')) as mrca_ct,mrcas,rns[[1]] as community_seg_ct, rns[[0]] as mss_anc_desc,rns[[2]] as mss_in_comm, rns[[8]] as mss_seg_in_comm, rns[[3]] as included_mss_total_seg_ct, rns[[9]] as mss_seg_in_community_segs";
                     //"CALL gds.beta.modularityOptimization.stream('shared_matches', {relationshipWeightProperty:'weight',tolerance:0.0000001}) YIELD nodeId, communityId with nodeId,case when gds.util.asNode(nodeId).RN is not null then '*' + gds.util.asNode(nodeId).fullname else gds.util.asNode(nodeId).fullname end AS name, communityId as cid with nodeId,cid,name order by name with cid,collect(name) as names,collect(gds.util.asNode(nodeId).RN) as rns with rns,cid as community,size(names) as ct, names as matches order by ct desc with rns,community,ct,matches where ct>2 return community,ct, matches,gen.rel.mrca_from_cypher_list(rns,15) as mrcas";
         }
         

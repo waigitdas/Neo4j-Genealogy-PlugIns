@@ -38,7 +38,11 @@ public class DNA_shared{
         return cr;
         
     }
-         
+ 
+    
+        public static void main(String args[]) {
+        calc_shared_DNA(19L, 2100L);
+    }
              
         public static String calc_shared_DNA(Long rn1, Long rn2){
        
@@ -68,7 +72,7 @@ public class DNA_shared{
             String anc = gen.gedcom.get_family_tree_data.getPersonFromRN(anc_rn, false);
           
             gen.rel.relationship rr = new gen.rel.relationship();
-            String relationship = rr.relationship_from_path(Long.valueOf(1),path1,path2);
+            String relationship = rr.relationship_from_path(1L,path1,path2);
             
             //cm = Math.round(cm);
 
@@ -79,7 +83,6 @@ public class DNA_shared{
         }
         
             //String exp_sharedCM2 =  scm.expected_cm(Long.valueOf(1),path1,path2);
-
                     
             gen.dna.shared_dna dna = new gen.dna.shared_dna();
             String cm = dna.sharedCM(rn1,rn2);
@@ -94,8 +97,10 @@ public class DNA_shared{
             fw.write("," + all_rel  + ",,,,," + String.valueOf(cor) + "," + gen.genlib.handy_Functions.fix_str(cm) + ",");
             fw.flush();
             fw.close();
-            int total_cm = 7200;
-            gen.excelLib.excel_from_csv.load_csv(fname, "shared_dna","cor",1, "","3:###;4:###;5:###;6:#.#######","",true,"The total COR is " + cor + "\nFrom the shared centimorgan project the expected value and range is " + scm + " cm.\nThe observed shared DNA is " + cm + ".\nThe predicted DNA is " + cor + " x " + total_cm +" = " + cor*total_cm + " cm\n\nUDF:\nreturn gen.rel.shared_DNA(" + rn1 + "," + rn2 +")\n\nThe coefficient of relationship (COR) is a measure of pedigree collapse resulting from ancstors appearing more that one in the family tree.\nThe paths are the generations to the common ancestor for each person in the analysis.\n\nreferences:\nhttps://www.yourdnaguide.com/ydgblog/2019/7/26/pedigree-collapse-and-genetic-relationships\nhttp://www.genetic-genealogy.co.uk/Toc115570135.html\nhttps://isogg.org/wiki/Coefficient_of_relationship",false);
+            String cq ="MATCH (n:chr_cm) RETURN toInteger(sum(n.cm)*2) as cm";
+            String cmt = gen.neo4jlib.neo4j_qry.qry_str(cq).replace("[","").replace("]","");
+            int total_cm = Integer.parseInt(cmt);
+            gen.excelLib.excel_from_csv.load_csv(fname, "shared_dna","cor",1, "","3:###;4:###;5:###;6:#.#######","",true,"The total COR is " + cor + "\nFrom the shared centimorgan project the expected value and range is " + scm + " cm.\nThe observed shared DNA is " + cm + ".\nThe predicted DNA is " + cor + " x " + total_cm +" = " + cor*total_cm + " cm\n\nUDF:\nreturn gen.rel.shared_DNA(" + rn1 + "," + rn2 +")\n\nThe pedigree coefficient of relationship (COR) is a measure of pedigree collapse resulting from ancstors appearing more that one in the family tree.\nThe paths are the generations to the common ancestor for each person in the analysis.\n\nreferences:\nhttps://www.yourdnaguide.com/ydgblog/2019/7/26/pedigree-collapse-and-genetic-relationships\nhttp://www.genetic-genealogy.co.uk/Toc115570135.html\nhttps://isogg.org/wiki/Coefficient_of_relationship\nhttps://en.wikipedia.org/wiki/Coefficient_of_relationship\n\n",false);
             //Desktop.getDesktop().open(fn);
         }
         catch (Exception e) {}

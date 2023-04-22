@@ -154,7 +154,7 @@ public class upload_HapMap_Files {
            
             {
             
-                session.writeTransaction( tx -> {
+                session.executeWrite(tx -> {
                    Result result = tx.run( cq );
                return 1;
                

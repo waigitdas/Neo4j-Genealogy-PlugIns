@@ -27,7 +27,15 @@ public class endogamy_individual {
             }
     
     public static void main(String args[]) {
-        create_panel(4L);
+//        create_panel(767316L);
+        create_panel(234155L);
+//        create_panel(234160L);
+        create_panel(234194L);
+//        create_panel(767316L);
+//        create_panel(767316L);
+//        create_panel(767316L);
+//        create_panel(767316L);
+//        create_panel(767316L);
     }
     
      public static String create_panel(Long rn) 

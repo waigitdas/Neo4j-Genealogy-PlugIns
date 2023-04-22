@@ -37,6 +37,8 @@ public class get_family_tree_data {
     
     public static String getPersonFromRN(Long rn,Boolean UnicodeBrackets) {
         String s;
+        gen.neo4jlib.neo4j_info.neo4j_var();
+        gen.neo4jlib.neo4j_info.neo4j_var_reload();
         try{
         if (UnicodeBrackets==true){
             s = gen.neo4jlib.neo4j_qry.qry_str("match (p:Person{RN:" + rn + "}) with p.fullname + ' ⦋' + p.RN + '⦌ (' + right(p.BDGed,4) +'-' + right(p.DDGed,4) + ')' as name return name").replace("[", "").replace("]", "").replace("\"", "");

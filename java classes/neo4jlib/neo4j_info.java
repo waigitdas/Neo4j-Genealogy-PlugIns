@@ -6,11 +6,8 @@
  */
 package gen.neo4jlib;
 
-import gen.conn.AuthInfo;
 import java.io.File;
 import java.util.regex.Pattern;
-import org.neo4j.driver.Driver;
-import org.neo4j.driver.GraphDatabase;
 
 //reads text file with user name, password, folders relevant to the functions. 
 //this strategy mitigates the need for users to input this info into the function calls

@@ -36,20 +36,26 @@ public class load_all_files {
         gen.neo4jlib.neo4j_info.neo4j_var();
         gen.neo4jlib.neo4j_info.neo4j_var_reload();  //initialize variables
         
+        ;
+        System.out.println("Load GEDCOM");
         upload_gedcom g = new upload_gedcom();
         g.load_gedcom();
         
         
+         ;
+        System.out.println("Load FTDNA");
         load_ftdna_files f = new load_ftdna_files();
         f.load_ftdna_files();
         
-        try{
-        load_tgs_from_template t = new load_tgs_from_template();
-        t.load_tgs_from_csv();
-        }
-        catch(Exception e){}
-        
-        //add x_gen_dist property
+//        try{
+//        load_tgs_from_template t = new load_tgs_from_template();
+//        t.load_tgs_from_csv();
+//        }
+//        catch(Exception e){}
+//        
+//        add x_gen_dist property
+
+        System.out.println("Load FTDNA enhancements");
         load_ftdna_enhancements fe = new load_ftdna_enhancements();
         fe.add_match_segment_properties();
         
@@ -59,11 +65,12 @@ public class load_all_files {
   
         
         //gen.endogamy.path_enhancements.add_enhancements(); from endogamy2
+        System.out.println("Endogamy knowledge graph");
          gen.endogamy.endogamy_knowledge eke = new gen.endogamy.endogamy_knowledge();
         eke.endogamy_knowledge_graph();
     
   
-        
+         System.out.println("Enhancements");
         //create avatars requirements
         try{
         gen.avatar.targeted_anc_enhance tge = new gen.avatar.targeted_anc_enhance();
@@ -74,7 +81,7 @@ public class load_all_files {
         }
         catch(Exception e){}
         
-  
+        System.out.println("Paths");         
         gen.endogamy.path_enhancements penh = new gen.endogamy.path_enhancements();
         penh.create_path_enhancements();
         

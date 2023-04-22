@@ -167,18 +167,19 @@ public class upload_gedcom {
            
            
          //create edges of Person & Union events to places
-           neo4j_qry.qry_write("match (p:Person) with p Match (l:Place) where l.desc=p.BP create (p)-[r:person_place{type:'bp'}]->(l) ");
-           neo4j_qry.qry_write("match (p:Person) with p Match (l:Place) where l.desc=p.DP create (p)-[r:person_place{type:'dp'}]->(l) ");
-           neo4j_qry.qry_write("match (p:Union) with p Match (l:Place) where l.desc=p.Union_Place create (p)-[r:person_place{type:'up'}]->(l) ");
+           gen.neo4jlib.neo4j_qry.qry_write("match (p:Person) with p Match (l:Place) where l.desc=p.BP create (p)-[r:person_place{type:'bp'}]->(l) ");
+           gen.neo4jlib.neo4j_qry.qry_write("match (p:Person) with p Match (l:Place) where l.desc=p.DP create (p)-[r:person_place{type:'dp'}]->(l) ");
+           gen.neo4jlib.neo4j_qry.qry_write("match (p:Union) with p Match (l:Place) where l.desc=p.Union_Place create (p)-[r:person_place{type:'up'}]->(l) ");
            
         }
         catch (IOException e){
              //System.out.println( e);
              }
+        
         //create genealogy dates from gedcom dates using User Defined Function
-        neo4j_qry.qry_write("MATCH (p:Person) with p,p.BDGed as ged,gen.genlib.ged_to_gen_date(p.BDGed) as gen   set p.BD = gen");
-        neo4j_qry.qry_write("MATCH (p:Person) with p,p.DDGed as ged,gen.genlib.ged_to_gen_date(p.DDGed) as gen   set p.DD = gen");
-        neo4j_qry.qry_write("MATCH (u:Union) with u,u.UDGed as ged,gen.genlib.ged_to_gen_date(u.UDGed) as gen   set u.UD = gen");
+        gen.neo4jlib.neo4j_qry.qry_write("MATCH (p:Person) with p, gen.genlib.ged_to_gen_date(p.BDGed) as gen   set p.BD = gen");
+        gen.neo4jlib.neo4j_qry.qry_write("MATCH (p:Person) with p, gen.genlib.ged_to_gen_date(p.DDGed) as gen   set p.DD = gen");
+        gen.neo4jlib.neo4j_qry.qry_write("MATCH (u:Union) with u,u.UDGed as ged, gen.genlib.ged_to_gen_date(u.UDGed) as gen   set u.UD = gen");
         
         return "Completed";
          }

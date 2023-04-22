@@ -16,8 +16,10 @@ import java.io.UnsupportedEncodingException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
+//import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,7 +48,10 @@ public static JSONObject getJSONFromUrl(String url, String FileNm) {
     // pull down FTDNA Y-hplotree reference data
     try {
         // defaultHttpClient
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+        HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+        HttpClient httpClient = httpClientBuilder.build();
+
+//        DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(url);
 
         HttpResponse httpResponse = httpClient.execute(httpPost);
