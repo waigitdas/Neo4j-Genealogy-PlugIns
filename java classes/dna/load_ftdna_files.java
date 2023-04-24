@@ -368,7 +368,7 @@ public  String load_ftdna_csv_files(
  
                 //Load unique chromosome segments shared by matches and currently iterated kit
                 //Segment nodes use only chr, strt and end pos. Variation in other properties will be incorporated into edges because they are variations from match pairs
-                  //cq = "LOAD CSV WITH HEADERS FROM 'file:///" + FileSegs + "' AS line FIELDTERMINATOR '|' merge (l:Segment{Indx:ltrim(toString(case when line.Chromosome is null then '' else line.Chromosome end)) + ':' + toInteger(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toInteger(case when line.End_Location is null then 0 else line.End_Location end)  ,chr:toString(case when line.Chromosome is null then '' else line.Chromosome end), strt_pos:toInteger(case when line.Start_Location is null then 0 else line.Start_Location end), end_pos:toInteger(case when line.End_Location is null then 0 else line.End_Location end),cm:apoc.math.round(toFloat(case when line.Centimorgans is null then 0 else line.Centimorgans end),1),snp:toInteger(case when line.Matching_SNPs is null then 0 else line.Matching_SNPs end)})";
+                  //cq = "LOAD CSV WITH HEADERS FROM 'file:///" + FileSegs + "' AS line FIELDTERMINATOR '|' merge (l:Segment{Indx:ltrim(toString(case when line.Chromosome is null then '' else line.Chromosome end)) + ':' + toInteger(case when line.Start_Location is null then 0 else line.Start_Location end) + ':' + toInteger(case when line.End_Location is null then 0 else line.End_Location end)  ,chr:toString(case when line.Chromosome is null then '' else line.Chromosome end), strt_pos:toInteger(case when line.Start_Location is null then 0 else line.Start_Location end), end_pos:toInteger(case when line.End_Location is null then 0 else line.End_Location end),cm:round(toFloat(case when line.Centimorgans is null then 0 else line.Centimorgans end),1),snp:toInteger(case when line.Matching_SNPs is null then 0 else line.Matching_SNPs end)})";
 
                     gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///" + FileSegs + "' as line FIELDTERMINATOR '|'  merge (m:DNA_Match{fullname:trim(toString(case when line.Match_Name is null then '' else line.Match_Name end))})");
 
@@ -802,7 +802,7 @@ neo4j_qry.qry_write("CREATE FULLTEXT INDEX ancestor_surnames_names FOR (n:ancest
 
 try{
         cq="MATCH (s:Segment) with s.chr as c,min(s.strt_pos) as s,max(s.end_pos) as e with c,s,e, gen.dna.hapmap_cm(case when c='0X' then 'X' else c end,s,e) as cm return c,s,e,cm";
-        //cq="MATCH (s:Segment) with s.chr as c,min(s.strt_pos) as s,max(s.end_pos) as e with c,s,e, 0 as cm return c,s,e,apoc.math.round(cm,1) as cm";
+        //cq="MATCH (s:Segment) with s.chr as c,min(s.strt_pos) as s,max(s.end_pos) as e with c,s,e, 0 as cm return c,s,e,round(cm,1) as cm";
         neo4j_qry.qry_to_pipe_delimited(cq,"chr_cm.csv");
         lc = "LOAD CSV WITH HEADERS FROM 'file:///chr_cm.csv' as line FIELDTERMINATOR '|' return line ";
         cq = "create (cn:chr_cm{chr:toString(line.c),strt_pos:toInteger(line.s),end_pos:toInteger(line.e),cm:toFloat(line.cm)})";

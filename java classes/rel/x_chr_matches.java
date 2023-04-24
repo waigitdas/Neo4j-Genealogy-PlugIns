@@ -34,7 +34,7 @@ public class x_chr_matches {
     
      public String get_matches()
     {
-        String cq ="match (ms:DNA_Match where ms.RN>0 )-[[r:match_segment]]->(s:Segment where s.chr='0X') where r.rel is not null with ms.RN as rn1,r.m_rn as rn2,r,r.p as p, r.m as m,r.rel as rel,s order by s.Indx with p,m,rn1,rn2, rel,collect(distinct s.Indx) as segs,sum(r.cm) as cm where rn2>0 return p,m,rn1,rn2,rel,apoc.math.round(cm,1) as x_cm, segs order by x_cm desc";
+        String cq ="match (ms:DNA_Match where ms.RN>0 )-[[r:match_segment]]->(s:Segment where s.chr='0X') where r.rel is not null with ms.RN as rn1,r.m_rn as rn2,r,r.p as p, r.m as m,r.rel as rel,s order by s.Indx with p,m,rn1,rn2, rel,collect(distinct s.Indx) as segs,sum(r.cm) as cm where rn2>0 return p,m,rn1,rn2,rel,round(cm,1) as x_cm, segs order by x_cm desc";
         gen.excelLib.queries_to_excel.qry_to_excel(cq, "x-matches_segs", "x_match segs", 1, "", "2:####,3:####;5:####.#", "", true, "query is\n" + cq, true);
         return "";
     }

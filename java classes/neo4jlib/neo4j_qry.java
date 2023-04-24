@@ -223,45 +223,15 @@ public static Result qry_obj_all(String cq) {
             return names;
         } );
    }
-  
       
-//public static Map<String,Object> qry_map(String cq) {
-//        //DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(gen.neo4jlib.neo4j_info.Database_Dir ).build();
-//        //GraphDatabaseService db = managementService.database( DEFAULT_DATABASE_NAME );
-//            Session java_session =  gen.conn.connTest.session;
-//            return java_session.executeRead( tx -> {
-//            Result r = tx.run(cq) ;
-//            
-//            Map<String,Object> m = new HashMap<>();
-//            //m.putall(r.stream());
-//            {
-//                
-//                while (r.hasNext()){
-//                    m.put(r.next().keys().toString(),r.next().values().toString());
-//                    //m.put(r.next().get(0).asMap());
-//                    //m.entrySet(r.next().get(0).asObject());
-//                    //m.getOrDefault(r.next().asMap());
-//                    //m.merge(r.next().asMap());  //, m, remappingFunction).
-//                   //m = r.next().asMap();
-//                   
-//                }
-//            //java_session.close();
-//            return m;
-//            }
-//            }
-//           );
-//            
-//                   }
-
- 
- public static String qry_to_pipe_delimited(String cq,String csv_File) {
+      public static String qry_to_pipe_delimited(String cq,String csv_File) {
         String Q = "\"";
         String q = "call apoc.export.csv.query(" + Q + cq + Q + ",'" + csv_File + "' , {delim:'|',  quotes: false, format: 'plain'})"; 
         gen.conn.connTest.cstatus();
-        Session java_session =  gen.conn.connTest.session;
+         Session java_session =  gen.conn.connTest.session;
 
-            return java_session.executeWrite( tx -> {
-           
+        return java_session.executeRead( tx -> {
+         
             tx.run(q);
   
                         
@@ -275,7 +245,7 @@ public static Result qry_obj_all(String cq) {
         gen.conn.connTest.cstatus();
         Session java_session =  gen.conn.connTest.session;
 
-            return java_session.executeWrite(tx -> {
+            return java_session.executeRead(tx -> {
             String Q = "\"";
             String q = "call apoc.export.csv.query(" + Q  + cq + Q + ",'" + csv_File + "' , {delim:',', quotes: true, format: 'plain'})"; 
                         

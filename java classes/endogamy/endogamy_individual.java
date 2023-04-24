@@ -6,8 +6,8 @@
  */
 package gen.endogamy;
 
-import gen.neo4jlib.neo4j_qry;
-import java.text.DecimalFormat;
+//import gen.neo4jlib.neo4j_qry;
+//import java.text.DecimalFormat;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
 import org.neo4j.procedure.UserFunction;
@@ -27,10 +27,10 @@ public class endogamy_individual {
             }
     
     public static void main(String args[]) {
-//        create_panel(767316L);
-        create_panel(234155L);
+        create_panel(13L);
+//        create_panel(234155L);
 //        create_panel(234160L);
-        create_panel(234194L);
+//        create_panel(234194L);
 //        create_panel(767316L);
 //        create_panel(767316L);
 //        create_panel(767316L);
@@ -45,11 +45,11 @@ public class endogamy_individual {
         int ct = 1;
 
         //coefficient of inbreeding function
-        gen.endogamy.coi qcoi = new gen.endogamy.coi();
+//        gen.endogamy.coi qcoi = new gen.endogamy.coi();
 
         //family tree
         String cq = "match p=(n:Person{RN:" + rn + "})-[[r:father|mother*0..99]]->(x) with x,x.fullname + ' ⦋' + x.RN + '⦌ (' + left(x.BD,4) + '-' + left(x.DD,4) + ')' as Name, length(p) as gen, [[z in nodes(p)|z.RN]] as op, '1' + reduce(srt ='', q IN nodes(p)|srt + case when q.sex='M' then '0' else '1' end ) AS Anh with x,Name,gen,'1' + right(Anh,size(Anh)-2) as Ahnen, gen.graph.get_ordpath(op) as op optional match (d:Person{RN:x.RN}) return apoc.text.lpad('',(gen)*5,'.') + Name as Person,gen,gen.rel.ahnentafel(Ahnen) as Ahnentafel,case when d.iYHG is null then '~' else d.iYHG end as inferred_YHG,case when d.imtHG is null then '~' else d.imtHG end as inferred_mtHG order by Ahnentafel";
-        String  cqq = cq.replace("[[","[").replace("]]","]");
+        //String  cqq = cq.replace("[[","[").replace("]]","]");
          String excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "endogamy_package_" + rn, "family_tree", ct, "", "1:#######;2:###,###,###,###", "", false,"UDF: \nreturn gen.endogamy.endogamy_panel(" + rn + ")\n\nUDF:\nreturn gen.endogamy.coefficient_of_inbreeding(" + rn + ")\n\nCypher query:\n" + cq, false);
         ct = ct + 1;
         int fam_member_ct =gen.excelLib.queries_to_excel.rwCt;
@@ -60,8 +60,8 @@ public class endogamy_individual {
         ct = ct + 1;
  
          //duplicate unions
-         cq = "with " + rn + " as urn MATCH p=(u1:Union)-[[r:union_parent*0..99]]->(u2:Union) where u1.U1=urn or u1.U2= urn with u1,u2,u2.uid as uid, count(*) as ct,u2.cor as cor,u2.rel as rel with distinct u1,u2,uid,ct,cor,rel where ct>1  with distinct u1,u2,uid,ct,cor,rel,gen.gedcom.person_from_rn(case when u2.U1 is null then 0 else u2.U1 end,true) as u1p, gen.gedcom.person_from_rn(case when u2.U2 is null then 0 else u2.U2 end,true) as u2p RETURN u1.uid as proband_uid, uid as parents_uid, u1p as father, u2p as mother, ct,cor,rel order by ct desc,proband_uid,parents_uid";
-         excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "duplicate_unions", "duplicate_unions", ct, "", "0:#####;1:###,###,###;2:######;3:##.############;4:#####",excelFile, false, "cypher query:\n" + cq + "\n\nUnions (marriages) that occur more thsn once in the family tree. \nComparing this with the next worksheet will distinguish duplicate ancestors with more than one union.\n\nThis report gives granular information so you can see it.\nThe may be redundancies in there are multiple marriages.", false);
+         cq = "with " + rn + " as urn MATCH p=(u1:Union)-[r:union_parent*0..99]->(u2:Union) where u1.U1=urn or u1.U2= urn with u1,u2,u2.uid as uid, count(*) as ct,u2.cor as cor,u2.rel as rel with distinct u1,u2,uid,ct,u1.cor as cor1,u1.rel as rel1,u2.cor as cor2,u2.rel as rel2 where ct>1  with distinct u1,u2,uid,ct,cor1,rel1,cor2,rel2,gen.gedcom.person_from_rn(case when u2.U1 is null then 0 else u2.U1 end,true) as u1p, gen.gedcom.person_from_rn(case when u2.U2 is null then 0 else u2.U2 end,true) as u2p RETURN u1.uid as proband_uid, uid as parents_uid, u1p as father, u2p as mother, ct,cor2 as cor,rel2 as rel order by ct desc,proband_uid,parents_uid";
+         excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "duplicate_unions", "duplicate_unions", ct, "", "0:#####;1:###,###,###;2:######;3:##.############;4:#####,5:0.############",excelFile, false, "cypher query:\n" + cq + "\n\nUnions (marriages) that occur more thsn once in the family tree. \nComparing this with the next worksheet will distinguish duplicate ancestors with more than one union.\n\nThis report gives granular information so you can see it.\nThe may be redundancies in there are multiple marriages.", false);
         ct = ct + 1;
          
         
@@ -72,16 +72,16 @@ public class endogamy_individual {
            
         //duplicate ancestors
           cq = "match p=(n:Person{RN:" + rn + "})-[[r:father|mother*0..99]]->(x) with x,x.uid as uid,x.fullname + ' ⦋' + x.RN + '⦌ (' + left(x.BD,4) + '-' + left(x.DD,4) + ')' as Name, length(p) as gen, [[z in nodes(p)|z.RN]] as op, '1' + reduce(srt ='', q IN nodes(p)|srt + case when q.sex='M' then '0' else '1' end ) AS Anh with x,uid,Name,gen,'1' + right(Anh,size(Anh)-2) as Ahnen, gen.graph.get_ordpath(op) as op optional match (d:Person{RN:x.RN}) with Name as Person,uid,collect(distinct gen) as gen,collect(,gen.rel.ahnentafel(Ahnen)) as Ahnentafel,x with Person,uid,x,apoc.coll.sort(Ahnentafel) as Ahnentafel,apoc.coll.sort(gen) as gen where size(Ahnentafel)>1 with Person,uid,Ahnentafel,gen,gen.rel.compute_cor(" + rn + ",x.RN) as cor return Person,size(Ahnentafel) as ct,Ahnentafel, gen,cor,uid as union order by ct desc,Ahnentafel";
-          cqq = cq.replace("[[","[").replace("]]","]");
-          gen.neo4jlib.neo4j_qry.qry_to_csv(cqq,"duplicate_ancestors2.csv");
+//          cqq = cq.replace("[[","[").replace("]]","]");
+//          gen.neo4jlib.neo4j_qry.qry_to_csv(cqq,"duplicate_ancestors2.csv");
           String dup_ct_str = gen.neo4jlib.neo4j_qry.qry_str("LOAD CSV WITH HEADERS FROM 'file:///duplicate_ancestors2.csv' as line FIELDTERMINATOR ','  with sum(toInteger(line.ct)) as total_ct return toInteger(total_ct) as ct");
-          String dup_ct_pc = gen.neo4jlib.neo4j_qry.qry_str("LOAD CSV WITH HEADERS FROM 'file:///duplicate_ancestors2.csv' as line FIELDTERMINATOR ','  with sum(toInteger(line.ct)) as total_ct return apoc.math.round(toFloat(total_ct)/" + fam_member_ct + " * 100,2) as pc");
+          String dup_ct_pc = gen.neo4jlib.neo4j_qry.qry_str("LOAD CSV WITH HEADERS FROM 'file:///duplicate_ancestors2.csv' as line FIELDTERMINATOR ','  with sum(toInteger(line.ct)) as total_ct return round(toFloat(total_ct)/" + fam_member_ct + " * 100,2) as pc");
  
           int dup_ct = Integer.parseInt(dup_ct_str.replace("[","").replace("]",""));
           String rws = gen.neo4jlib.neo4j_qry.qry_str("LOAD CSV WITH HEADERS FROM 'file:///duplicate_ancestors2.csv' as line FIELDTERMINATOR ',' return count(*) as ct");
           String unique_fam_mbrs_str = gen.neo4jlib.neo4j_qry.qry_str("match p=(n:Person{RN:" + rn + "})-[r:father|mother*0..99]->(x) with distinct x return count(x) as ct");
           Double unique_fam_mbrs = Double.parseDouble(unique_fam_mbrs_str.replace("[","").replace("]",""));
-          String uniq_mbr_ct_pc = gen.neo4jlib.neo4j_qry.qry_str("LOAD CSV WITH HEADERS FROM 'file:///duplicate_ancestors2.csv' as line FIELDTERMINATOR ','  with sum(toInteger(line.ct)) as total_ct return apoc.math.round(toFloat(" + rws.replace("[","").replace("]","") + ")/" + unique_fam_mbrs + " * 100,2) as pc");
+          String uniq_mbr_ct_pc = gen.neo4jlib.neo4j_qry.qry_str("LOAD CSV WITH HEADERS FROM 'file:///duplicate_ancestors2.csv' as line FIELDTERMINATOR ','  with sum(toInteger(line.ct)) as total_ct return round(toFloat(" + rws.replace("[","").replace("]","") + ")/" + unique_fam_mbrs + " * 100,2) as pc");
          // System.out.println(dup_ct);
              
         //duplicate ancestors

@@ -64,7 +64,7 @@ public static String qry_to_excel(String cq,String FileNm,String SheetName, int 
     
      //create csv from results
      String cqq = cq.replace("[[","[").replace("]]","]");
-     String q = gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited(cqq, FileNm + ".csv");  //uses apoc and save defaults to import dir
+     String q = gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited(cqq, FileNm + ".csv"); 
      
     String excelFile = "";
     String excelFileNm = "" ;

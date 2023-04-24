@@ -50,7 +50,7 @@ public class mss_report {
          gen.excelLib.queries_to_excel.qry_to_excel(cq, "mss_specificity", "specificity", ct, "", "0:##;1:####", excelFile, false,"cypher query:\n" + cq + "\n\nThis report finds all matches who map to segments in the monophyletic segment set. Notably, there are few of them and mostly identiable as descended from the mrca listed. The unknowns are likely descendants of the common ancestor.", false);
         ct=ct+1;
         
-       cq="MATCH (m:MSS)-[[r:ms_seg]]->(s:Segment) with m,left(s.Indx,2) as chr with chr,count(*) as ct optional match (s2:Segment) where s2.chr=chr with chr,ct,collect(distinct s2.Indx) as sc with chr,size(sc) as chr_total_segs,ct as mss_seg_ct return chr,chr_total_segs,mss_seg_ct,apoc.math.round((toFloat(mss_seg_ct)/chr_total_segs)*100,2) as percent order by chr";
+       cq="MATCH (m:MSS)-[[r:ms_seg]]->(s:Segment) with m,left(s.Indx,2) as chr with chr,count(*) as ct optional match (s2:Segment) where s2.chr=chr with chr,ct,collect(distinct s2.Indx) as sc with chr,size(sc) as chr_total_segs,ct as mss_seg_ct return chr,chr_total_segs,mss_seg_ct,round((toFloat(mss_seg_ct)/chr_total_segs)*100,2) as percent order by chr";
         gen.excelLib.queries_to_excel.qry_to_excel(cq, "mss_chr_cts", "chr frequency", ct, "", "0:##;1:###,###;2:###,#;3:0.##", excelFile, false,"cypher query:\n" + cq + "\n\nThis report finds and counts all segments in the monophyletic segment set and compares this number to the total segments on the chromosome. The very small number found is related to the specificity of the monophyletic segment set.", false);
         ct=ct+1;
 

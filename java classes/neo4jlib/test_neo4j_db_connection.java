@@ -27,6 +27,8 @@ try
         System.out.println("Server directory: " + c);
         c = gen.neo4jlib.neo4j_qry.qry_to_csv("SHOW FUNCTIONS");
         System.out.println(c);
+        gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited("SHOW FUNCTIONS", "xxx");
+
 }
 catch(Exception e)
 {

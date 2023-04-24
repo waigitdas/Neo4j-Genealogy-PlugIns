@@ -37,7 +37,7 @@ public class chr_portion {
     
      public Double get_portion(String c, Long r) 
     {
-        String cq = "MATCH (s:Segment{chr:'" + c + "'})-[rs:match_segment]-() where id(rs)=" + r + " with s, rs match (cc:chr_cm{chr:s.chr}) RETURN apoc.math.round(rs.cm/cc.cm,2) as x ";
+        String cq = "MATCH (s:Segment{chr:'" + c + "'})-[rs:match_segment]-() where id(rs)=" + r + " with s, rs match (cc:chr_cm{chr:s.chr}) RETURN round(rs.cm/cc.cm,2) as x ";
         try{
         Double d = Double.parseDouble(gen.neo4jlib.neo4j_qry.qry_to_csv(cq).split("\n")[0]);
         return d;

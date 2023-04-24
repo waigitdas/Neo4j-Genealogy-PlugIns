@@ -41,7 +41,7 @@
 //
 //    //chr_cm node
 //    try{
-//String cq = "MATCH (s:Segment) with s.chr as c,min(s.strt_pos) as s,max(s.end_pos) as e with c,s,e, gen.dna.hapmap_cm(case when c='0X' then 'X' else c end,s,e) as cm return c,s,e,apoc.math.round(cm,1) as cm";
+//String cq = "MATCH (s:Segment) with s.chr as c,min(s.strt_pos) as s,max(s.end_pos) as e with c,s,e, gen.dna.hapmap_cm(case when c='0X' then 'X' else c end,s,e) as cm return c,s,e,round(cm,1) as cm";
 //String Q = "\"";
 ////            String q = "call apoc.export.csv.query(" + Q +  cq + Q + ", 'chr_cm.csv' , {delim:'|', stream:true, quotes: false, format: 'plain'})"; 
 // //           neo4j_qry(q);

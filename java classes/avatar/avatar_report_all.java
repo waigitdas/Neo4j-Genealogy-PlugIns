@@ -87,7 +87,7 @@ public class avatar_report_all {
        ct = ct+1;
        
        //total CSegs
-       cq = "MATCH (a:Avatar) where a.total_cm is not null with a, a.fullname as avatar, a.RN as RN, a.paternal_cm as CSeg_paternal_cm, a.maternal_cm as CSeg_maternal_cm, a.total_cm as CSeg_total_cm, apoc.math.round(a.segment_coverage,3) as ancestor_coverage RETURN avatar,RN, ancestor_coverage, CSeg_paternal_cm,CSeg_maternal_cm,CSeg_total_cm order by CSeg_total_cm desc";
+       cq = "MATCH (a:Avatar) where a.total_cm is not null with a, a.fullname as avatar, a.RN as RN, a.paternal_cm as CSeg_paternal_cm, a.maternal_cm as CSeg_maternal_cm, a.total_cm as CSeg_total_cm, round(a.segment_coverage,3) as ancestor_coverage RETURN avatar,RN, ancestor_coverage, CSeg_paternal_cm,CSeg_maternal_cm,CSeg_total_cm order by CSeg_total_cm desc";
        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Arvatar_names", "CSeg_cm", ct, "", "1:######;2:0.####;3:###,###;4:###,###;5:###,###;6:###,###", excelFile, false, "UDF:\n" + UDF_query + "\n\ncypher query:\n" + cq + "\n\nAvatar CSeg cM, which avoids double counting of segments attributed to the avatar by parental side. \nThe coverage reported here will agree with that when uploading an individual avataar report DNA Painter file to DNA Painter", false);
        ct = ct+1;
        
