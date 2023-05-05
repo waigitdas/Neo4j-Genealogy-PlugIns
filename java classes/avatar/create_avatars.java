@@ -53,17 +53,20 @@ public class create_avatars {
         gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("avatar_segment", "p_rn");
         gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("avatar_segment", "m_rn");
        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("avatar_segment", "avatar_rn");
-        //gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("avatar_segment", "m_rn");
+        gen.neo4jlib.neo4j_qry.CreateRelationshipIndex("avatar_cseg", "side");
            } 
         catch(Exception e){}
         
         gen.neo4jlib.neo4j_qry.qry_write("match (a:Avatar)-[r]-() delete r");
-        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:avatar_avsegment]-() delete r");
-        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:avseg_seg]-() delete r");
+        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:avatar_cseg]-() delete r");
+        gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:avatar_segment]-() delete r");
+         gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:shared_avatar_match]-() delete r");
+       gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:cseg_seg]-() delete r");
         gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:person_avatar]-() delete r");
         gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:avfather]-() delete r");
         gen.neo4jlib.neo4j_qry.qry_write("match ()-[r:avmother]-() delete r");
         gen.neo4jlib.neo4j_qry.qry_write("match (d:Avatar) delete d");
+       gen.neo4jlib.neo4j_qry.qry_write("match (d:CSeg) delete d");
    
         //get all descendants who are DNA testers
         cq = "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y'] with path,q  with apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten(collect (distinct[x in nodes(path)|x.RN])))) as rns return rns";        
@@ -118,8 +121,9 @@ public class create_avatars {
         for (int i=0;i<kids.length; i++)
         {   try{
             String[] sKids = kids[i].split(",");
-            persons[i][0] = Integer.valueOf(sKids[0].strip());  //record number
-            persons[i][2] =  Integer.valueOf(sKids[2].strip());  ;   //parent
+            persons[i][0] = Integer.parseInt(sKids[0].strip());  //record number
+            persons[i][2] =  Integer.parseInt(sKids[2].strip());  ;   //parent
+                        
             //persons[i][2] = 0;   //iterating below will add person themself
             persons[i][4] = i;  //index to facilitate lookups with ordering is filtered
         }
@@ -141,7 +145,7 @@ public class create_avatars {
                         //add child to kids if not there already and increment child count if added
                         try{
                             persons[k][3] = cs.length;  //gen
-                            if (persons[k][0] == Integer.valueOf(cs[cs.length-1].strip()))
+                            if (persons[k][0] == Integer.parseInt(cs[cs.length-1].strip()))
                             {
                                 persons[k][5] = 1;
                             }
@@ -237,6 +241,7 @@ public class create_avatars {
             }  //filer for generation
         } //next generation
         
+        //increment in reverse order
          for (int i=persons.length-1; i>-1; i-- )
          {
              if (persons[i][5]==1) //tested
@@ -294,7 +299,7 @@ public class create_avatars {
        
        gen.neo4jlib.neo4j_qry.qry_write("match (a:Avatar) with a match(p:Person)-[r:mother]->(anc:Person) where p.RN=a.RN with a,p,anc,r with a.fullname as fn,a.RN as rn,anc.RN as arn match (a1:Avatar{RN:rn}) match(a2:Avatar{RN:arn}) merge (a1)-[rp:avmother]->(a2)");
        
-       gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(a1:Avatar)-[r1:avatar_avsegment]->(s:avSegment)<-[r2:avatar_avsegment]-(a2:Avatar) with a1,a2,sum(s.cm) as cm merge (a1)-[r3:av_shared_avsegments{cm:cm}]->(a2)");
+       gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(a1:Avatar)-[r1:avatar_cseg]->(s:CSeg)<-[r2:avatar_cseg]-(a2:Avatar) with a1,a2,sum(s.cm) as cm merge (a1)-[r3:av_shared_csegs{cm:cm}]->(a2)");
        
        //avatar DNA_Match relationship
        gen.neo4jlib.neo4j_qry.qry_write("match (a:Avatar) with a match(p:DNA_Match) where p.RN=a.RN merge (p)-[r:match_avatar]->(a)");
@@ -304,6 +309,9 @@ public class create_avatars {
        
        gen.neo4jlib.neo4j_qry.qry_write(("MATCH (p:Person)-[r:person_avatar]->(a:Avatar) where p.imtHG is not null set a.imtHG=p.imtHG"));
        
+       
+       //avatar DNA match relationship
+       gen.neo4jlib.neo4j_qry.qry_write("MATCH p=(a:Avatar)-[r:avatar_segment]->(s) with a,s,r match (d:DNA_Match)-[rs:match_segment]->(s) where a.RN<>rs.p_rn and a.RN<>rs.m_rn with a, a.RN as avatar_rn,d, d.RN as DNA_Tester_RN,rs.cor as cor,case when r.rel is null then '' else r.rel end as rel,count(*) as seg_ct, sum(r.cm) as cm, min(r.cm) as shortest_seg_cm,max(r.cm) as longest_seg_cm,collect (distinct r.method) as methods ,apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten(collect(distinct r.mrca_rn)))) as mrca_rns, apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten(collect(distinct r.pair_mrca)))) as mrca_names merge (a)-[rsm:shared_avatar_match{cor:toFloat(cor), rel:rel,seg_ct:toInteger(seg_ct),cm:toFloat(cm),shortest_cm:toFloat(shortest_seg_cm),longest_cm:toFloat(longest_seg_cm),methods:methods,mrca_rns:mrca_rns,mrca_names:mrca_names}]-(d)");
        ////////////////////////////////////////////////////////////////////////
        /////////////////////  REPORTS//////////////////////////////////////////
        ////////////////////////////////////////////////////////////////////////
@@ -318,9 +326,9 @@ public class create_avatars {
        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Avatar_initial_report_" + anc_rn, "nodes and rel", ct, "", "1:#,###2:####", "", false,"UDF:\n" + UDF_query + "\nthe targetted ancestor is: " + anc_name + "\n\ncypher query:\n" + cq, false);
        ct = ct+1;
 
-       //tracking file generated during iteration of descendants
-       gen.excelLib.excel_from_csv.load_csv(fn, excelFile, "load_log", ct, "", "0:#####;1:######;2:###,###;3:######", excelFile, false,"Tracking generated during creation of the avatars. The source is the descendant of the targeted ancestor who is processed and the number of rows imported. \nThe imports overlap and will not be duplicated when encountered in a later kit.\nSegments will be created for each row imported.",false);
-       
+//       //tracking file generated during iteration of descendants
+//       gen.excelLib.excel_from_csv.load_csv(fn, excelFile, "load_log", ct, "", "0:#####;1:######;2:###,###;3:######", excelFile, false,"Tracking generated during creation of the avatars. The source is the descendant of the targeted ancestor who is processed and the number of rows imported. \nThe imports overlap and will not be duplicated when encountered in a later kit.\nSegments will be created for each row imported.",false);
+//       
        //sources
        cq ="MATCH (a:Avatar)-[[r:avatar_segment]]->() with a,r match (p:Person{RN:r.source}) with p.fullname + ' [[' + p.RN + ']]'as source,collect(distinct a.fullname + ' [' + a.RN + ']') as avatars return source,avatars";
        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Avatar_sources", "source_kits", ct, "", "1:######;2:###,###;4:###,###;5:###,###;6:###,###", excelFile, false, "UDF:\n" + UDF_query + "\n\ncypher query:\n" + cq + "\n\nFTDNA kits that were the source of segments attributed to avatars.", false);
@@ -359,7 +367,7 @@ public class create_avatars {
 
        //avatar segment details
        cq ="MATCH p=(a:Avatar)-[[r:avatar_segment]]->(s:Segment) with s, case when r.avatar_side='maternal; paternal' or r.avatar_side='paternal; maternal' then 'both' else r.avatar_side end as side with s,apoc.coll.sort(collect(distinct side)) as side,sum(case when side='both' then 1 else 0 end) as both,sum(case when side='maternal' then 1 else 0 end) as maternal,sum(case when side='paternal' then 1 else 0 end) as paternal,sum(case when side='unknown' then 1 else 0 end) as unknown,sum(case when side is null then 1 else 0 end) as no_category,count(*) as ct return s.Indx, side as source_side,both, maternal,paternal,unknown,no_category, ct as total_source_ct order by s.Indx";
-       excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Avatar_seg_detail", "segment_details", ct, "", "1:######;2:###;3:###;4:###;5:###;6:###;7:###,###", excelFile, true, "UDF:\nr" + UDF_query + "\n\ncypher query:\n" + cq, false);
+       gen.excelLib.queries_to_excel.qry_to_excel(cq, "Avatar_seg_detail", "segment_details", ct, "", "1:######;2:###;3:###;4:###;5:###;6:###;7:###,###", excelFile, true, "UDF:\nr" + UDF_query + "\n\ncypher query:\n" + cq, false);
        ct = ct+1;
 
  //not used but do not delete
@@ -462,7 +470,7 @@ public class create_avatars {
  
         //tracker iteration ending count
         Long newct = gen.neo4jlib.neo4j_qry.qry_long_list("match ()-[r:avatar_segment]->() return count(*) as ct").get(0) - strt;
-        System.out.println(rn + " : " + newct + " : " + c.length + " : " + newrowct);
+        //System.out.println(rn + " : " + newct + " : " + c.length + " : " + newrowct);
         try{
             //write to tracker file
             fw.write(rn + "," + newct + "," + c.length + "," + newrowct + "\n");

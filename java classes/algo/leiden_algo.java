@@ -35,10 +35,10 @@ public class leiden_algo {
     
     
     public static void main(String args[]) {
-        //run_algo(25L,100L,10L,true);
+        run_algo(25L,100L,10L,true);
     }
     
-     public String run_algo(Long min_cm, Long max_cm,Long intermiate_communities, Boolean known_matches_only)  //, Boolean intermediateCommunities) 
+     public static String run_algo(Long min_cm, Long max_cm,Long intermiate_communities, Boolean known_matches_only)  //, Boolean intermediateCommunities) 
     {
         String cq ="";
          String cqv ="";

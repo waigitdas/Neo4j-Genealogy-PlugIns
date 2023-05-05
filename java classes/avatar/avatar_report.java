@@ -30,7 +30,7 @@ public class avatar_report {
     
     
     public static void main(String args[]) {
-        get_report(1L);
+        get_report(27L);
     }
     
      public static String get_report(Long rn) 
@@ -43,12 +43,12 @@ public class avatar_report {
         excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Avatar_Reoprt_" + rn + "_" + gen.genlib.current_date_time.getDateTime() , "MSeg_detail", ct, "", "1:#####;4:0.######;7:###.##;8:####.#", "", false,"UDF:\nreturn gen.avatar.avatar_reports(" + rn + ")\n\ncypher query:\n" +  cq, false);
         
         ct = ct +1;
-        cq = "with " + rn + " as rn MATCH p=(d:Avatar{RN:rn})-[[r:avatar_avsegment]]->(s:avSegment) with s,d.fullname as Avatar,d.RN as RN,case when r.side is null then '~' else r.side end as side, s.Indx as seg,min(s.cm) as cm optional match (s)-[[r2:avseg_seg]]-(s2:Segment) with  Avatar,RN,side,seg as avatar_CSegs,cm,apoc.coll.sort(collect(distinct s2.Indx)) as DNA_match_segs return Avatar,RN,side,avatar_CSegs,cm,size(DNA_match_segs) as ct,DNA_match_segs order by avatar_CSegs";
+        cq = "with " + rn + " as rn MATCH p=(d:Avatar{RN:rn})-[[r:avatar_cseg]]->(s:CSeg) with s,d.fullname as Avatar,d.RN as RN,case when r.side is null then '~' else r.side end as side, s.Indx as seg,min(s.cm) as cm optional match (s)-[[r2:cseg_seg]]-(s2:Segment) with  Avatar,RN,side,seg as avatar_csegs,cm,apoc.coll.sort(collect(distinct s2.Indx)) as DNA_match_segs return Avatar,RN,side,avatar_csegs,cm,size(DNA_match_segs) as ct,DNA_match_segs as subsumed_MSegs order by avatar_csegs";
         excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Avatar_Reoprt_" + rn , "CSegs", ct, "","1:#####;4:####.#;5:###", excelFile, false,"cypher query:\n" +  cq + "\n\nThis report shows how the CSegs are merged from MSegs.", false);
         
         ct = ct +1;
-        cq = "with " + rn + " as rn  MATCH p=(a:Avatar{RN:rn})-[r:avatar_segment]->(s:Segment)<-[rm:match_segment]-(d:DNA_Match) where (rm.p_rn=d.RN or rm.m_rn=d.RN) with a.fullname as Avatar,case when r.avatar_side is null then '~' else r.avatar_side end  as avatar_side,a.RN as RN,d.fullname as match,d.RN as dRN,sum(r.cm) as a_cm,sum(rm.cm) as match_cm,apoc.coll.sort(collect(distinct s.Indx)) as segs return Avatar,RN as aRN,avatar_side,match as DNA_Match,dRN,a_cm,match_cm,size(segs), segs";
-        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Avatar_Reoprt_" + rn , "MSegs_matches", ct, "", "1:#####;3:#####;4:####.#;5:####.#;6:#####", excelFile, false,"cypher query:\n" +  cq, false);
+        cq = "with " + rn + " as rn  MATCH p=(a:Avatar{RN:rn})-[r:avatar_segment]->(s:Segment)<-[rm:match_segment]-(d:DNA_Match) where (rm.p_rn=d.RN or rm.m_rn=d.RN) with a.fullname as Avatar,case when r.avatar_side is null then '~' else r.avatar_side end  as avatar_side,a.RN as RN,d.fullname as match,d.RN as dRN,sum(r.cm) as a_cm,sum(rm.cm) as match_cm,apoc.coll.sort(collect(distinct s.Indx)) as segs return Avatar,RN as aRN,avatar_side,match as DNA_Match,dRN as match_rn,a_cm as avatar_cM,match_cm,size(segs) as seg_ct, segs";
+        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "Avatar_Reoprt_" + rn , "MSegs_matches", ct, "", "1:#####;3:#####;4:####;5:####;6:#####;7:####", excelFile, false,"cypher query:\n" +  cq, false);
 
         ct = ct +1;
         cq = "with " + rn + " as rn MATCH p=(a:Avatar{RN:rn})-[[r:avatar_segment]]->(s:Segment)<-[[rm:match_segment]]-(d:DNA_Match) with a.fullname as Avatar,a.RN as RN,d.fullname as match,d.RN as dRN,sum(r.cm) as a_cm,sum(rm.cm) as match_cm,apoc.coll.sort(collect(distinct s.Indx)) as segs where dRN is null return Avatar,RN as aRN,match as DNA_Match,a_cm,match_cm,size(segs), segs";

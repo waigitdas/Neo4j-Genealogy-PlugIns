@@ -93,10 +93,10 @@ public class merge_segs {
           String strt_pos = StringUtils.leftPad(String.valueOf(data.get(i).get(1)),9,"0");
           String end_pos = StringUtils.leftPad(String.valueOf(data.get(i).get(2)),9,"0");
             
-            //create avSegment nodes and relationships
-            gen.neo4jlib.neo4j_qry.qry_write("merge (s:avSegment{chr:'" + chr + "', strt_pos:" + data.get(i).get(1) + ", end_pos:" + data.get(i).get(2) + ", Indx:'" + chr + ":" + strt_pos + ":" + end_pos + "'})");
+            //create CSeg nodes and relationships
+            gen.neo4jlib.neo4j_qry.qry_write("merge (s:CSeg{chr:'" + chr + "', strt_pos:" + data.get(i).get(1) + ", end_pos:" + data.get(i).get(2) + ", Indx:'" + chr + ":" + strt_pos + ":" + end_pos + "'})");
 
-          gen.neo4jlib.neo4j_qry.qry_write("match (a:Avatar{RN:" + rn + "}) match(s:avSegment{Indx:'" + chr + ":" + strt_pos + ":" + end_pos + "'}) merge (a)-[r:avatar_avsegment{side:'" + side + "'}]-(s)");
+          gen.neo4jlib.neo4j_qry.qry_write("match (a:Avatar{RN:" + rn + "}) match(s:CSeg{Indx:'" + chr + ":" + strt_pos + ":" + end_pos + "'}) merge (a)-[r:avatar_cseg{side:'" + side + "'}]-(s)");
             }
             
        //compute overlap cm
@@ -118,7 +118,7 @@ public class merge_segs {
                             if (data.get(i).get(0)==23){chr="0X";}
                            String strt_pos = StringUtils.leftPad(String.valueOf(data.get(i).get(1)),9,"0");
                              String end_pos = StringUtils.leftPad(String.valueOf(data.get(i).get(2)),9,"0");
-                           String  cq = "match(s:Segment{chr:'" + chr.strip() + "', strt_pos:" + cs[rw][1] + ", end_pos:" + cs[rw][2] + "}) match(a:avSegment{Indx:'" + chr + ":" + strt_pos + ":" + end_pos + "'}) merge (a)-[r:avseg_seg]-(s)" ;
+                           String  cq = "match(s:Segment{chr:'" + chr.strip() + "', strt_pos:" + cs[rw][1] + ", end_pos:" + cs[rw][2] + "}) match(a:CSeg{Indx:'" + chr + ":" + strt_pos + ":" + end_pos + "'}) merge (a)-[r:cseg_seg]-(s)" ;
                              gen.neo4jlib.neo4j_qry.qry_write(cq );
                    
                

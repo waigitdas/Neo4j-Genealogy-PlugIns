@@ -7,6 +7,7 @@
 package gen.dna;
 
 //import gen.neo4jlib.neo4j_qry;
+import java.awt.Desktop;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Arrays;
@@ -249,7 +250,7 @@ public class dna_coverage {
             //{   //rows
     
            sumR = get_cov_rollup(persons, Tbl, indv_row, DescList, coverage);
-           System.out.println(persons[indv_row][0] + "\t" + sumR + "\t" + coverage[indv_row][0]);
+           //System.out.println(persons[indv_row][0] + "\t" + sumR + "\t" + coverage[indv_row][0]);
             //}
   
             /////////////////////////////////////////////////////////////////
@@ -279,6 +280,15 @@ public class dna_coverage {
              
           
        // Desktop.getDesktop().open(new File(fn));
+       
+        try
+        {
+            File urlDesktop = new File(fn);
+        Desktop.getDesktop().open(urlDesktop);    
+        //Desktop.getDesktop().open(new File(gen.neo4jlib.neo4j_info.Import_Dir + fn));
+        }
+        catch(Exception e){}
+
 
         return "HTML Report in the import directory.";
     }

@@ -35,6 +35,10 @@ public class communities_icw {
             }
 
      
+       public static void main(String args[]) {
+        run_algo(  1L,7L,250L,true);
+    }
+  
      public static String run_algo(Long algorithm, Long min_cm, Long max_cm,Boolean known_matches_only)  //, Boolean intermediateCommunities) 
     {
         String cq ="";

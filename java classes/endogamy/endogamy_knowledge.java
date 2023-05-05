@@ -72,32 +72,11 @@ public class endogamy_knowledge {
          
         curr_ct = curr_ct + increment;
         endct = endct + increment;
-        System.out.println(j + "\t" + curr_ct + "\t" + endct);
+        //System.out.println(j + "\t" + curr_ct + "\t" + endct);
         
         } //next j
         
-         ;
         
-////        create union cor property
-//        //String uids[] = gen.neo4jlib.neo4j_qry.qry_to_csv("MATCH (u:Union) where u.U1>0 and u.U2>0  RETURN u.uid").split("\n");
-//        increment = 1000;
-//        curr_ct = 0;
-//        endct = increment;
-//        
-//        for (int j=0; j<stop; j++)
-//        {
-//        for (int i = curr_ct; i < increment; i++)
-//        {
-//        gen.neo4jlib.neo4j_qry.qry_write("match (u:Union) with distinct u where u.U1>0 and u.U2>0 with u, gen.rel.compute_cor(u.U1,u.U2) as cor with u,cor where cor>0 set u.cor=cor");
-//        
-//        }
-//        curr_ct = curr_ct + increment;
-//        endct = endct + increment;
-//        System.out.println(j + "\t" + curr_ct + "\t" + endct);
-//        
-//        } //next j
-        
-
         String uids2[] = gen.neo4jlib.neo4j_qry.qry_to_csv("MATCH (u:Union) where u.cor is not null RETURN u.uid as uid, u.U1 as u1, u.U2 as u2").split("\n");
         //add union rel property and coi property to Person nodes
         for (int i=0; i<uids2.length; i++)

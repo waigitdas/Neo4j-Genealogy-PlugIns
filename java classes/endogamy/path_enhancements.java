@@ -36,13 +36,17 @@ public class path_enhancements {
         gen.neo4jlib.neo4j_info.neo4j_var();
         gen.neo4jlib.neo4j_info.neo4j_var_reload(); 
         
+        try
+        {
         gen.neo4jlib.neo4j_qry.qry_write("match (p:fam_path)-[r]-() delete r");
         gen.neo4jlib.neo4j_qry.qry_write("match(p:fam_path) delete p");
         gen.neo4jlib.neo4j_qry.qry_write("match (p:path_segs)-[r]-() delete r");
         gen.neo4jlib.neo4j_qry.qry_write("match (p:path_segs) delete p");
         gen.neo4jlib.neo4j_qry.qry_write("match (i:intersect)-[r]-() delete r");
         gen.neo4jlib.neo4j_qry.qry_write("match (i:intersect) delete i");
-         
+        }
+        catch(Exception e){}
+        
         try{
         gen.neo4jlib.neo4j_qry.CreateIndex("fam_path","persons");
         gen.neo4jlib.neo4j_qry.CreateIndex("fam_path", "gen");
@@ -54,9 +58,6 @@ public class path_enhancements {
         //add path nodes
         gen.neo4jlib.neo4j_qry.qry_write("match (m:MSS) with collect(distinct m.RN) as rns1 match (d:DNA_Match)-[r:match_segment]->() where r.p_rn>0 with rns1,collect(distinct r.p_rn) as rns2 with apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten(rns1+rns2))) as rns match path=(p:Person)-[r:father|mother*0..25]->(a:Person) where p.RN in rns and a.RN in rns and p.RN<>a.RN with [x in nodes(path)|x.RN] as path_nodes with path_nodes as path_nodes,size(path_nodes) as gen with path_nodes,gen create (ss:fam_path{persons:path_nodes,gen:gen})");
         
-//        gen.neo4jlib.neo4j_qry.qry_write("match (m:MSS) with collect(distinct m.RN) as rns1 match (d:DNA_Match)-[r:match_segment]->() where r.p_rn>0 with rns1,collect(distinct r.p_rn) as rns2 with apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten(rns1+rns2))) as rns match path=(p:Person)-[r:father|mother*0..25]->(a:Person) where p.RN in rns and a.RN in rns and p.RN<>a.RN with [x in nodes(path)|x.RN] as path_nodes match (m2:MSS)-[e2:ms_seg]->(s:Segment) where m2.RN in path_nodes with path_nodes as path_nodes,size(path_nodes) as gen, gen.graph.get_ordpath(path_nodes) as op, apoc.coll.sort(collect(distinct s.Indx)) as segs with path_nodes,gen create (ss:fam_path{persons:path_nodes,gen:gen})");
-
-//gen.neo4jlib.neo4j_qry.qry_write("match (m:Avatar) with collect(distinct m.RN) as rns match path=(p:Person)-[r:father|mother*0..25]->(a:Person) where p.RN in rns and a.RN in rns and p.RN<>a.RN with [x in nodes(path)|x.RN] as path_nodes match (m2:Avatar)-[e2:ms_seg]->(s:Segment) where m2.RN in path_nodes with path_nodes as path_nodes,size(path_nodes) as gen, gen.graph.get_ordpath(path_nodes) as op, apoc.coll.sort(collect(distinct s.Indx)) as segs with path_nodes,gen create (ss:fam_path{persons:path_nodes,gen:gen})");
   
         //add path_seg nodes
         gen.neo4jlib.neo4j_qry.qry_write("match (m:MSS) with collect(distinct m.RN) as rns match path=(p:Person)-[r:father|mother*0..25]->(a:Person) where p.RN in rns and a.RN in rns and p.RN<>a.RN with [x in nodes(path)|x.RN] as path_nodes match (m2:MSS)-[e2:ms_seg]->(s:Segment) where m2.RN in path_nodes with path_nodes as path_nodes,size(path_nodes) as gen, gen.graph.get_ordpath(path_nodes) as op, apoc.coll.sort(collect(distinct s.Indx)) as segs with segs,size(segs) as seg_size,count(*) as ct create (ss:path_segs{segs:segs,seg_ct:seg_size,appearances:ct})");

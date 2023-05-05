@@ -28,11 +28,14 @@ public class cor_cm {
     
     
     public static void main(String args[]) {
-        // TODO code application logic here
+        create_reports();
     }
     
-     public String create_reports() 
+     public static String create_reports() 
     {
+        gen.neo4jlib.neo4j_info.neo4j_var();
+        gen.neo4jlib.neo4j_info.neo4j_var_reload();
+                
         int ct = 1;
         String cq = "MATCH (s:Segment)<-[[rm:match_segment]]-(md:DNA_Match) where rm.cm>=7 and rm.snp_ct>=500 and rm.cm<gen.dna.total_chr_cm(s.chr) *0.5 and rm.cor<0.1 with s,s.Indx as seg,min(rm.cm) as min_cm,max(rm.cm) as max_cm,count(md) as ct,sum(case when md.ancestor_rn is not null then 1 else 0 end) as ct_anc, apoc.coll.sort(collect(distinct case when md.RN is not null then '*' + md.fullname else md.fullname end)) as fn,collect(distinct md.RN) as rns, collect (distinct rm.p) as pfn,collect(distinct rm.m) as mfn, collect(distinct rm.gen_dist) as gd,rm.cor as cor,rm.rel as rel with s,seg,ct,min_cm,max_cm,ct_anc,size(fn) as match_ct, fn,gd,rns,toFloat(toFloat(max_cm)/toFloat(gen.dna.total_chr_cm(s.chr))) as pc,pfn,mfn,cor,rel with seg,ct,min_cm,max_cm,ct_anc,fn,gd,match_ct,rns,pc,pfn,mfn,cor,rel where match_ct>1 with seg,ct,min_cm,max_cm,pc as percent_chr_cm,ct_anc,size(fn) as match_ct,rel,gd as gen_dist,cor, fn,gen.rel.mrca_from_cypher_list(rns,15) as mrca,pfn,mfn optional match (mnew:DNA_Match)-[[rs2:match_segment]]-(s:Segment) where s.Indx=seg and not mnew.fullname in pfn and not mnew.fullname in mfn return seg,ct,min_cm as cm, percent_chr_cm,ct_anc,match_ct, case when rel='' then '~' else rel end as rel,case when gen_dist is null then '~' else gen_dist end as min_gen_dist,case when cor is null then 0 else cor end as cor, fn as match_pair, mrca,collect(distinct mnew.fullname) as other_matches_at_segment order by seg";
         String excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq,gen.neo4jlib.neo4j_info.project + "_match_cor_cm", "detail", ct, "", "1:###;2:####.#;3:###%;4:###;5:###;7:##;8:0.##########", "", false, "cypher query:\n" + cq + "\n\nMatches at segments with their MRCAs. Relationships are shown in three column: \nrel is a text abbreviation (2C1r-second cousin once removed)\nminimum genetic distance is the path length between the match pair to their nearest common ancestor.\ncor: the correlation of relatedness\n\nEach project involves slight different segment ranges. GFG computes the total range on each chromosome and uses the HapMap to calculate the cm in the project on each chromosome. \nThis number is used to compute the percent of the chromosone for a given segment.\nA filter can then be applies to exclude segments lager than half those on the chromosome, which may happen with close relatives. ", true);

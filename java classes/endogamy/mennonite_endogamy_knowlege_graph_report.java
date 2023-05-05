@@ -46,7 +46,7 @@ public class mennonite_endogamy_knowlege_graph_report {
         
 //        //unions where members are related
         cq = "match (u:Union) where u.cor>0 with u match(p:Person) where p.RN=u.U1 or p.RN=u.U2 return collect(p.fullname  + ' [' + p.RN + '] (' + left(p.BD,4)  + '-' +  left(p.DD,4) + ') {' + p.coi + '}') as union_pair,u.uid as uid, u.cor as cor,u.rel as rel order by cor desc";
-//        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "mennonite_knowledge_graph", "unions_of_relatives", ct, "", "1:#####;2:0.##########", excelFile, true,"UDF:\nreturn gen.endogamy.endogamy_knowledge_graph()\n\ncypher query:\n" +  cq + "\n\nShown are unions in which the people are related.\nSorted by COR in descendding order.", false);
+        gen.excelLib.queries_to_excel.qry_to_excel(cq, "mennonite_knowledge_graph", "unions_of_relatives", ct, "", "1:#####;2:0.##########", excelFile, true,"UDF:\nreturn gen.endogamy.endogamy_knowledge_graph()\n\ncypher query:\n" +  cq + "\n\nShown are unions in which the people are related.\nSorted by COR in descendding order.", false);
 //        ct = ct + 1;
 //      
   

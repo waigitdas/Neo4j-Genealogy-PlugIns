@@ -49,9 +49,9 @@ public class mrca_attribution {
                 rnmin=rn2;
                 rnmax=rn1;
             }
-        String cq = "match path = (p:Person{RN:" + rnmin + "})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(b:Person{RN:" + rnmax + "}) where p.RN<b.RN with apoc.coll.disjunction([x in nodes(path)|x.RN],collect(distinct mrca.RN)) as rns  return distinct rns";
+        String cq = "match path = (p:Person{RN:" + rnmin + "})-[r1:father|mother*0..15]->(mrca:Person)<-[r2:father|mother*0..15]-(b:Person{RN:" + rnmax + "}) where p.RN<b.RN with mrca, [x in nodes(path)|x.RN] as xx,collect(distinct mrca.RN) as rns with apoc.coll.disjunction(xx,rns) as rnd return distinct rnd";
         String lo = gen.neo4jlib.neo4j_qry.qry_str(cq).replace("[[","").replace("]]","");
-        System.out.println(lo);
+        //System.out.println(lo);
         return lo;
     }
 }

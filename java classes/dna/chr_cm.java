@@ -30,12 +30,13 @@ public class chr_cm {
     
     
     public static void main(String args[]) {
-        // TODO code application logic here
+        Double s = get_cm("01");
+        System.out.println(s);
     }
     
-     public Double get_cm(String chr) 
+     public static Double get_cm(String chr) 
     {
-        Double c = Double.parseDouble(gen.neo4jlib.neo4j_qry.qry_to_csv("match (c:chr_cm{chr:'" + chr + "'}) return c.cm").split("\n")[0]);
+        Double c = Double.valueOf(gen.neo4jlib.neo4j_qry.qry_to_csv("match (c:chr_cm{chr:'" + chr + "'}) return c.cm").split("\n")[0]);
         return c;
     }
 }

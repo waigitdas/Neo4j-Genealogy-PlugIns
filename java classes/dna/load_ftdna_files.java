@@ -736,9 +736,11 @@ neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///RN_for_Matches.csv' AS 
          cq =  "call apoc.export.csv.query(" + Q + qry + Q + ",'" + mbsf + "', {delim:'|', quotes: false, format: 'plain'}) ";
          neo4j_qry.qry_write(cq);
 
-         lc = "LOAD CSV WITH HEADERS FROM 'file:///" + mbsf + "' as line FIELDTERMINATOR '|' return line ";
-        cq = " match (m1:DNA_Match{fullname:toString(line.Match1)}) match (m2:DNA_Match{fullname:toString(line.Match2)})  merge (m1)-[rz:match_by_segment{cm:toFloat(line.cm),mbp:toFloat(line.mbp),seg_ct:toInteger(line.segment_ct),shortest_cm:toFloat(line.shortest_cm),longest_cm:toFloat(line.longest_cm),shortest_mbp:toFloat(line.shortest_mbp),longest_mbp:toFloat(line.longest_mbp)}]-(m2) ";
-           neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
+//         lc = "LOAD CSV WITH HEADERS FROM 'file:///" + mbsf + "' as line FIELDTERMINATOR '|' return line ";
+//        cq = " match (m1:DNA_Match{fullname:toString(line.Match1)}) match (m2:DNA_Match{fullname:toString(line.Match2)})  merge (m1)-[rz:match_by_segment{cm:toFloat(line.cm),mbp:toFloat(line.mbp),seg_ct:toInteger(line.segment_ct),shortest_cm:toFloat(line.shortest_cm),longest_cm:toFloat(line.longest_cm),shortest_mbp:toFloat(line.shortest_mbp),longest_mbp:toFloat(line.longest_mbp)}]-(m2) ";
+//           neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 100000);
+
+gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///match_by_segment.csv' as line FIELDTERMINATOR '|' match (m1:DNA_Match{fullname:toString(line.Match1)}) match (m2:DNA_Match{fullname:toString(line.Match2)})  merge (m1)-[rz:match_by_segment{cm:toFloat(line.cm),mbp:toFloat(line.mbp),seg_ct:toInteger(line.segment_ct),shortest_cm:toFloat(line.shortest_cm),longest_cm:toFloat(line.longest_cm),shortest_mbp:toFloat(line.shortest_mbp),longest_mbp:toFloat(line.longest_mbp)}]-(m2) ");
 
          String mbsf_x =  "match_by_segment_x.csv";
   
@@ -801,12 +803,13 @@ neo4j_qry.qry_write("CREATE FULLTEXT INDEX ancestor_surnames_names FOR (n:ancest
 
 
 try{
-        cq="MATCH (s:Segment) with s.chr as c,min(s.strt_pos) as s,max(s.end_pos) as e with c,s,e, gen.dna.hapmap_cm(case when c='0X' then 'X' else c end,s,e) as cm return c,s,e,cm";
-        //cq="MATCH (s:Segment) with s.chr as c,min(s.strt_pos) as s,max(s.end_pos) as e with c,s,e, 0 as cm return c,s,e,round(cm,1) as cm";
-        neo4j_qry.qry_to_pipe_delimited(cq,"chr_cm.csv");
-        lc = "LOAD CSV WITH HEADERS FROM 'file:///chr_cm.csv' as line FIELDTERMINATOR '|' return line ";
-        cq = "create (cn:chr_cm{chr:toString(line.c),strt_pos:toInteger(line.s),end_pos:toInteger(line.e),cm:toFloat(line.cm)})";
-        neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
+//        cq="MATCH (s:Segment) with s.chr as c,min(s.strt_pos) as s,max(s.end_pos) as e with c,s,e, gen.dna.hapmap_cm(case when c='0X' then 'X' else c end,s,e) as cm return c,s,e,cm";
+//        //cq="MATCH (s:Segment) with s.chr as c,min(s.strt_pos) as s,max(s.end_pos) as e with c,s,e, 0 as cm return c,s,e,round(cm,1) as cm";
+//        neo4j_qry.qry_to_pipe_delimited(cq,"chr_cm.csv");
+//        lc = "LOAD CSV WITH HEADERS FROM 'file:///chr_cm.csv' as line FIELDTERMINATOR '|' return line ";
+//        cq = "create (cn:chr_cm{chr:toString(line.c),strt_pos:toInteger(line.s),end_pos:toInteger(line.e),cm:toFloat(line.cm)})";
+//        neo4j_qry.APOCPeriodicIterateCSV(lc, cq, 10000);
+        gen.neo4jlib.neo4j_qry.qry_write("LOAD CSV WITH HEADERS FROM 'file:///chr_cm.csv' as line FIELDTERMINATOR '|'  create (cn:chr_cm{chr:toString(line.c),strt_pos:toInteger(line.s),end_pos:toInteger(line.e),cm:toFloat(line.cm)})");
 }catch(Exception e){}    
   
 try{
@@ -825,6 +828,8 @@ catch(Exception e){}
     
     gen.ref.upload_mt_haplotree mht = new gen.ref.upload_mt_haplotree();
     mht.upload_FTDNA_mt_haplotree();
+    
+    gen.neo4jlib.neo4j_qry.qry_write("MATCH (s:Segment) with s.chr as c,min(s.strt_pos) as s,max(s.end_pos) as e with c,s,e, gen.dna.hapmap_cm(case when c='0X' then 'X' else c end,s,e) as cm with c,s,e,round(cm,1) as cm create (cn:chr_cm{chr:toString(c),str_pos:toInteger(s),end_pos:toInteger(e),cm:toFloat(cm)})");
     
     //create sort propert for mt-snps
     gen.neo4jlib.neo4j_qry.qry_write("MATCH (v:mt_variant) with v where toInteger(left(v.name,1)) is  null with v,v.name as name, toInteger(substring(v.name,1,size(v.name)-2)) as sort set v.sort=sort");

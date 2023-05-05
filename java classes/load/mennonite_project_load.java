@@ -36,6 +36,7 @@ public class mennonite_project_load {
     {
         gen.neo4jlib.neo4j_info.neo4j_var();
         gen.neo4jlib.neo4j_info.neo4j_var_reload();
+        String cq = "";
         
         gen.gedcom.upload_gedcom g = new gen.gedcom.upload_gedcom();
         g.load_gedcom();
@@ -48,24 +49,27 @@ public class mennonite_project_load {
         int endct = increment;
         int stop = (uids.length/increment) + 1;
         
-       
-        for (int j=0; j<stop; j++)
-        {
-        for (int i = curr_ct; i < endct; i++)
+       try
+       {
+            for (int j=0; j<stop; j++)
             {
-            try
+            for (int i = curr_ct; i < endct; i++)
                 {
-                gen.neo4jlib.neo4j_qry.qry_write("match (u:Union{uid:" + uids[i] + "}) with distinct u where u.U1>0 and u.U2>0 with u, gen.rel.compute_cor(u.U1,u.U2) as cor with u,cor where cor>0 set u.cor=cor");
-            }
-            catch (Exception e){}
-        } //next i
-         
-        curr_ct = curr_ct + increment;
-        endct = endct + increment;
-        System.out.println(j + "\t" + curr_ct + "\t" + endct);
-        
-        } //next j
-        
+                try
+                    {
+                    gen.neo4jlib.neo4j_qry.qry_write("match (u:Union{uid:" + uids[i] + "}) with distinct u where u.U1>0 and u.U2>0 with u, gen.rel.compute_cor(u.U1,u.U2) as cor with u,cor where cor>0 set u.cor=cor");
+                }
+                catch (Exception e){}
+            } //next i
+
+            curr_ct = curr_ct + increment;
+            endct = endct + increment;
+            if(endct>uids.length){endct=uids.length;}
+            System.out.println(j + "\t" + curr_ct + "\t" + endct);
+
+            } //next j
+       }
+       catch(Exception e2){}
     
         
 
@@ -77,13 +81,17 @@ public class mennonite_project_load {
         //add union rel property and coi property to Person nodes
         for (int i=0; i<uids2.length; i++)
         {
+            try
+            {
         String uu[] = uids2[i].split(",");
         gen.neo4jlib.neo4j_qry.qry_write("match (u:Union{uid:" + uu[0] + "}) with u,gen.rel.relationship_from_RNs(u.U1,u.U2) as rel set u.rel=rel");
         gen.neo4jlib.neo4j_qry.qry_write("match (p:Person{RN:" + uu[1] + "}) with  p, gen.endogamy.coefficient_of_inbreeding(p.RN) as coi set p.coi = coi");
         gen.neo4jlib.neo4j_qry.qry_write("match (p:Person{RN:" + uu[2] + "}) with p, gen.endogamy.coefficient_of_inbreeding(p.RN) as coi set p.coi = coi");
-        }        
+            }
+            catch(Exception e){}
+            }        
        
-        //union_parennt relationship
+        //union_parent relationship
         gen.neo4jlib.neo4j_qry.qry_write("MATCH (u:Union) with u,u.U1 as u1,u.U2 as u2 match (p:Person) where p.RN=u1 or p.RN =u2 with u,p match (u2:Union) where p.uid=u2.uid merge (u)-[r:union_parent{side:case when u.U1=p.RN then 'P' else 'M' end}]->(u2)");
 
         //add most recent endogamous union and generation to Person nodes
@@ -95,21 +103,13 @@ public class mennonite_project_load {
         gen.neo4jlib.neo4j_qry.qry_to_pipe_delimited("match path=(p:Person)-[r:father|mother*0..25]->(a:Person) where p.coi>0 and p.RN<>a.RN with p,[x in nodes(path)|x.RN] as path_nodes with p,path_nodes as path_nodes,size(path_nodes) as gen with p, path_nodes,gen return p.RN as RN,path_nodes,gen","fam_paths.csv");
         
         
-////        gen.neo4jlib.neo4j_qry.qry_write("MATCH p=()-[r:path_person]->() delete r");
-////        gen.neo4jlib.neo4j_qry.qry_write("MATCH (n:fam_path) delete n");
-        
- 
-       gen.neo4jlib.neo4j_qry.CreateIndex("fam_path","persons");
-////        gen.neo4jlib.neo4j_qry.CreateCompositeIndex("fam_path", "persons, gen");
- 
+          gen.neo4jlib.neo4j_qry.CreateIndex("fam_path","persons");
 
-////        gen.neo4jlib.neo4j_qry.qry_write("drop index fam_path_persons_gen");
-        
+       
         String lc = "LOAD CSV WITH HEADERS FROM 'file:///fam_paths.csv' as line FIELDTERMINATOR '|' return line ";
-        String  cq = "create (f:fam_path{persons:gen.genlib.covertStrToIntList(line.path_nodes),gen:line.gen})";
+        cq = "create (f:fam_path{persons:gen.genlib.covertStrToIntList(line.path_nodes),gen:line.gen})";
         gen.neo4jlib.neo4j_qry.APOCPeriodicIterateCSV(lc,cq, 10000);
        
-        
         cq = "match(p:Person{RN:toInteger(line.RN)}) match (f:fam_path{persons:gen.genlib.covertStrToIntList(line.path_nodes),gen:line.gen}) using index f:fam_path(persons) merge (f)-[r:path_person]->(p)";
         gen.neo4jlib.neo4j_qry.APOCPeriodicIterateCSV(lc,cq, 10000);
 
@@ -124,7 +124,7 @@ public class mennonite_project_load {
 //        
 //        create patn_intersect relationship
 //        gen.neo4jlib.neo4j_qry.qry_write("match (f:fam_path) with f match (i:intersect) where size(apoc.coll.intersection(f.persons,i.persons))=size(i.persons) merge (i)-[r:path_intersect]->(f)");
-//        
+////        
 
         return "completed";
 
