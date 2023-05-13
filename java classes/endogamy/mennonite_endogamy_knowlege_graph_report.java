@@ -41,7 +41,7 @@ public class mennonite_endogamy_knowlege_graph_report {
         String cq = "MATCH (p:Person) where p.coi >0 RETURN p.fullname as name,p.RN as RN,p.BD as BD, p.DD as DD, p.coi as coi, p.coi_gen as coi_gen order by coi desc, name"; 
                 //"MATCH (p:Person) where p.coi >0 RETURN p.fullname as name,p.RN as RN,p.BD as BD, p.DD as DD, p.coi as coi, p.coi_gen as coi_gen order by coi desc, name";
         //String excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "mennonite_knowledge_report", "cq", ct, "", "", "", true, cq, false);
-        String excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "mennonite_knowledge_graph", "person_COIs", ct, "", "1:######;2:########;3:########;4:#.#########", "", true,"", false);
+        String excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "mennonite_knowledge_graph", "person_COIs", ct, "", "1:######;2:########;3:########;4:#.#########", "", false,"", false);
         ct = ct + 1;
         
 //        //unions where members are related

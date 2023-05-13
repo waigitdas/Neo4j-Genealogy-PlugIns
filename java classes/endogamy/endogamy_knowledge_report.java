@@ -58,7 +58,7 @@ public class endogamy_knowledge_report {
         
         //intersects
         cq = "MATCH p=(i:intersect)-[r:path_intersect]->(f:fam_path) with  i.persons as ip,count(*) as ct return ip as intercept,size(ip) as len,ct  as paths_with_intersect order by gen.graph.get_ordpath(ip)";
-        excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, "endogamy_knowledge_graph", "intersections", ct, "", "1:#####;2:0.##########", excelFile, true,"UDF:\nreturn gen.endogamy.endogamy_knowledge_graph()\n\ncypher query:\n" +  cq + "\n\nPaths of intersections of two paths and the lengths and the number of paths they intersect.\n\nA similar query is used to produce the intercept nodes.\n\nTo see the path detail for an intersect, use this query replacing xxx with the intersext:\nmatch (f:fam_path)-[[rp:path_intersect]]-(i:intersect{persons:[[xxx]]}) with f,i, gen.graph.get_ordpath(f.persons) as op with f,i,op order by op return distinct i.persons as intersect,f.persons as fam_path", false);
+        gen.excelLib.queries_to_excel.qry_to_excel(cq, "endogamy_knowledge_graph", "intersections", ct, "", "1:#####;2:0.##########", excelFile, true,"UDF:\nreturn gen.endogamy.endogamy_knowledge_graph()\n\ncypher query:\n" +  cq + "\n\nPaths of intersections of two paths and the lengths and the number of paths they intersect.\n\nA similar query is used to produce the intercept nodes.\n\nTo see the path detail for an intersect, use this query replacing xxx with the intersext:\nmatch (f:fam_path)-[[rp:path_intersect]]-(i:intersect{persons:[[xxx]]}) with f,i, gen.graph.get_ordpath(f.persons) as op with f,i,op order by op return distinct i.persons as intersect,f.persons as fam_path", false);
         ct = ct + 1;
         
         

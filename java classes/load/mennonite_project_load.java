@@ -17,7 +17,7 @@ public class mennonite_project_load {
     @UserFunction
     @Description("Template used in creating new functions.")
 
-    public String load_and_enhance(
+    public String mennonite_load_and_enhance(
   )
    
          { 
