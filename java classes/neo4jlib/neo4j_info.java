@@ -35,6 +35,8 @@ public class neo4j_info {
     public static String neo4j_home_dir;
     public static String wrt;    
     public static String cq;
+    public static double female_crossocer_rate = 0.6;
+    public static double male_crossocer_rate = 0.5;
 
 
 public static Boolean neo4j_var() {

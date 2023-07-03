@@ -17,25 +17,25 @@ public class radial_dendrogram {
     @Description("in development.")
 
     public String dendrogram(
-        @Name("rn1") 
-            Long rn1,
-        @Name("rn2") 
-            Long rn2
+        @Name("cypher_query") 
+            String cypher_query,
+        @Name("d3_template") 
+            String d3_template
   )
    
          { 
              
-        call_code_here("");
+        create_dendrogram(cypher_query, d3_template);
          return "";
             }
 
     
     
     public static void main(String args[]) {
-        // TODO code application logic here
+        create_dendrogram("", "");
     }
     
-     public String call_code_here(String cq) 
+     public static String create_dendrogram(String cq, String d3t) 
     {
         return "";
     }

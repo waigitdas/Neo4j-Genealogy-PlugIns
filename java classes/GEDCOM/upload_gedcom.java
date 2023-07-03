@@ -5,7 +5,6 @@
  * Woodstock, IL 60098 USA
  */
 package gen.gedcom;
-    import gen.conn.connTest;
     import gen.neo4jlib.neo4j_qry;
     import gen.neo4jlib.file_lib;
     import gen.neo4jlib.neo4j_info;
@@ -13,19 +12,16 @@ package gen.gedcom;
 
     import java.io.File;
     import java.io.FileOutputStream;
-    import java.io.FileWriter;
     import java.io.IOException;    
     import java.io.OutputStreamWriter;
     import java.io.Writer;
     import java.nio.charset.StandardCharsets;
     import org.neo4j.procedure.Description;
-    import org.neo4j.procedure.Name;
     import org.neo4j.procedure.UserFunction;
    
 public class upload_gedcom {
         @UserFunction
         @Description("Load a GEDCOM into Neo4j creating Person, Union and Place nodes and the edges connecting them.")
-                    
     
     public String gedcom_to_neo4j(
 
@@ -35,18 +31,18 @@ public class upload_gedcom {
         return sss;
       }
     
-  public  void main(String args[]){
+  public void main(String args[]){
     load_gedcom();
 }
 
  
   
-    public static String load_gedcom () 
+    public static String load_gedcom() 
    
     {
         gen.neo4jlib.neo4j_info.neo4j_var_reload();  //initialize variables
         //gen.conn.connTest.cstatus();
-        String filePath =  gen.neo4jlib.neo4j_info.gedcom_file;  //"C:/Genealogy/gfg/gedcom/josie_gedcom.ged";//
+        String filePath =  gen.neo4jlib.neo4j_info.gedcom_file;  
 
         //create indices to speed upload using merge
         neo4j_qry.CreateIndex("Person", "RN");

@@ -34,7 +34,9 @@ public class ancestral_surname_search {
     
     public static void main(String args[]) {
         // TODO code application logic here
-        find_matches("avitts, mcmican, mcmakin,mcmaken,macmican,macmikan");
+        //find_matches("avitts, mcmican, mcmakin,mcmaken,macmican,macmikan");
+        find_matches("Abercrombie,Adams,Andersen,Anderson,Arbaugh,Averatts,Averyt,Avitts,Ballowe,Barnard,Bassford,Birch,Bivins,Bone,Bottini,Boyd,Bratton,Brown,Buchanan,Bullock,Burtis,Caldwell,Campbell,Canterbury,Choplin,Christiansen,Coatney,Cochem,Cochems,Cochran,Coker,Crabtree,Cyrus,Denham,Derrin,Doss,Duncan,Dunlap,Eipper,Ellis,Engelke,Erwin,Garland,Gertrude,Gibbs,Gilstrap,Graves,Green,Grissom,Grisson,Hammond,Harris,Haubold,Hiddleson,Horne,Houston,Irwin,Jacobs,Jordan,Kaster,Kerr,Kippenbrock,Layton,Loftin,Loggins,Long,Ludwig,MRCA,Mager,Maughan,McFarland,McMakin,McMican,McMichen,McMicken,Montgomery,Moss,Nelson,Nisbet,Parker,Prater,Price,Quattlebaum,Radcliffe,Ridgeway,Rinehart,Robinson,Rogers,Rosier,Rushing,Savage,Scott,Shemwell,Smith,Spracklin,Steely,Stinnett,Talbot,Taylor,Tierney,Turpell,Watkins,Wells,White,Williams,Witty,Wren,Wright,Young");
+        
     }
     
      public static String find_matches(String search_term) 

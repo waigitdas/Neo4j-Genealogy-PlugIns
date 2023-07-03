@@ -28,13 +28,13 @@ public class icw {
     
     
     public static void main(String args[]) {
-        // TODO code application logic here
+        get_matches();
     }
     
-     public String get_matches() 
+     public static String get_matches() 
     {
         
-        String cq = "match (m1:DNA_Match)-[r1:match_by_segment]->(icw:DNA_Match)<-[r2:match_by_segment]-(m2:DNA_Match) where m1.fullname<m2.fullname  and m1<>icw and m2<>icw and r1.cm>=7 and r2.cm>=7 and m1.ancestor_rn is not null and m2.ancestor_rn is not null with m1,m2,case when icw.RN is null then icw.fullname else '*' + icw.fullname + ' [' + icw.RN + ']' end + ' {' + toInteger(r1.cm) + ', ' + toInteger(r2.cm) + '}' as fn  with m1,m2,collect(fn) as cicw with m1,m2,cicw where size(cicw)<=50  with m1.fullname + ' [' + m1.RN + ']' as match1,m2.fullname + ' [' + m2.RN + ']' as match2,size(cicw) as ct,cicw as in_common_with_matches with match1,match2,ct,in_common_with_matches where match1 is not null and match2 is not null return match1, match2,ct,in_common_with_matches order by ct desc";
+        String cq = "match (m1:DNA_Match)-[[r1:match_by_segment]]->(icw:DNA_Match)<-[[r2:match_by_segment]]-(m2:DNA_Match) where m1.fullname<m2.fullname  and m1<>icw and m2<>icw and r1.cm>=7 and r2.cm>=7 and m1.ancestor_rn is not null and m2.ancestor_rn is not null with m1,m2,case when icw.RN is null then icw.fullname else '*' + icw.fullname + ' ⦋' + icw.RN + '⦌' end + ' {' + toInteger(r1.cm) + ', ' + toInteger(r2.cm) + '}' as fn  with m1,m2,collect(fn) as cicw with m1,m2,cicw where size(cicw)<=50  with m1.fullname + ' ⦋' + m1.RN + '⦌' as match1,m2.fullname + ' ⦋' + m2.RN + '⦌' as match2,size(cicw) as ct,cicw as in_common_with_matches with match1,match2,ct,in_common_with_matches where match1 is not null and match2 is not null return match1, match2,ct,in_common_with_matches order by ct desc";
         gen.excelLib.queries_to_excel.qry_to_excel(cq,"icw_matches", "matches", 1, "", "2:###", "", true, "UDF: \nreturn gen.discovery.icw_matches()\n\nThe icw matches with an * prefix are those sharing the common ancestor.\nThe numbers in brackets[] are the shared cm of the icw and match1 and match2 respectively\n\nquery:\n" + cq,true);
         return "completed";
     }

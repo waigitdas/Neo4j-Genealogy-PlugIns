@@ -30,7 +30,8 @@ public class person_connect {
     
     
     public static void main(String args[]) {
-        get_connections("Sheila K. Evans");
+        //get_connections("Sheila K. Evans");
+        get_connections("Charles Logan");
     }
     
      public static String get_connections(String fullname) 
@@ -39,15 +40,27 @@ public class person_connect {
         surname = surname.replace("\"", "");
       
      
+        //matches by segment -- the segments
         String cq = "match (m:DNA_Match{fullname:'" + fullname + "'})-[[rs:match_segment]]-(s:Segment) with s,m.fullname as name,rs.p as proband,rs.m as match order by s.Indx with name,proband,match,collect(distinct s.Indx) as segs return proband,match,size(segs) as shared_seg_ct,segs";
                 //"match (m:DNA_Match{fullname:'" + fullname + "'})-[[rs:match_segment]]-() with m.fullname as name,rs.p as proband,rs.m as match return name,proband,match";
         int ct = 1;
         String excelFile = gen.excelLib.queries_to_excel.qry_to_excel(cq, fullname + "_explorer", "matches at segments", ct, "", "2:#####;3:#####", "",false,"Cypher query:\n" + cq + "\n\nProband kits with DNA that matches to the report subject with shared segments", false);
         ct= ct +1;
         
-        cq = "match (m:DNA_Match{fullname:'" + fullname + "'})-[[rs:match_by_segment]]-(mm:DNA_Match) with m.fullname as proband, mm.fullname as match,rs.cm as shared_cm,rs.x_cm as x_cm,rs.rel as relationship return proband,match,shared_cm,x_cm,relationship";
-        gen.excelLib.queries_to_excel.qry_to_excel(cq, "mbs", "matches by segments", ct, "", "2:####.#;3:####.#", excelFile,false, "Cypher query:\n" + cq +"\n\nKits which share segments with (match to) the report subject with their shared cM\nIf there is a relationship between them in the GEDCOM, it is shown.", false);
+        //shared cM
+        cq = "match (m:DNA_Match{fullname:'" + fullname + "'})-[[rs:match_by_segment]]-(mm:DNA_Match) with m.fullname as proband, mm.fullname as match,rs.cm as shared_cm,rs.x_cm as x_cm,rs.rel as relationship return proband,match,shared_cm,x_cm,relationship order by shared_cm desc";
+        gen.excelLib.queries_to_excel.qry_to_excel(cq, "mbs", "shared_cM", ct, "", "2:####.#;3:####.#", excelFile,false, "Cypher query:\n" + cq +"\n\nKits which share segments with (match to) the report subject with their shared cM\nIf there is a relationship between them in the GEDCOM, it is shown.", false);
         ct = ct + 1;
+        
+        //avatar matches with MSegs
+        cq = "with '" + fullname + "' as fn MATCH p=(d:DNA_Match)-[r1:match_segment]->(s1:Segment) where r1.p=fn or r1.m=fn match (s2:Segment)<-[rv:avatar_segment]-(a:Avatar) where ((rv.p=r1.m or rv.p=r1.p) or (rv.m=r1.m or rv.m=r1.p)) and s1.chr=s2.chr and s1.strt_pos<s2.end_pos and s1.end_pos>s2.strt_pos with fn as discovered_match,a.fullname as avatar,apoc.coll.sort(collect (distinct s2.Indx)) as segs return discovered_match,avatar, size(segs) as MSeg_ct, segs as avatar_MSegs order by MSeg_ct desc";
+        gen.excelLib.queries_to_excel.qry_to_excel(cq, "mbs", "avatar_MSegs", ct, "", "2:####.#;3:####.#", excelFile,false, "Cypher query:\n" + cq +"\n\nKits which share segments with available avatars.", false);
+        ct = ct + 1;
+       
+        cq = "with '" + fullname + "' as fn MATCH p=(d:DNA_Match)-[r1:match_segment]->(s1:Segment) where r1.p=fn or r1.m=fn match (s2:CSeg)<-[rv:avatar_cseg]-(a:Avatar) where s1.chr=s2.chr and s1.strt_pos<s2.end_pos and s1.end_pos>s2.strt_pos with fn as discovered_match,a.fullname as avatar,apoc.coll.sort(collect (distinct s2.Indx)) as segs with discovered_match,avatar, size(segs) as seg_ct, segs as avatar_CSegs match (s3:CSeg) where s3.Indx in avatar_CSegs return discovered_match,avatar, seg_ct, sum(s3.cm) as CSeg_cM, avatar_CSegs order by CSeg_cM";
+             gen.excelLib.queries_to_excel.qry_to_excel(cq, "mbs", "avatar_CSegs", ct, "", "2:####.#;3:####.#", excelFile,false, "Cypher query:\n" + cq +"\n\nKits which share segments with available avatars.", false);
+        ct = ct + 1;
+    
         
         cq = "match (m:DNA_Match{fullname:'" + fullname + "'})-[rs:shared_match]-(mm:DNA_Match) with m.fullname as proband, mm.fullname as match,rs.cm as shared_cm,rs.x_cm as x_cm,rs.rel as relationship,rs.pair_mrca as mrcas,rs.x_cm as gfg_x_cm,rs.x_gen_dist as gfg_x_gen_dist return proband,match,shared_cm,case when x_cm is null then 0 else x_cm end as x_cm,relationship,mrcas";
         gen.excelLib.queries_to_excel.qry_to_excel(cq, "shared_matches", "shared_matches", ct, "", "2:####.#;3:####.#", excelFile,false, "Cypher query:\n" + cq + "\n\nShared matches as reported by FTDNA.\nFTDNA X-matches may differ from those reported by GFG for at least two reasons:\n   1. the match does not meet their criteria while it does for GFG\n  2. FTDNA may report an incorrect X-match while GFG uses the family tree to recognize that an X-match is not tenable given the graph topology.\n\nSee the previuos tab to see the GFG X-match data.", false);

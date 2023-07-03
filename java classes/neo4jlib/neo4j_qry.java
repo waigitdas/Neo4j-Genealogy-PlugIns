@@ -263,6 +263,7 @@ public static String APOCPeriodicIterateCSV(String LoadCSV, String ReplaceCypher
     //optimize with specific query design:
     //https://neo4j.com/developer/kb/a-significant-change-in-apoc-periodic-iterate-in-apoc-4-0
     String Q = "\"";
+    //String cq = Q + LoadCSV + Q + ", " + Q + ReplaceCypher + Q;
     String csv = "CALL apoc.periodic.iterate(" + Q + LoadCSV + Q + ", " + Q + ReplaceCypher + Q + ",{batchSize: " + batchsize + ", parallel:false, iterateList:true, retries:25})";
     
     qry_write(csv);

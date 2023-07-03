@@ -69,7 +69,8 @@ public class create_avatars {
        gen.neo4jlib.neo4j_qry.qry_write("match (d:CSeg) delete d");
    
         //get all descendants who are DNA testers
-        cq = "match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y'] with path,q  with apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten(collect (distinct[x in nodes(path)|x.RN])))) as rns return rns";        
+        cq = ""
+;                //"match path=(p:Person{RN:" + anc_rn + "})<-[:father|mother*0..15]-(q:Person) where q.at_DNA_tester in ['Y'] with path,q  with apoc.coll.dropDuplicateNeighbors(apoc.coll.sort(apoc.coll.flatten(collect (distinct[x in nodes(path)|x.RN])))) as rns return rns";        
         //string collection of rns in paths from ancestor to descendants
         String paths = gen.neo4jlib.neo4j_qry.qry_to_csv(cq);
         //array of these rns for iteration
@@ -262,7 +263,7 @@ public class create_avatars {
        
        //ENHANCEMENTS
        //flag curated avatars
-       gen.neo4jlib.neo4j_qry.qry_write("MATCH (n:DNA_Match) where n.curated=1 with collect(n.RN) as rns match (v:Avatar) where v.RN in rns set v.curate=1");
+       gen.neo4jlib.neo4j_qry.qry_write("MATCH (n:DNA_Match) where n.curated=1 and n.surname<>'MRCA' with collect(n.RN) as rns match (v:Avatar) where v.RN in rns set v.curate=1");
        
        //set avatar side using direct method
        gen.neo4jlib.neo4j_qry.qry_write("MATCH (d:Avatar)-[r:avatar_segment]-(s:Segment) where d.RN=r.p_rn with d,r, case when r.p_side='maternal' then 'maternal' else case when r.p_side='paternal' then 'paternal' else case when replace(r.p_side,'maternal','')<> r.p_side and replace(r.p_side,'paternal','')<> r.p_side then 'both' else case  when r.p_side is null then 'unknown' else '' end end end end as vnode_side set r.avatar_side=vnode_side,r.side_method='direct'");

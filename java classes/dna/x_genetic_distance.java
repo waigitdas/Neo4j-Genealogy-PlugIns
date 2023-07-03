@@ -32,15 +32,21 @@ public class x_genetic_distance {
     
     
     public static void main(String args[]) {
-        // TODO code application logic here
+        Long n = get_dist(1L,600L);
+        System.out.println(n);
+       n = get_dist(34621L,34627L);
+        System.out.println(n);
     }
     
-     public Long get_dist(Long rn1,Long rn2) 
+     public static  Long get_dist(Long rn1,Long rn2) 
     {
         Long ii = 0L;
         try{
-        String cq = "match p=(p1:Person{RN:" + rn1 + "})-[:father|mother*0..99]->(x) with x,reduce(srt2 ='', q IN nodes(p)| srt2 + q.sex) AS c where c=replace(c,'MM','') with collect (x.RN) as RNs match m=(p2:Person)<-[:father|mother*0..99]-(y:Person{RN:" + rn2 + "}) where p2.RN in RNs with y, reduce(srt3 ='', s IN nodes(m)| srt3 + s.sex) AS cc with y where cc=replace(cc,'MM','') match sp=shortestpath ((y)-[:father|mother*0..99]-(z:Person{RN:" + rn1 + "}) ) with y,sp,reduce(ss='', t in nodes(sp)| t.RN + '>' + ss) as Path return distinct y.fullname as Name, y.RN as RN, length(sp) as genetic_distance,Path order by genetic_distance,Path";
-        ii = Long.parseLong(gen.neo4jlib.neo4j_qry.qry_to_csv(cq).split("\n")[0].split(",")[2]);
+        String cq = "match p=(p1:Person{RN:" + rn1 + "})-[r1:father|mother*0..25]->(x)<-[r2:father|mother*0..25]-(y:Person{RN:" + rn2 + "}) with reduce(s1='', a in relationships(p)|s1 + case when type(a)='father' then 'P' else 'M' end) as path with path where path=replace(path,'PP',\"\") return size(path) as gen_dist";
+                //"match p=(p1:Person{RN:" + rn1 + "})-[:father|mother*0..99]->(x) with x,reduce(srt2 ='', q IN nodes(p)| srt2 + q.sex) AS c where c=replace(c,'MM','') with collect (x.RN) as RNs match m=(p2:Person)<-[:father|mother*0..99]-(y:Person{RN:" + rn2 + "}) where p2.RN in RNs with y, reduce(srt3 ='', s IN nodes(m)| srt3 + s.sex) AS cc with y where cc=replace(cc,'MM','') match sp=shortestpath ((y)-[:father|mother*0..99]-(z:Person{RN:" + rn1 + "}) ) with y,sp,reduce(ss='', t in nodes(sp)| t.RN + '>' + ss) as Path return distinct y.fullname as Name, y.RN as RN, length(sp) as genetic_distance,Path order by genetic_distance,Path";
+        //ii = Long.parseLong(gen.neo4jlib.neo4j_qry.qry_to_csv(cq).split("\n")[0].split(",")[2]);
+        ii = Long.valueOf(gen.neo4jlib.neo4j_qry.qry_to_csv(cq).split("\n")[0]);
+        
         return ii;
         }
         catch (Exception e) {return ii;}

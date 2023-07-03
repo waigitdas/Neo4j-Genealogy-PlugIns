@@ -11,6 +11,7 @@ package gen.rel;
     import org.neo4j.procedure.UserFunction;
     import org.neo4j.procedure.Description;
      import gen.conn.connTest;
+import java.util.Collections;
  
     import java.util.List;        
       
@@ -28,9 +29,12 @@ public class mrca_from_cypher_List {
 
         {
         String qry = "match (c:Person) where c.RN in " + rn_list + " With c order by c.RN With collect(distinct c.RN) As cc match (c2:Person)-[:father|mother*0.." + generations + "]->(MRCA:Person)<-[:father|mother*0.." + generations + "]-(c3:Person) where c2.RN in cc And c3.RN in cc  and c2.RN<>c3.RN with MRCA,cc,c2 order by c2.RN with MRCA,cc,collect(distinct c2.RN) as cc2 order by MRCA.sex desc with distinct cc,cc2,MRCA.fullname + ' ⦋' + MRCA.RN + '⦌ (' + left(MRCA.BD,4) + '-' + left(MRCA.DD,4) + ')' as CommonAncestor where cc2=cc return CommonAncestor";
-        try{List r =mrca_from_list_qry(qry,rn_list);
-        String s = gen.genlib.listStrToStr.list_to_string(r);
-        return s;}
+        try{
+            List r =mrca_from_list_qry(qry,rn_list);
+            Collections.sort(r);
+            String s = gen.genlib.listStrToStr.list_to_string(r);
+            return s;
+        }
         catch(Exception e){return "-";}
             }
     
